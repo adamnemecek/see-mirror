@@ -1,0 +1,10 @@
+# pkg-config for @PACKAGE_NAME@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: Simple ECMAScript Engine
+Description: Javascript interpreter
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir} -lsee @LIBSEE_LIBS@ 
+Cflags: -I${includedir}
+Requires: @LIBSEE_REQS@

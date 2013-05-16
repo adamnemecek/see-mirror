@@ -1,0 +1,41 @@
+
+Things to do
+
+* split parse.c up into the three parts of the grammar
+* switch from executable AST to compact bytecode
+* bytecode JIT compiler
+* add an argument converter, eg
+	SEE_argconv(interp, argc, argv, "ofi|sa*b",
+	   &obj, &floatv, &intv, &stringv, 
+	   &asciibuf, sizeof asciibuf, &boolchar);
+  and maybe a corresponding call:
+	SEE_callv(interp, callableobj, "ofisab-",
+	    obj, float, int, see_string, asciiptr, boolchar);
+
+
+* Get rid of EXT1 and replace with real JavaScript version compat
+
+    some resources at: http://www.swtech.com/script/javascript/diff/
+    http://members.ozemail.com.au/~enigman/javascript/js_faq.html
+    http://web.archive.org/web/20011014100919/http://www.webcoder.com/reference/2/
+
+    JavaScript1.0->1.1 
+	http://wp.netscape.com/eng/mozilla/3.0/handbook/javascript/newfunc.htm
+		- new operators: typeof void
+		- new objects: Array Boolean Function Number
+		- new methods:
+			Array.join(separator)
+			Array.reverse()
+			Array.sort(comparefunc)
+			String.split([separator])
+			Object.valueOf()
+		- new properties:
+			?.constructor
+			?.prototype
+			Number.MAX_VALUE
+			Number.MIN_VALUE
+			Number.NaN
+			Number.NEGATIVE_INFINITY
+			Number.POSITIVE_INFINITY
+
+		

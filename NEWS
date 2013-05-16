@@ -1,0 +1,180 @@
+$Id: NEWS 1371 2008-02-10 04:59:09Z d $
+
+3.0 [2008-02-09]
+  Bug 118: Programs w/only function decls had no effect in bytecode mode
+  Bug 115: Object.prototype.isPrototypeOf() didn't follow prototype chain
+  Bug 112: /)/ is strictly an illegal regex 
+  Bug 110: /[]/ is a legal regex even though it can't match anything
+  Bug 109: detect illegal unicode escapes in identifiers
+  Bug 108: fix Number.toString(undefined)
+  Bug 105: make SEE_intern() work right with strings from other interps
+  Bug 106: fix prematurely reclaimed objects
+  Bug 104: fix leaked finalized objects
+  Bug 102: fix traceback chains lost to finally clauses
+  Bug 101: allow escaped LineTerminators in string literals for compat
+  Bug 97: recognise CRLF line endings for line number reporting
+  Bug 96: newlines were not properly recognised with --disable-full-unicode
+  Bug 94: string concatenation can end up with nuls
+  Bug 93: seg fault in String.prototype.charAt() and charCodeAt()
+  Bug 92: add SEE_string_append_unicode() that encodes to UTF-16
+  Bug 91: multiple function declarations inside a conditional
+  Bug 90: document that applications must call GC_INIT() when using Boehm GC
+  Bug 89: Use OSI's licence text exactly
+  Bug 88: Add host_data field to SEE_object
+  Bug 85: add SEE_system.object_construct hook for host objects
+  Bug 84: add compatibility with ECMA262-3 errata document
+  Bug 83: Function.toString() wrongly displayed numeric literals as '?'
+  Bug 82: improve compatibility of instanceof operator
+  Bug 87: varargs SEE_error_throw_va() and SEE_error_throw_sys_va()
+  Bug 81: varargs SEE_call_args_va() and SEE_parse_args_va()
+  Bug 79: '-->' at start of line treated like '//' in SGMLCOM compat mode
+  Bug 78: fix crash when pretty-printing a switch with adjacent case clauses
+  Bug 77: portability improvements with isnan, finite, copysign
+  Bug 75: fix crash when enumerating a host object with no enumerator
+  Bug 74: portability improvement in module loader
+  Bug 73: new function SEE_eval() provides more control for host developers
+  Bug 72: bytecode generator --enable-bytecode (default)
+  Bug 70: SEE_context_eval() was leaking reference values
+  Bug 69: fix crash when some methods are called without 'this' context
+  Bug 68: free the right pointer in SEE_grow_to()
+  Bug 66: fix line numbering with '//' and '<!--' comments
+  Bug 65: fixed alloca support on some systems
+  Bug 62: document that SEE_OBJECT_DELETE assumes intern'd property
+  Bug 61: fixed operator -= raising spurious TypeError exceptions
+  Bug 52: attach tracebacks to try contexts when exceptions are thrown
+  Bug 53: improved support for cross-compiling
+  Bug 50: use finite() instead of isinf() for libm portability
+  Bug 49: detect alloca on FreeBSD; correct readline; fix daylight savings
+  Bug 47: Added Object.prototype.eval for JS1.2 compatibility
+  Bug 20: added SEE_grow_to() for limited, growable memory regions
+  Bug 16: support for keeping static strings in a resource segment
+  Bug 14: use floor() instead of rint()
+  Changed: Get, Put, CanPut, HasProperty, Delete APIs assume interned property
+  Changed: see-shell has -i option for interactive use, instead of -f '-'
+  Changed: SEE_ASSERT() now calls SEE_ABORT() instead of throwing an exception
+  Changed: error messages from eval() label as <eval> instead of <string>
+  Changed: SEE_system allocators take file/line for allocator debugging
+  New: SEE_string_fix() for passing string values between interpreters
+  New: see-shell -dg option for tracebacks on SIGINFO
+  New: SEE_string_cmp_ascii()
+  New: SEE_call_args() counterpart to SEE_parse_args()
+  New: see-shell has -e option for executing javascript strings
+  New: ssp example, a threaded server-side javascript HTTP server
+  Deprecated: thisobj field of constructors deprecated (it was never used)
+  Deprecated: SEE_no_enumerator deprecated (use NULL instead)
+  Experimental: support external regex library --with-pcre (pcre.org) (bug 107)
+
+2.0 [2006-08-06]
+  API change: removed SEE_COMPAT_EXT1 (replaced with JSxx)
+  Feature: security domain framework
+  Feature: SEE_parse_args() to help convert arguments to C types
+  Bug 45: improved compilation portability
+  Bug 12: efficient string concatenation
+  Bug 42: String.concat() behaves correctly
+  Use libltdl for the shell's dynamic loading of modules
+  Feature: SEE_gcollect() method that tries a garbage collection
+  gen.c no longer uses the non-portable fgetln()
+  Feature: Shell ignores first line of '-f' files if they start with "#!".
+  Compat: regular expression instances are callable as in JS1.1+
+  Feature: Module support - see File module example
+  API change: added SEE_string_toutf8() which is pretty handy
+  Compat: Added Netscape-compatible version() function to the shell
+  API change: SEE_COMPAT_ flags cleaned up; specific Netscape version compat
+  Bug 36: function arguments object now accesses args by index 
+  Compat: octal escapes in regular expressions for JS1.1+ compat
+  API change: only [[Put]], [[Get]], [[Delete]] can use uninterned props
+  Compat: Added Regex.$1 et al. support, for JS1.2 compat
+  Compat: Added conditional function support, for JS1.5 compat
+  Compat: Added compat() function to the shell which changes compat flags.
+  API change: Added many ASCII string functions to the API for convenience
+  Compat: Allow /[/]/ to be parsed as a regex literal in JS1.2
+  Fix: Error.prototype and NativeError.prototype attributes now match standard
+  Bug 35: labelled blocks could not be targets of break
+  Compat: Allow [[HasInstance]] for RegExp, e.g. /x*/ instanceof RegExp
+  Bug 34: some boolean true values (eg from Regexp) do not compare equal
+  Bug 33: indexOf() corrected when substring is longer than string
+  Bug 32: thisobj not set for called functions
+  Fix: Corrected some Unicode case translations
+  Improved: more sophisticated debugger for the shell
+  Improved: Platform isolation of time and abort functions
+  Fix: Correction in daylight savings estimation code
+  Portability: Internal vsnprintf implementation with extra formats
+  Experimental: Internal garbage collector implementation (backup only)
+  Improved: GC finalization support (unused by native, but supported by API)
+  API change: SEE_interpreter.trace() function takes new event type argument
+  API change: SEE_objectclass.Class is now const char * 
+
+1.3.1 [2005-01-18]
+  Bug 31: Fix header include installation
+  
+1.3 [2005-12-23]
+  Fix typeof undefined references no longer throws ReferenceError
+  Fix function instance prototype initialisation
+  Regular expressions now treat invalid quantifiers as literal in EXT1
+  Memory debugging.
+  Qualified use of the GC's free function.
+  Better checking for some function availability.
+  Moved allocator/error handling into a single structure.
+  Bug 24: lastIndexOf() boundary condition
+  Bug 4: Unicode upper/lowercase support
+  Bug 11: check for overgrown strings
+  Bug 10: SEE_size_t used for allocators
+  EXT1 compatibility allows using reserved words as identifiers
+  Bug 9: corrected function instances' prototype.constructor property
+  Corrected timezone problem with Date.setMilliseconds()
+  Bug 2: Strings are marked so they are not scanned by the GC
+  Bug 7: SEE_ALLOCA now takes an interpreter argument
+  New features to enable/disable: parser-print parser-visit full-unicode
+  Proper API versioning (1.0)
+  Better parser internal consistency checks in debug mode (node cast checks)
+  Bug 3: Added a simple interactive debugger into see-shell
+  Trace hook now exposes context structures for use with SEE_context_eval()
+  Fixed bug where malformed unicode text could cause seg fault
+  Changed licence (removed BSD advertising clause)
+  Fixed bugs where allocated memory was not zeroed
+  Added --[exec-]prefix options to libsee-config
+  Improved usage and error messages in see-shell
+  Support for amd64 in dtoa [simun mikeci]
+  Some static declarations missing extern [simun mikeci]
+  Remove need for platform to supply rint() getopt() [fabrice segura]
+  Provide local time support (was UTC-only)
+  Improved support for win32 [gerry sweeney]
+
+1.2 [2004-10-31]
+  Corrected embarrasing stringdefs build problem
+  Adhere more closely to GNU software standards (but still BSD licence)
+  Configure change: --with-boehm-gc=[yes|no|prefix]
+  Added SEE_VALUE_GET_TYPE() for cleaner API
+  Added support for timeofday when building under Windows.
+  Removed enumerator 'reset' method (never used)
+  Prefixed some non-public API members with underscores.
+  Removed see/config.h from install
+  Better documentation for the see-shell; simplified, extra features.
+  Added libsee-config script
+  Fixed octal parsing bug in parseInt
+  Fixed undefined arg bugs with escape, unescape, isNaN, isFinite
+  Fixed bug scanning /*/*/ as comment
+  Simpler search for perl and better support for compiling with MSYS/MinGW
+
+1.1 [2004-08-15]
+  Much improved documentation.
+  Global.encodeURI generates uppercase hexadecimal to comply with standard.
+  Implied literal '[' and '-' in regexs now conforms to standard.
+  SGML comments are now part of compatibility mode. 
+  Array.prototype.concat correctly updates this.length.
+  UTF-8 decoding now treats 'unsafe' sequences as illegal. (This
+    violates an obscure part of the standard, but improves security.)
+  Function recursion limits capability
+  ToObject throws a better exception message in pathological cases
+  Per-interpreter locales.
+  See-shell now has a -c option to set the compatibility flags dynamically.
+  Application static strings can be intern'd across multiple interpreters.
+  Empty functions optimised.
+  Better syntax error messages
+  Traceback-printing utility function
+  Bugfix: 'printed' expressions now have disambiguating parentheses
+  Bugfix: separate build directory support
+
+1.0 [2003-12-03]
+  Initial public release
+

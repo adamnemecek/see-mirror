@@ -1,0 +1,447 @@
+# Copyright (c) 2003, David Leonard. All rights reserved.
+# $Id: string.defs 1313 2008-01-12 00:21:04Z d $
+
+#
+# This file contains the string constants that are used to
+# generate UTF-16 string constants at compile time. See the
+# Makefile and string.pl for more details. 
+#
+# Each line in this file is a string definition of the form
+#	name = "some text"
+# or, more simply just the 'name' by itself which is shorthand for name="name".
+#
+# The resulting string constants are accessed using the macro STR(name),
+# which is defined in the generated stringdefs.h header file.
+#
+# NB: If language internationalisation is ever needed, this could
+# be the right place to do most of it.
+#
+
+#
+# general error messages
+#
+bad_argc = "Wrong number of arguments passed to the function"
+bad_arg = "Invalid arguments were given to the function"
+internal_error = "Internal error occurred; please report"
+new_not_an_object = "'new' cannot be applied to a non-object"
+not_a_constructor = "'new' cannot be applied to the object"
+no_such_function = "Function is not defined"
+not_a_function = "Value is not a function"
+not_callable = "Object is not callable"
+instanceof_not_object = "Value following 'instanceof' is not an object"
+in_not_object = "Value following 'in' is not an object"
+no_hasinstance = "Object does not support the 'instanceof' operator"
+bad_lvalue = "Left-hand-side of the assignment cannot be assigned to"
+regex_syntax_error = "Regular expression contained a syntax error"
+recursion_limit_reached = "Call limit was reached; runaway recursion?"
+string_limit_reached = "String too long"
+error
+
+#
+# some errors from the string module
+#
+no_string_space = "No string space left"
+bad_utf16_string = "Invalid UTF-16 sequence was found in the string"
+unknown_file = "<input>"
+string_input_name = "<string>"
+eval_input_name = "<eval>"
+duplicate_label = "Duplicate label '"
+previous_definition = "Previous definition"
+
+#
+# more misc error messages
+#
+toobject_undefined =	"Tried to use undefined as an object"
+toobject_null =		"Tried to use null as an object"
+toobject_bad =		"Value cannot be converted into an object"
+toboolean_bad =		"Value cannot be converted into a boolean"
+tonumber_bad =		"Value cannot be converted into a number"
+tostring_bad =		"Value cannot be converted into a string"
+
+defaultvalue_string_bad = "Object cannot be converted into a string"
+defaultvalue_number_bad = "Object cannot be converted into a number"
+defaultvalue_no_bad =     "Object cannot be converted into a default form"
+not_array =		  "Object is not a native Array object"
+array_badlen =		  "Bad length given to the Array constructor"
+not_boolean =		  "Object is not a native Boolean object"
+not_function =		  "Object is not a native Function object"
+not_cfunction =		  "Object is not a native CFunction object"
+not_number =		  "Object is not a native Number object"
+not_regexp =		  "Object is not a native RegExp object"
+not_string =		  "Object is not a native String object"
+not_date =		  "Object is not a native Date object"
+null_thisobj =		  "Method called with a null object"
+
+apply_not_array =	"Second argument to apply() is not an array"
+bad_radix =	"Radix argument does not lie between 2 and 36, inclusive"
+regexp_bad_string =	"Bad argument was given to RegExp constructor"
+regexp_bad_flag =	"Bad flag given to RegExp constructor"
+uri_badhex =		"Bad hexadecimal escape sequence in URI"
+bad_utf8 =		"Invalid UTF-8 sequence in string"
+bad_unicode =		"Unicode codepoint is too large for UTF-16"
+array_sort_error =	"Sort comparison function did not return a number"
+toLocaleString_notfunc   = "'toLocaleString' property is not a function"
+toLocaleString_notstring = "toLocaleString() property did not return a string"
+
+too_many_args =		"Too many arguments"
+string_not_ascii =	"String contains non-ASCII character(s)"
+string_contains_null =	"String contains null character(s)"
+not_implemented =	"Not implemented"
+
+# Function body strings
+implementation_dependent = "ECMA-262 'implementation dependent' result"
+
+#
+# some strings used by String and Object methods
+#
+empty_string = ""
+zero_digit = "0"
+comma = ","
+write
+writeval
+minus = "-"
+
+#
+# strings used by Error
+#
+name
+message
+Error
+EvalError
+RangeError
+ReferenceError
+SyntaxError
+TypeError
+URIError
+
+#
+# Strings used by functions
+#
+arguments
+callee
+
+#
+# names used by RegExp
+#
+source
+global
+ignoreCase
+multiline
+lastIndex
+exec
+test
+index
+input
+
+#
+# names used by Date
+#
+parse
+UTC
+toDateString
+toTimeString
+toLocaleDateString
+toLocaleTimeString
+getTime
+getFullYear
+getUTCFullYear
+getMonth
+getUTCMonth
+getDate
+getUTCDate
+getDay
+getUTCDay
+getHours
+getUTCHours
+getMinutes
+getUTCMinutes
+getSeconds
+getUTCSeconds
+getMilliseconds
+getUTCMilliseconds
+getTimezoneOffset
+setTime
+setMilliseconds
+setUTCMilliseconds
+setSeconds
+setUTCSeconds
+setMinutes
+setUTCMinutes
+setHours
+setUTCHours
+setDate
+setUTCDate
+setMonth
+setUTCMonth
+setFullYear
+setUTCFullYear
+toUTCString
+
+#
+# names used by Global
+#
+Object
+Function
+Array
+String
+Boolean
+Number
+Date
+RegExp
+Math
+
+#
+# constants and methods names of built-in objects
+#
+Infinity
+NaN
+apply
+call
+charAt
+charCodeAt
+concat
+constructor
+decodeURI
+decodeURIComponent
+encodeURI
+encodeURIComponent
+eval
+fromCharCode
+hasOwnProperty
+indexOf
+isFinite
+isNaN
+isPrototypeOf
+join
+lastIndexOf
+length
+localeCompare
+match
+parseFloat
+parseInt
+pop
+propertyIsEnumerable
+prototype
+push
+replace
+reverse
+search
+shift
+slice
+sort
+splice
+split
+substring
+toLocaleLowerCase
+toLocaleString
+toLocaleUpperCase
+toLowerCase
+toString
+toUpperCase
+undefined
+unshift
+valueOf
+
+# Global.Number strings
+MAX_VALUE
+MIN_VALUE
+NEGATIVE_INFINITY
+POSITIVE_INFINITY
+toFixed
+toExponential
+toPrecision
+
+# Global.Math strings
+E
+LN10
+LN2
+LOG2E
+LOG10E
+PI
+SQRT1_2
+SQRT2
+abs
+acos
+asin
+atan
+atan2
+ceil
+cos
+exp
+floor
+log
+max
+min
+pow
+random
+round
+sin
+sqrt
+tan
+
+#
+# backward-compatibility strings
+#
+escape
+unescape
+substr
+getYear
+setYear
+toGMTString
+
+#
+# some strings returned by 'typeof(x)'
+#
+object
+string
+number
+unknown
+
+#
+# Lexer errors
+#
+unexpected_eof = "Token truncated at end of file"
+broken_literal = "String literal not closed at end of line"
+escaped_lit_nl = "Backslash immediately followed by end of line"
+invalid_esc_x =	 "Invalid \\x escape"
+invalid_esc_u =	 "Invalid \\u escape"
+hex_literal_detritus = "Unexpected characters after hexadecimal literal"
+dec_literal_detritus = "Unexpected characters after decimal literal"
+eof_in_c_comment = "Comment is missing its closing '*/'"
+eof_in_regex = "Regular expression missing final '/'"
+broken_regex = "Regular expression missing final '/'"
+bad_unicode_ident = "Invalid \\u escape in identifier"
+
+#
+# lexer tokens
+#
+synchronized
+eleven_filler = "..........."
+implements
+instanceof
+transient
+protected
+interface
+volatile
+debugger
+function
+continue
+abstract
+private
+package
+extends
+boolean
+finally
+default
+native
+export
+typeof
+switch
+return
+throws
+import
+static
+delete
+public
+double
+float
+super
+short
+const
+class
+while
+final
+throw
+catch
+break
+with
+long
+void
+else
+goto
+enum
+this
+byte
+case
+char
+new
+try
+int
+for
+var
+in
+do
+if
+
+#
+# more tokens (literals)
+#
+null
+true
+false
+
+#
+# compatibility strings
+#
+__proto__
+
+#
+# cfunction strings
+#
+cfunction_body1 = "function "
+cfunction_body2 = "() { /* built-in "
+cfunction_body3 = " */ }"
+
+#
+# common integers, used by array indicies
+#
+1
+2
+3
+4
+5
+6
+7
+8
+9
+
+#
+# RegExp properties
+#
+dollar_underscore = "$_"
+dollar_star = "$*"
+dollar_ampersand = "$&"
+dollar_plus = "$+"
+dollar_backquote = "$`"
+dollar_quote = "$'"
+dollar_1 = "$1"
+dollar_2 = "$2"
+dollar_3 = "$3"
+dollar_4 = "$4"
+dollar_5 = "$5"
+dollar_6 = "$6"
+dollar_7 = "$7"
+dollar_8 = "$8"
+dollar_9 = "$9"
+lastMatch
+lastParen
+leftContext
+rightContext
+
+#
+# String methods for Netscape compat
+#
+_ns_nop
+anchor
+big
+blink
+bold
+fixed
+fontcolor
+fontsize
+italics
+link
+small
+strike
+sub
+sup

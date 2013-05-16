@@ -1,0 +1,20 @@
+#! /bin/sh
+
+#- Don't run if shared libraries are disables
+if ${LIBTOOL} --features | grep '^disable shared libraries' > /dev/null; then
+    echo "skipping because shared libraries are disabled"
+    exit 77
+fi
+
+#- Don't run the test if loading the module doesn't work
+${LIBTOOL} --mode=execute \
+    -dlopen libFile.la \
+    ./see-shell -lFile $SHELLARGS -e 'Shell.exit(0)' || exit 77
+
+set -ex
+
+${LIBTOOL} --mode=execute \
+    -dlopen libFile.la \
+    ./see-shell -lFile $SHELLARGS -f $0.js
+
+rm -f t-File.out

@@ -1,0 +1,4022 @@
+<html>
+
+<head>
+<title>Using the Simple ECMAScript Engine</title>
+
+<style type="text/css"><!--
+        body     { background: white; color: black; }
+        h1,h2,h3,h4 { font-family: sans-serif; }
+        h2,h3,h4   { background: #f0f0f0; }
+        table    { /*display: block;  */
+                   /*float: none;*/
+                   /*position: relative; */
+                   /* margin-left: 10%; */
+                   }
+        table    { border-collapse: collapse; 
+                   border: none /* thin solid black */;
+		   margin-left: auto;
+		   margin-right: auto;
+		   }
+        table tr { border: thin solid black; }
+        table th { background: #f0f0f0;
+                   border-bottom: thin solid black; }
+        table th, table td { 
+                   border-right: thin solid black;
+                   vertical-align: top;
+                 }
+        td       { padding-left: 1ex; padding-right: 1ex;
+                   padding-top: 0.3ex; padding-bottom: 0.3ex;
+                   }
+        dl       { margin-left: 4ex; }
+        pre      { margin-left: 8ex; }
+        code i, pre i    { color: blue; }
+        code b, pre b    { 
+                   background: #ffffd0;   
+                   color: #202020; 
+                   font-weight: normal;
+                 }
+        ul.toc   { font-size: smaller; }
+        code     { white-space: nowrap; }
+        /* code,pre { background: #ffe0e0; } */
+        /* code.js,pre.js { background: #e0ffe0; } */
+        code.js  { font-family: sans-serif; }
+        code.meta i { font-family: serif; color: gray; }
+        code dfn,pre dfn { font: bold; color: green; }
+        pre.js   { font-family: sans-serif; }
+        p.misc   { font-size: smaller; color: gray; }
+        ul.misc li { font-size: smaller; color: gray; }
+        blockquote { font-size: smaller; }
+        p.note   { margin-left: 2ex; font-size: smaller; 
+		border: thin #f80 solid; }
+        dt       { font: bold; }
+        table.index { border: none }
+        table.index td { font: x-small monospace; }
+        cite     { font-style: italic; }
+        .footnote { vertical-align: super;
+                    font-size: smaller;
+                    color: #008; }
+	div.example { margin-left: 4ex; margin-right: 4ex;
+		      padding-left: 1ex; padding-right: 1ex;
+		      margin-top: 1ex;
+		      border: thin dashed green;
+		      background: #f4fff4; }
+// -->
+</style>
+
+</head>
+
+<body>
+
+<h1>Using SEE, the Simple ECMAScript Engine</h1>
+
+<p>
+by David Leonard, 2006
+<br>
+for SEE version 3.0
+</p>
+
+
+<p>The impatient may want to jump straight to the <a href="#runxmp">&sect;4.1 code example</a>.</p>
+
+<h2 id="toc">Table of contents</h2>
+
+<ul class="toc">
+<li><a href="#intro">Introduction</a>
+<li><a href="#req">1 Requirements</a>
+<li><a href="#interp">2 Creating interpreters</a>
+ <ul>
+ <li><a href="#interp-multi">2.1 Multiple simultaneous interpreters</a>
+ <li><a href="#abort">2.2 Fatal error handlers</a>
+ </ul>
+<li><a href="#mem">3 Memory management</a>
+ <ul>
+ <li><a href="#memgrow">3.1 Growable memory regions</a>
+ <li><a href="#mem2">3.2 On memory allocators</a>
+ <li><a href="#memother">3.3 Interacting with an external allocator</a>
+ <li><a href="#memfinal">3.4 Finalization</a>
+ </ul>
+<li><a href="#eval">4 Running programs</a>
+ <ul>
+ <li><a href="#runxmp">4.1 Example</a>
+ <li><a href="#input">4.2 Inputs</a>
+ <li><a href="#try">4.3 Try-catch contexts</a>
+ <li><a href="#periodic">4.4 Periodic callbacks</a>
+ </ul>
+<li><a href="#value">5 Values</a>
+ <ul>
+ <li><a href="#conversion">5.1 Value conversion</a>
+ <li><a href="#undef">5.2 Undefined, null, boolean and number values</a>
+ <li><a href="#string">5.3 String values</a>
+ </ul>
+<li><a href="#object">6 Objects</a>
+ <ul>
+ <li><a href="#objclient">6.1 Object values, and the object client interface</a>
+ <li><a href="#enum">6.2 Property enumerators</a>
+ <li><a href="#objimpl">6.3 The object implementation interface</a>
+ <li><a href="#native">6.4 Native objects</a>
+ <li><a href="#cfunction">6.5 C function objects</a>
+ <li><a href="#function">6.6 User function objects</a>
+ <li><a href="#error">6.7 Errors and Error objects</a>
+ </ul>
+ <li><a href="#modules">7 Modules</a>
+ <li><a href="#compat">8 Compatibility features</a>
+ <ul>
+ <li><a href="#compatjs">8.1 Compatibility with other JavaScript implementations</a>
+ <li><a href="#compatsee">8.2 Compatibility with future versions of SEE</a>
+ <li><a href="#port10_20">8.3 Porting from API 1.0 to API 2.0</a>
+ <li><a href="#port20_21">8.4 Porting from API 2.0 to API 3.0</a>
+ </ul>
+ <li><a href="#security">9 Security</a>
+ <ul>
+ <li><a href="#secguide">9.1 Guidelines for using the security framework</a>
+ </ul>
+ <li><a href="#debug">10 Debugging facilities</a>
+ <ul>
+ <li><a href="#debug-see">10.1 Debugging the SEE library (for developers)</a>
+ <li><a href="#debug-js">10.2 Debugging scripts (for users)</a>
+ </ul>
+ <li><a href="#ref">References</a>
+ <li><a href="#idx">Name index</a>
+</ul>
+
+<h2 id="intro">Introduction</h2>
+
+<p>
+The Simple ECMAScript Engine ('SEE') is a parser and runtime library 
+for the popular ECMAScript language.
+ECMAScript is the official name for what most people call JavaScript:
+</p>
+
+<!-- img src="http://www.itconversations.com/assets/gifs/eich.gif" 
+     align=right -->
+
+<blockquote cite="#ref-ecma">
+[ECMAScript] is based on several originating technologies, the most well
+known being JavaScript (Netscape) and JScript (Microsoft). The language
+was invented by Brendan Eich at Netscape and first appeared in that
+company's Navigator 2.0 browser. It has appeared in all subsequent
+browsers from Netscape and in all browsers from Microsoft starting with
+Internet Explorer 3.0. 
+<cite>(<a href="#ref-ecma">ECMA-262 standard</a>, 1999)</cite>
+</blockquote>
+
+<p>
+SEE fully complies with ECMAScript Edition 
+3<sup><a href="#ref-ecma">^</a>,<a href="#ref-ecma-errata">^</a></sup>,
+and to JavaScript 1.5<sup><a href="#netscape-js15">^</a></sup>.
+It has compatibility modes that allow it to run scripts
+developed under earlier versions of JavaScript, Microsoft's JScript and
+LiveScript.
+</p>
+
+<p>
+This documentation is intended for developers wishing to incorporate
+SEE into their applications. It explains how you can use SEE to:
+</p>
+
+<ul>
+ <li>     manage multiple, separate ECMAScript runtime environments,
+ <li>     evaluate instances of user-supplied ECMAScript program text, and
+ <li>     expose your application's objects to those programs.
+</ul>
+
+<p>
+This documentation does not explain the ECMAScript language,
+nor discuss how to build the library on your system.
+</p>
+
+<p>
+SEE includes an example application, called <i>see-shell</i> which
+allows interactive use of the interpreter, and demonstrates how to
+write host function objects.
+</p>
+
+<h3 id="type">Document conventions</h3>
+
+<p>
+I will use the phrase <q>host application</q> to mean your application, or
+any application that uses the SEE runtime environment auxillary to
+some primary purpose.
+Examples of a host application are web browsers and
+scriptable XML processors.
+</p>
+
+<p>
+Throughout this documentation, references are made to the C functions and
+macros provided by the SEE library. To avoid definitional redundancy and 
+to improve precision, the reader is encouraged to examine the SEE header 
+files to find the precise definitions and arguments of each function or macro.
+Signatures for C macros are given, but you should understand that the compiler
+cannot normally typecheck your use of those macros.
+</p>
+
+<p>Where literal C code is used, it is typeset in a monospace font, 
+like this:</p>
+<pre>if (failed) { abort(); } <i>/* comment */</i></pre>
+<p>Similarly, ECMAScript code is typeset in a sans serif font, like this:</p>
+<pre class="js">window.location = "about:blank";</pre>
+
+<p>
+Important parts of exammple code are <code><b>highlighted</b></code>, and
+elided code is indicated with an elipsis, like this: <code><i>...</i></code>
+</p>
+
+<p>
+Function definitions listed in the <a href="#idx">name index</a>
+appear in green, like this: <code><dfn>SEE_example()</dfn></code>
+</p>
+
+<p class="note">
+&#9888; Note:
+Notes of caution appear in boxes like this.
+</p>
+
+<p>
+Short examples of usage appear in green boxes, like this:
+<div class="example">Example:
+Demonstrating intended or expected usage through code snippets:
+<pre>cut() &amp;&amp; paste(); <i>/* as required */</i></pre>
+</div>
+
+<p>
+The term ASCII in this document
+refers to character codes in the decimal range 0 through 127,
+inclusive.
+</p>
+
+<h2 id="req">1 Requirements</h2>
+
+<p>
+Compiling SEE requires an ANSI C compiler.
+Although the SEE library is essentially self-contained, it does depend on you
+(the host application developer) providing the following:
+</p>
+
+<dl>
+ <dt>an IEEE 754 floating point type and a math library</dt> 
+ <dd>Most modern compilers have this, but if you are developing
+      for some obscure architecture, you should check.</dd>
+ <dt>a garbage-collecting memory allocator</dt>
+ <dd>The free <a href="#ref-boehm">Boehm gc</a> is highly recommended
+      (See also <a href="#mem">&sect;3.2</a>).</dd>
+</dl>
+
+<p>
+SEE uses scripts from GNU autoconf to determine if these
+are available, and also to determine other system-dependent
+properties. 
+Host applications should <code>#include &lt;see/see.h&gt;</code> to
+access all the macros and functions prototypes.
+</p>
+
+<p>
+(As a developer you may find the need to edit header files and configure
+scripts to make SEE compile on your system. 
+I would be interested in hearing what
+changes were needed so that future releases can supply this automatically
+for other users. Please send mail to <a href="mailto:leonard&#64;users.sourceforge.net.nospam">leonard&#64;users.sourceforge.net.nospam</a>.)
+</p>
+
+<h2 id="interp">2 Creating interpreters</h2>
+
+<p>
+After having initialised the library with a call to <code>SEE_init()</code>,
+the first step in executing an ECMAScript program is to create
+an <em>interpreter</em> instance. 
+Each interpreter instance represents an execution context and 
+global variable space.
+When created,
+an interpreter is initialised with all the standard ECMAScript objects
+such as <code class="js">Math</code> and <code class="js">String</code>.
+Modules may add other objects (see <a href="#modules">&sect;7</a>).
+</p>
+
+<p>
+First, the host application should allocate storage for a 
+<code>struct SEE_interpreter</code> and then call
+<code>SEE_interpreter_init()</code> to initialise that structure.
+</p>
+
+<pre>void <dfn id="SEE_interpreter_init">SEE_interpreter_init</dfn>(struct SEE_interpreter *interp);</pre>
+
+<p>
+A pointer to the initialised <code>SEE_interpreter</code>
+is required for almost every function that SEE provides.
+The pointer is conventionally named <code>interp</code>.
+</p>
+
+<div class="example">Example:
+Where storage has been allocated for the interpeter structure on the stack,
+and consequently the interpreter exists only until the function returns.
+
+<pre>void
+example()
+{
+    struct SEE_interpreter interp_storage;
+
+    SEE_interpreter_init(&amp;interp_storage);
+    <i>/* Now the interpreter is ready for use */</i>
+
+    <i>/* Because the interpreter storage is on the stack, it
+     * will be garbage collected after this function returns.*/</i>
+}</pre>
+</div>
+
+<p>
+There is no mechanism for explicitly destroying an initialised
+interpreter; instead, SEE relies on the garbage collector to reclaim all
+unreferenced storage
+(see <a href="#mem">&sect;3</a>).
+</p>
+
+<h3 id="interp-multi">2.1 Multiple simultaneous interpreters</h3>
+
+<p>
+SEE supports multiple, simultaneous, independent interpreter instances.
+This is useful,
+for example, in an HTML web browser application, where each window may
+need its own interpreter instance because the variables
+and bindings to built-in objects must be different and separate in each one.
+</p>
+
+<p>
+SEE's functions are not thread-safe within the same interpreter,
+but multiple different interpreters can be safely used by
+different threads without collision. 
+This is because global data structures used by SEE are marked
+immutable when the first interpreter is initialised.
+Interpreters remain
+completely independent of each other only if the application:
+</p>
+
+<ul>
+<li>never passes an object or mutable string reference obtained 
+    from one interpreter 
+    to the other, and
+<li>uses a thread-safe (or interpreter-dependent) memory allocator.
+</ul>
+
+<p>
+Strings generated from one interpreter, can be exported for use in 
+another interpreter by using the
+<code>SEE_string_fix()</code> function
+(See <a href="#string">&sect;5.3</a>).
+</p>
+
+<p>
+If you need to allow multiple threads to call into the interpreter,
+but in a serialized manner (which you must enforce), then you can save
+and restore some of the interpreter state with the following functions.
+</p>
+
+<pre>struct SEE_interpreter_state * <dfn id="SEE_interpreter_save_state">SEE_interpreter_save_state</dfn>(
+        struct SEE_interpreter *interp);
+void <dfn id="SEE_interpreter_restore_state">SEE_interpreter_restore_state</dfn>(
+        struct SEE_interpreter *interp, struct SEE_interpreter_state *state);</pre>
+
+<div class="example">Example:
+of a cfunction that allows a re-entrant call into the SEE library.
+
+<pre>void
+example_block(interp, self, thisobj, argc, argv, res)
+	struct SEE_interpreter *interp;
+	struct SEE_object *self, *thisobj;
+	int argc;
+	struct SEE_value **argv, *res;
+
+{
+	struct SEE_interpreter_state *saved_state;
+
+	/* Save the interpreter state */
+	saved_state = SEE_interpreter_save_state(interp);
+
+	<i>/* The following three calls are not part of SEE */</i>
+	RELEASE_MUTEX(interp);
+	BLOCK();
+	ACQUIRE_MUTEX(interp);
+
+	/* Restore the interpreter state */
+	SEE_interpreter_restore_state(interp, saved_state);
+	SEE_SET_UNDEFINED(res);
+}</pre>
+</div>
+
+<p>
+Note that calls to <code>SEE_eval()</code> and <code>SEE_Global_eval()</code>
+are automatically re-entrant.
+</p>
+
+<h3 id="abort">2.2 Fatal error handlers</h3>
+
+<p>
+If SEE encounters an internal error (such as memory exhaustion,
+memory corruption, or a bug), it calls the global function pointer
+<code>SEE_system.abort</code>, 
+passing it a pointer to the interpreter in context (or <code>NULL</code>),
+and a short descriptive message.
+The <code>SEE_system.abort</code>
+hook initially points to a wapper function that simply calls 
+the C library function <code>abort()</code>. You can set the hook
+early if you want to handle errors more gracefully.
+Its signature is:
+</p>
+
+<pre>extern struct {
+    <i>...</i>
+    extern void (*<dfn id="SEE_system.abort">abort</dfn>)(struct SEE_interpreter *interp, const char *msg) _SEE_dead;
+    <i>...</i>
+} SEE_system;</pre>
+
+<p>
+A convenience macro, <code>SEE_ABORT()</code> is provided for 
+applications to call. It calls the hook function.
+</p>
+<pre>extern void (*<dfn id="SEE_ABORT">SEE_ABORT</dfn>)(struct SEE_interpreter *interp, const char *msg);</pre>
+
+<h2 id="mem">3 Memory management</h2>
+
+<p>
+SEE uses a garbage collecting memory allocator.
+SEE has global function pointers for memory allocation that the host 
+application can configure.
+These hooks must be set up 
+before any interpreter instances are created.
+</p>
+
+<p>
+SEE manages memory by calling through the following function pointers
+stored in the global structure <code>SEE_system</code>.
+Your host application can replace these pointers before it creates
+any interpreters.
+</p>
+
+<pre>extern struct {
+    <i>...</i>
+    void * (*<dfn id="SEE_system.malloc">malloc</dfn>)(struct SEE_interpreter *interp, SEE_size_t size);
+    void * (*<dfn id="SEE_system.malloc_finalize">malloc_finalize</dfn>)(struct SEE_interpreter *interp, SEE_size_t size,
+        void (*)(struct SEE_interpreter *, void *, void *), void *);
+    void * (*<dfn id="SEE_system.malloc_string">malloc_string</dfn>)(struct SEE_interpreter *interp, SEE_size_t size);
+
+    void   (*<dfn id="SEE_system.free">free</dfn>)(struct SEE_interpreter *interp, void *ptr);
+    void   (*<dfn id="SEE_system.mem_exhausted">mem_exhausted</dfn>)(struct SEE_interpreter *interp);
+    void   (*<dfn id="SEE_system.gcollect">gcollect</dfn>)(struct SEE_interpreter *interp);
+    <i>...</i>
+} SEE_system;</pre>
+
+<p>
+These hooks are invoked through the following functions:
+</p>
+<ul>
+<li><code>SEE_malloc()</code>
+- allocates storage that is scanned during garbage collection
+<li><code>SEE_malloc_finalize()</code>
+- allocates storage with a function that is called when it is unreachable
+<li><code>SEE_malloc_string()</code>
+- allocates storage for a string that will not contain pointers
+<li><code>SEE_free()</code>
+- releases storage that you can guarantee is unreferenced from anywhere
+<li><code>SEE_gcollect()</code>
+- detects and releases all unreachable objects
+</ul>
+
+<p>
+These functions should not be directly used by applications;
+instead use the macros below (for example, <code>SEE_NEW()</code>).
+</p>
+
+<pre>void * <dfn id="SEE_malloc">SEE_malloc</dfn>(struct SEE_interpreter *interp, SEE_size_t size);
+void * <dfn id="SEE_malloc_finalize">SEE_malloc_finalize</dfn>(struct SEE_interpreter *interp, SEE_size_t size
+        void (*finalizefn)(struct SEE_interpreter *i, void *p, void *closure),
+	void *closure);
+void * <dfn id="SEE_malloc_string">SEE_malloc_string</dfn>(struct SEE_interpreter *interp, SEE_size_t size);
+void <dfn id="SEE_free">SEE_free</dfn>(struct SEE_interpreter *interp, void **datap);
+void <dfn id="SEE_gcollect">SEE_gcollect</dfn>(struct SEE_interpreter *interp);</pre>
+
+<p>
+Notice that <code>SEE_free()</code> takes a pointer-to-a-pointer
+argument, unlike
+its counterpart in the <code>SEE_system</code> structure.
+The pointer will be set to <code>NULL</code> after freeing.
+Freeing an already-<code>NULL</code> pointer with <code>SEE_free()</code>
+has no effect.
+</p>
+
+<p>
+If SEE was compiled with Boehm-gc support, <code>SEE_system.malloc</code>
+is initialised to point to a wrapper
+around the <code>GC_malloc()</code> function,
+<code>SEE_system.malloc_string</code> is initialised to point to a wrapper
+around <code>GC_malloc_atomic()</code>,
+<code>SEE_system.free</code> is initialised to point to a wrapper
+around <code>GC_free()</code>, and
+<code>SEE_system.malloc_finalize</code> is initialised to point to a wrapper
+around <code>GC_malloc()</code> and <code>GC_register_finalizer()</code>.
+Otherwise, the initial functions print a warning message and
+use the system <code>malloc()</code> without releasing any memory.
+</p>
+
+
+<p class="note">
+&#9888; Note:
+If you are using Boehm-gc support (and therefore <code>GC_malloc()</code>), 
+then you <em>must</em> call <code>GC_INIT()</code> early (usually 
+from <code>main()</code>). 
+Otherwise, your application may crash.
+The SEE library does not initialise the Boehm garbage collector (because
+on some systems, and when SEE is a shared library, the Boehm GC must be
+initialised from a non-static code segment.)
+</p>
+
+<p>
+If you intend to hook in your own memory allocator, be aware that any of
+these hooks may be called with a <code>NULL</code> interpreter argument
+which indicates an unknown context.
+In case of errors or resource exhaustion,
+the malloc hooks must not throw an exception,
+but should return <code>NULL</code> on failure.
+SEE will detect this situation and act accordingly.
+</p>
+
+<p>
+Instead of calling the <code>SEE_malloc</code> functions directly,
+application code should use these
+convenient type-cast macros to allocate storage:
+</p>
+
+<ul>
+<li><code>SEE_NEW()</code>
+- allocate structure storage in the context of an interpreter,
+returning a pointer of given type
+<li><code>SEE_NEW_ARRAY()</code>
+- allocate storage for an array of elements of the given type
+<li><code>SEE_NEW_STRING_ARRAY()</code>
+- a gc-efficient form of <code>SEE_NEW_ARRAY()</code>, where you guarantee that the elements will not contain pointers
+<li><code>SEE_NEW_FINALIZE()</code>
+- same as <code>SEE_NEW()</code>, but associates a finalizer function
+<li><code>SEE_ALLOCA()</code>
+- allocate storage for an array on the stack (see <code>alloca()</code>)
+<li><code>SEE_STRING_ALLOCA()</code>
+- like <code>SEE_ALLOCA()</code>, except used to hint that the allocated
+elements will not contain pointers
+</ul>
+
+<pre>T * <dfn id="SEE_NEW">SEE_NEW</dfn>(struct SEE_interpreter *interp, type T);
+T * <dfn id="SEE_NEW_ARRAY">SEE_NEW_ARRAY</dfn>(struct SEE_interpreter *interp, type T, int length);
+T * <dfn id="SEE_NEW_STRING_ARRAY">SEE_NEW_STRING_ARRAY</dfn>(struct SEE_interpreter *interp, type T, int length);
+T * <dfn id="SEE_NEW_FINALIZE">SEE_NEW_FINALIZE</dfn>(struct SEE_interpreter *interp, type T,
+    void (*finalizefn)(struct SEE_interpreter *, void *, void *),
+    void *closure);
+T * <dfn id="SEE_ALLOCA">SEE_ALLOCA</dfn>(struct SEE_interpreter *interp, type T, int length);
+T * <dfn id="SEE_STRING_ALLOCA">SEE_STRING_ALLOCA</dfn>(struct SEE_interpreter *interp, type T, int length);</pre>
+
+<div class="example">Example:
+Allocating a buffer for 30 characters:
+<pre>char *buffer = SEE_NEW_STRING_ARRAY(interp, char, 30);</pre>
+</div>
+
+<p>
+The allocator macros and functions check for memory allocation failures,
+and in that instance will automatically call
+<code>SEE_system.mem_exhausted()</code>.
+This hook defaults 
+to a function that simply calls <code>SEE_ABORT()</code>
+with a short message. 
+Your application may prefer to change the <code>mem_exhausted</code>
+hook to handle this situation more gracefully.
+</p>
+
+<p>
+It is worth familiarizing yourself with the macro definitions 
+in <code>&lt;see/mem.h&gt;</code> to see what they do.
+</p>
+
+<h3 id="memgrow">3.1 Growable memory regions</h3>
+
+<p>
+SEE provides a convenience function <code>SEE_grow_to()</code>
+that exponentially enlarges an allocated region to handle resize requests.
+This makes it useful for implementing efficient, resizeable arrays.
+</p>
+
+<ul>
+<li><code>SEE_GROW_INIT()</code>
+- initialises a <code>SEE_grow</code> structure, 
+  and zeros the pointer, length counter and allocated storage counter.
+  It sets the <code>element_size</code> field to the size of 
+  an individual element in the <code>ptr</code> array.
+<li><code>SEE_grow_to()</code>
+- sets the length counter to the given value, ensuring that the array
+  has sufficient storage, in a manner similar to realloc. 
+  Newly allocated elements are left uninitialised. 
+</ul>
+
+<pre>void <dfn id="SEE_GROW_INIT">SEE_GROW_INIT</dfn>(struct SEE_interpreter *interp, T *&amp;ptr, unsigned int &amp;len);
+void <dfn id="SEE_grow_to">SEE_grow_to</dfn>(struct SEE_interpreter *interp, struct SEE_growable *grow, unsigned int new_len);
+
+<dfn id="struct_SEE_growable">struct SEE_growable</dfn> {
+    void **data_ptr;            <i>/* Reference to base pointer */</i>
+    unsigned int *length_ptr;   <i>/* Reference to element use count */</i>
+    SEE_size_t element_size;    <i>/* Size of an element */</i>
+    SEE_size_t allocated;       <i>/* Valid storage addressed by *data_ptr */</i>
+    unsigned int is_string : 1; <i>/* Use SEE_malloc_string */</i>
+};
+</pre>
+
+<p>
+This facility is intended for when you have a separated array pointer
+and a length field. When you want to change the length, call
+<code>SEE_grow_to</code>: It will ensure that the array pointer
+points to sufficient storage, and set the length field automatically.
+</p>
+
+<div class="example">Example:
+
+<pre>#include &lt;see/mem.h&gt;
+
+void example() 
+{
+    int *numbers;
+    unsigned int numbers_len;
+    <b>struct SEE_growable</b> numbers_grow;
+
+    <i>/* Initialises numbers to NULL, numbers_len to 0, 
+     * and prepares the numbers_grow structure for growth. */</i>
+    <b>SEE_GROW_INIT</b>(interp, &amp;numbers_grow, numbers, numbers_len);
+
+    <i>/* Because the array does not contain any GC'able pointers, 
+     * we will make SEE_grow_to use the 'string' allocators. This 
+     * gives a performance advantage when the numbers array gets large. */</i>
+    numbers_grow.is_string = 1;
+
+    <i>/* Set numbers_len = 2, growing the array as needed */</i>
+    <b>SEE_grow_to</b>(interp, &amp;numbers_grow, 2);
+
+    <i>/* Now it is safe to access elements 0 and 1 of numbers */</i>
+    numbers[0] = 1234;
+    numbers[1] = 5678;
+}</pre>
+</div>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_growable</code> structure and related functions
+first appeared in API 2.0
+</p>
+
+<h3 id="mem2">3.2 On memory allocators</h3>
+
+<p>
+Why is SEE so dependent on a garbage collector?
+Why doesn't it use reference counting?
+</p>
+
+<p>
+This subsection is a short diversion on answering this good question.
+I have asked myself the same thing about other applications
+that use garbage collectors.
+I'll justify SEE's reliance on a garbage collector with the following
+reasons:
+</p>
+
+<ul>
+<li> Using a strict memory allocator 
+(like <code>malloc()</code> and <code>free()</code>)
+would have significantly increased the
+complexity, development time, run-time performance and code size of the library.
+This would in turn affect those properties of the host application. 
+There are various convincing documents that explain why a garbage collector
+is a better general software engineering choice than (say) explicit
+reference counting. 
+(See <cite><a href="#ref-issues">Advantages and Disadvantages of Conservative Garbage Collection</a></cite>.)
+<li> Exceptions (<a href="#try">&sect;4.2</a>)
+could not have been implemented easily with (fast)
+<code>longjmp()</code>, because references on the stack would
+become memory leaks or introduce too much fragile 'finally' code.
+<li> The object-prototype model of ECMAScript results in plenty of
+circular references between constructor functions and instances,
+and with recursive function scope chains.
+A reference counting scheme would 
+leak these
+[<a href="http://www.codeproject.com/jscript/LeakPatterns.asp">1</a>]
+[<a href="http://jibbering.com/faq/faq_notes/closures.html#clMem">2</a>].
+<li> A decent garbage collector for C is freely available (and some
+good commercial ones exist, too).
+They do nothing to impede development.
+They can often be tuned to meet your 
+application's usage patterns.
+</ul>
+
+<h3 id="memother">3.3 Interacting with an external allocator</h3>
+
+<p>
+If you will be embedding SEE in a host application that uses
+non-GC <code>malloc()</code>,
+then any <code>struct SEE_...</code> pointers that
+you keep inside storage obtained by <code>malloc()</code> 
+are likely to be unreliable.
+This is because garbage collectors do not normally look
+inside <code>malloc</code>ed memory.
+</p>
+
+<p>
+To make the GC aware of your reference to the SEE object,
+you will either need to arrange for the GC to
+scan your malloc'd memory (e.g. by adding it to its <q>root set</q>) or 
+by using a level of pointer indirection through <q>uncollectable</q> GC
+memory. 
+</p>
+
+<p>
+For example, you might create an indirect reference by allocating storage
+with Boehm's <code>GC_MALLOC_UNCOLLECTABLE()</code> function for
+a structure like this:
+</p>
+
+<pre>struct myobjref {   <i>/* Always allocate this as GC uncollectable */</i>
+    struct SEE_interpreter *interp;
+    struct SEE_object *object;
+}</pre>
+
+<p>
+Then, you can safely keep a pointer to the <code>myobjref</code>
+in storage allocated by <code>malloc()</code>.
+It would still be your problem to eventually release 
+the <code>myobjref</code> with a call to <code>GC_FREE()</code>.
+</p>
+
+<p>
+You may also find it convenient for SEE to manage the lifetime of your
+<code>malloc</code>ed host data. 
+This normally happens when you create wrapped SEE objects
+(see <a href="#objimpl">&sect;6.3</a>)
+and include pointers into storage allocated with
+with <code>malloc()</code>.
+To achieve this, use <code>SEE_NEW_FINALIZE()</code> to allocate
+the wrapped object structure, and write a finalizer function that calls
+<code>free()</code> on the right members.
+</p>
+
+<p>
+Similar approaches can be used for external allocators that use
+reference counting.
+</p>
+
+
+<h3 id="memfinal">3.4 Finalization</h3>
+
+<p>
+Host objects that acquire operating system resources
+should release those resources when their finalizer is called by the
+garbage collector.
+However, a major criticism of garbage collectors is that finalizers
+are not invoked early or often enough.
+What this means is that it is highly desirable to release system resources 
+at the earliest time possible (i.e. immediately the referring object becomes
+unreachable), but garbage collectors deliberately don't do this
+because performing the reachability analysis on objects is expensive
+and often left only to when memory is low.
+</p>
+
+<p>To address this problem,
+I recommend developers follow these guidelines when designing 
+their host object finalizers:</p>
+
+<ol>
+<li>
+Provide a host object method 
+(conventionally called <code class="js">dispose()</code>)
+that immediately releases all resources acquired by the object. 
+The dispose method should cope with being called multiple times without error.
+The object will need to maintain state indicating whether it is valid or
+disposed, and its methods should check this state and generally throw
+an exception if it is invalid.
+You may also wish to provide the user with an accessor for this state,
+e.g. <code class="js">isValid()</code>.
+The state can usually be combined with other normally occurring error 
+states of the object.
+</li>
+<li>
+Arrange to have the finalizer simply invoke the dispose method.
+You may even choose to allow users to <q>hook</q> the dispose method
+by having the finalizer call the method
+indirectly with <code>SEE_OBJECT_CALL</code>, and then
+once again, directly, in case the user's hook failed.
+</li>
+<li>
+Detect/predict resource exhaustion at the point when host objects 
+acquire new resources. In this case, force an immediate garbage collection
+by calling <code>SEE_gcollect()</code>, and then
+try just once more to acquire the resource before failing.
+An example of this technique is shown in the <i>mod_File.c</i> example module
+that comes with SEE.
+</li>
+</ol>
+
+<p>
+The principal effects of these guidelines are to 
+first shift the burden of optional, optimal reachability analysis
+onto the user, and secondly to couple memory exhaustion with resource
+exhaustion to exploit the benefits of late reachability analysis and
+avoid false resource loss when memory is plentiful.
+</p>
+
+<h2 id="eval">4 Running programs</h2>
+
+<p>
+SEE's ultimate purpose is to execute user scripts.
+A full script, or a self-contained fragment of a script is referred to
+as <dfn>program text</dfn>.
+You should execute program text using the following general
+strategy:
+<ol>
+ <li> initialise the SEE library once with a call to <code>SEE_init()</code>
+ <li> obtain a reference to an (initialised) <code>SEE_interpreter</code>
+        (<a href="#interp">&sect;2</a>);
+ <li> construct a <code>SEE_input</code> unicode stream reader 
+        (<a href="#input">&sect;4.2</a>)
+        to transport the 
+      ECMAScript program text to SEE's parser;
+ <li> establish a try-catch context
+        (<a href="#try">&sect;4.3</a>);
+ <li> call the function <code>SEE_Global_eval()</code> to parse and
+      evaluate the stream;
+ <li> handle any exceptions caught in the try-catch context
+        (<a href="#try">&sect;4.3</a>);
+ <li> examine the value result returned
+        (<a href="#value">&sect;5</a>) (optional)
+</ol>
+</p>
+
+<p>
+The <code>SEE_init()</code> function initialises the SEE library, and
+need only be called once by the application. 
+Subsequent calls to <code>SEE_init()</code> will have no effect.
+This function should be called before any customization of the 
+<code>SEE_system<code> structure occurs.
+</p>
+
+<pre>void <dfn id="SEE_init">SEE_init</dfn>(void);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_init()</code> function appeared in API 3.0.
+</p>
+
+<p>
+The <code>SEE_Global_eval()</code> function is able to
+execute program text and then
+store the value associated with the last executed statement in 
+a location given by a value pointer.
+In a non-interactive environment, this last statement's value is 
+usually meaningless, and the
+value result return pointer ('<code>res</code>') given to 
+<code>SEE_Global_eval()</code> may be 
+safely given as <code>NULL</code>.
+</p>
+
+<pre>void <dfn id="SEE_Global_eval">SEE_Global_eval</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_input *input, 
+                struct SEE_value *res);</pre>
+
+<p>
+The input program text is first parsed and then immediately executed,
+storing the output result.
+If the executed program text contains function definitions, the
+function objects created will contain
+a compiled equivalent. This means it is safe
+to destroy the input immediately after it has been passed to 
+<code>SEE_Global_eval()</code>.
+</p>
+
+<p>
+A more versatile execution function is <code>SEE_eval()</code>.
+
+<pre>void <dfn id="SEE_eval">SEE_eval</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_input *input, struct SEE_object *thisobj,
+                struct SEE_object *variable, struct SEE_scope *scope,
+                struct SEE_value *res);</pre>
+
+<p>
+The program text executed by <code>SEE_eval()</code> is run in an
+execution context with the specified <code class="js">this</code> 
+object, variables object (in which <code class="js">var</code> statements
+create properties) and scope chain.
+This is useful for host applications that need fine control over
+the evaluation context of user scripts.
+</p>
+
+<p>
+<code>SEE_Global_eval()</code> calls 
+<code>SEE_eval()</code> with the [[Global]]
+object as both <code class="js">this</code> and the variables object, and 
+with a scope chain consisting of just the [[Global]] object.
+</p>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_eval()</code> function appeared in API 3.0
+</p>
+
+<h3 id="runxmp">4.1 Example</h3>
+
+<p>Although the rest of this document explains the library API in detail,
+a complete, but simple example of using the SEE interpreter follows:</p>
+
+<pre>#include &lt;see/see.h&gt;
+
+<i>/* Simple example of using the interpreter */</i>
+int
+main()
+{
+        struct SEE_interpreter interp_storage, *interp;
+        struct SEE_input *input;
+        SEE_try_context_t try_ctxt;
+        struct SEE_value result;
+        char *program_text = "<code class="js">Math.sqrt(3 + 4 * 7) + 9</code>";
+
+        <i>/* Initialise the SEE library */</i>
+	SEE_init();
+
+        <i>/* Initialise an interpreter */</i>
+        SEE_interpreter_init(&amp;interp_storage);
+        interp = &amp;interp_storage;
+
+        <i>/* Create an input stream that provides program text */</i>
+        input = SEE_input_utf8(interp, program_text);
+
+        <i>/* Establish an exception context */</i>
+        SEE_TRY(interp, try_ctxt) {
+                <i>/* Call the program evaluator */</i>
+                SEE_Global_eval(interp, input, &amp;result);
+
+                <i>/* Print the result */</i>
+                if (SEE_VALUE_GET_TYPE(&amp;result) == SEE_NUMBER)
+                        printf("The answer is %f\n", result.u.number);
+                else
+                        printf("Unexpected answer\n");
+        }
+
+        <i>/* Finally: */</i>
+        SEE_INPUT_CLOSE(input);
+
+        <i>/* Catch any exceptions */</i>
+        if (SEE_CAUGHT(try_ctxt))
+                printf("Unexpected exception\n");
+
+        exit(0);
+}</pre>
+
+<p>When this program is compiled, linked against the SEE library and
+the garbage collector library, and run, it should respond with:</p>
+
+<pre>The answer is 14.567764</pre>
+
+<p>This works because the value of the last executed statement in the
+<code>program_text</code> is stored in <code>result</code>.
+Calling <code>SEE_Global_eval()</code> is essentially the same 
+as using ECMAScript's built-in <code class="js">eval()</code>
+function.
+</p>
+
+<p>If you are interested in developing a provider module for SEE,
+then you should look at the example module file <i>mod_File.c</i>.
+See also <a href="#modules">&sect;7</a>.
+</p>
+
+<h3 id="input">4.2 Inputs</h3>
+
+<p>
+SEE uses Unicode character stream sources known as 'inputs' to consume
+(scan and parse) ECMAScript program text.
+An input is a stream of 32-bit Unicode UCS-4 characters.
+The stream is read, one character at a time, through its
+'get next character' callback function.
+</p>
+
+<p>
+The SEE library provides some useful stream constructors.
+Each constructor create a new <code>SEE_input</code> 
+structure, initialised for reading the source it is supplied.
+</p>
+
+<ul>
+  <li>  <code>SEE_input_file()</code>
+        - streams from a stdio <code>FILE</code> pointer, and
+          understands Unicode byte-order marks in that file
+  <li>  <code>SEE_input_utf8()</code>
+        - streams the contents of a null-terminated <code>char</code> array, and
+          assumes 7-bit ASCII or UTF-8 encoding
+  <li>  <code>SEE_input_string()</code>
+        - streams the contents of a <code>SEE_string</code> value structure
+          (which uses UTF-16 encoding, see <a href="#string">&sect;5.3</a>)
+</ul>
+
+<pre>struct SEE_input *<dfn id="SEE_input_file">SEE_input_file</dfn>(struct SEE_interpreter *interp, 
+                FILE *f, const char *filename, const char *encoding);
+struct SEE_input *<dfn id="SEE_input_utf8">SEE_input_utf8</dfn>(struct SEE_interpreter *interp,
+                const char *s);
+struct SEE_input *<dfn id="SEE_input_string">SEE_input_string</dfn>(struct SEE_interpreter *interp,
+                struct SEE_string *s);</pre>
+
+<p>
+If these constructors do not adequately meet your needs, you
+are encouraged to develop your own. They're quite easy to do, if a bit fiddly.
+I recommend you find the source to one of the above and modify it to do what
+you want.
+</p>
+
+<p>
+The rest of this section describes the input API in detail, with a view
+towards custom input streams.
+</p>
+
+<h4 id="inputapi">4.2.1 Input provider API</h4>
+
+<p>
+Why streams instead of strings?
+SEE uses a stream API for inputs rather than (say) a 
+simple UCS-4 or UTF-8 string API, because Unicode-compliant applications will 
+usually have a much better understanding of the encodings they are using 
+than will SEE. With only a small amount of effort, streams provide this 
+flexibility while avoiding unnecessary duplication or text
+storage.
+</p>
+
+<p>
+Inputs are described by <code>SEE_input</code> structures. 
+These are functionally similar to stdio's <code>FILE</code> type, or Java's 
+<code>ByteReader</code> classes.
+Except they stream fully-decoded Unicode characters.
+The <code>SEE_input</code> structure is the focus of the API and maintains
+the input's stream state and provides a pointer to its access (callback)
+methods.
+</p>
+
+<pre><dfn id="struct_SEE_input">struct SEE_input</dfn> {
+        struct SEE_inputclass *inputclass;
+        SEE_boolean_t          eof;
+        SEE_unicode_t          lookahead;
+        <i>...</i>
+};
+
+<dfn id="struct_SEE_inputclass">struct SEE_inputclass</dfn> {
+        SEE_unicode_t   (*next)(struct SEE_input *input);
+        void            (*close)(struct SEE_input *input);
+};</pre>
+
+<p>
+The <code>inputclass</code> member
+indicates the access methods.
+It is a pointer to a <code>SEE_inputclass</code> structure. This class structure
+contains function pointers to the two methods <code>next()</code> and 
+<code>close()</code>.
+</p>
+
+<p>
+The <code>next()</code> method should advance the input pointer, update the
+<code>eof</code> and <code>lookahead</code> members of the 
+<code>SEE_input</code> structure, and return the old value of 
+<code>lookahead</code>. 
+SEE's scanner calls <code>next()</code> repeatedly, until
+the <code>eof</code> member becomes true.
+When <code>eof</code> is true, the value of <code>lookahead</code> becomes
+meaningless (but should be set to <code>-1</code>).
+Generally, the stream's constructor will internally call its
+<code>next()</code> function once initially, to 'prime' the lookahead field.
+</p>
+
+<p>
+If the <code>next()</code> method encounters an encoding error, it should 
+set <code>lookahead</code> to <code>SEE_INPUT_BADCHAR</code> and try to 
+recover. 
+It can throw an exception if it wants to, but SEE does not attempt to 
+handle that: the application or user program will receive it.
+If you don't particularly care about Unicode, it is helpful to 
+know that 7-bit ASCII is a direct subset of Unicode, so you can just pass 
+each of your ASCII <code>char</code>s as a 32-bit <code>SEE_unicode_t</code>
+masked with <code>0x7f</code>. 
+(See the <a href="#ref-unicode">Unicode standards</a>.)
+</p>
+
+<p>
+The <code>close()</code> method should deallocate any operating system
+resources acquired during the input stream's construction.
+By convention, SEE will not call the <code>close()</code> method 
+of any application-supplied input. The onus is on the caller to close the
+inputs supplied to SEE library functions.
+For this reason, you should use the 'finally' behaviour described
+in <a href="#try">&sect;4.3</a> to clean up a possibly failed stream.
+</p>
+
+<p>
+The <code>SEE_input</code> structure represents the current state of the
+input stream.
+Most importantly, the <code>lookahead</code> field must always reflect the
+next character that a call to <code>next()</code> would return.
+Once initialised, the <code>filename</code>, <code>first_lineno</code> and 
+<code>interpreter</code> members of the <code>SEE_input</code> structure 
+should not be changed. 
+The <code>lookahead</code> and <code>eof</code> members 
+should also be initialised before the structure is given to SEE.
+</p>
+
+<p>
+You are encouraged to read the source code to the three constructors
+listed at the beginning of this section.
+</p>
+
+<h4 id="inputapic">4.2.2 Input client API</h4>
+
+<p>
+Consumers, like SEE's lexical analyser,
+will use these convenience macros to call input methods on a
+constructed input stream, rather than calling through the class structure
+directly:</p>
+
+<ul>
+<li><code>SEE_INPUT_NEXT()</code> -
+    Consumes and returns the next Unicode character from the stream
+<li><code>SEE_INPUT_CLOSE()</code> -
+    Releases any resources obtained by the stream
+</ul>
+
+<pre>SEE_unicode_t <dfn id="SEE_INPUT_NEXT">SEE_INPUT_NEXT</dfn>(struct SEE_input *input);
+void <dfn id="SEE_INPUT_CLOSE">SEE_INPUT_CLOSE</dfn>(struct SEE_input *input);</pre>
+
+<h3 id="try">4.3 Try-catch contexts</h3>
+
+<p>
+SEE's exceptions are implemented using C's 
+<code>setjmp()</code>/<code>longjmp()</code> mechanism. SEE provides macros 
+that establish a try-catch context, and test later if a try block 
+terminated abnormally (i.e. due to an thrown exception). Typical code that
+uses try-catch looks like this:
+</p>
+
+<pre>struct SEE_interpreter *interp;
+struct SEE_value *e;
+<b>SEE_try_context_t</b> c; <i>/* storage for the try-catch context */</i>
+
+<i>...</i>
+
+<b>SEE_TRY</b>(interp, c) {
+
+        <i>/*
+         * Now inside a protected "try block".
+         * The following calls may throw exceptions if they want,
+         * causing the try block to exit immediately.
+         */</i>
+        do_something();
+        do_something_else();
+
+        <i>/* 
+         * Because the SEE_TRY macro expands into a 'for' loop,
+         * avoid using 'break', or 'return' statements.
+         * If you must leave the try block, use <b>SEE_TRY_BREAK</b>
+         * or throw an exception.
+         */</i>
+}
+
+<i>/* Code placed here always runs. */</i>
+do_cleanup();
+
+if ((e = <b>SEE_CAUGHT</b>(c))) {
+        <i>/* Handle the thrown exception 'e', somehow. */</i>
+        handle_exception(e);
+
+        <i>/* OR you can throw it up to the next try-catch like so: */</i>
+        <b>SEE_RETHROW</b>(interp, c);
+}
+
+<i>...</i></pre>
+
+<p>
+Do <strong>not</strong> <code>return</code>, <code>goto</code> or 
+<code>break</code> out of a try block; the macro does not check for this, 
+and the try-catch context may not be restored properly, causing all sorts of
+havoc.
+Currently, the <code>SEE_TRY_BREAK</code> macro expands into a 
+<code>continue</code> statement, which terminates the <code>SEE_TRY</code>
+block correctly.
+</p>
+
+<p>
+Exceptions thrown outside of any try-catch context will cause the
+interpreter to abort.
+</p>
+
+<p>
+If you are not interested in catching exceptions, and only want the
+'finally' behaviour, use the following idiom:
+</p>
+
+<pre><b>SEE_TRY</b>(interp, c) {
+        do_something();
+}
+do_finally();    <i>/* optional */</i>
+<b>SEE_DEFAULT_CATCH</b>(interp, c);</pre>
+
+<p>
+If you need to re-throw an exception, use the <code>SEE_RETHROW()</code> macro.
+This macro must only be called when an exception has actually been caught;
+its behaviour when no exception has been caught is undefined.
+Note that you can still use <code>SEE_THROW()</code> to re-throw an exception,
+but the traceback information will be lost.
+</p>
+
+<p>The signatures of these macros are:</p>
+
+<pre><dfn id="SEE_TRY">SEE_TRY</dfn>(struct SEE_interpreter *interp, SEE_try_context_t ctxt) { <i>stmt...</i> }
+struct SEE_object *<dfn id="SEE_CAUGHT">SEE_CAUGHT</dfn>(SEE_try_context_t ctxt);
+void <dfn id="SEE_THROW">SEE_THROW</dfn>(struct SEE_interpreter *interp, struct SEE_object *exception);
+void <dfn id="SEE_DEFAULT_CATCH">SEE_DEFAULT_CATCH</dfn>(struct SEE_interpreter *interp, SEE_try_context_t ctxt);
+void <dfn id="SEE_RETHROW">SEE_RETHROW</dfn>(struct SEE_interpreter *interp, SEE_try_context_t ctxt);</pre>
+
+<p>
+The <code>SEE_DEFAULT_CATCH(interp, c)</code> macro is equivalent to:
+</p>
+
+<pre>if (SEE_CAUGHT(c))
+	SEE_RETHROW(interp, c);</pre>
+
+<h3 id="periodic">4.4 Periodic callbacks</h3>
+
+<p>
+An application can use SEE's periodic callback mechanism to check for
+timeouts, interrupts or GUI events.
+The <code>periodic</code> field in the <code>SEE_system</code> structure, 
+if set to something other than <code>NULL</code>, is called in the following
+situations:
+<ul>
+<li>Before any statement in a script is executed
+<li>Before any state branch processing during regular expression execution
+</ul>
+
+<pre>extern struct {
+	/* ... */
+        void (*<dfn id="SEE_system.periodic">periodic</dfn>)(struct SEE_interpreter *);
+	/* ... */
+} SEE_system;</pre>
+
+<p>
+It is possible for a cfunction to block the current thread and prevent
+the <code>periodic</code> hook from being called by SEE.
+Alternatives to the <code>periodic</code> hook are:
+<ul>
+<li>Using threads
+<li>Using signals or interrupts
+</ul>
+
+<p class="note">
+&#9888; Note:
+The <code>periodic</code> hook appeared in API 2.0
+</p>
+
+<h2 id="value">5 Values</h2>
+
+<p>
+Eventually, your host application will want to pass numbers, strings and 
+complex value objects about, through the SEE interpreter, to and from the user
+code. This section describes the C interface to ECMAScript values.</p>
+
+<p>
+The ECMAScript language has exactly six types of value. They are:
+</p>
+
+<ul>
+<li><em>undefined type</em>
+- with exactly one value: <code class="js">undefined</code>
+<li><em>null type</em>
+- with exactly one value: <code class="js">null</code>
+<li><em>boolean type</em>
+- with exactly two values: <code class="js">true</code>
+and <code class="js">false</code>
+<li><em>number type</em>
+- IEEE 754 64-bit floating point numbers
+<li><em>string type</em>
+- UTF-16 character arrays of arbitrary length
+<li><em>object type</em>
+- a reference to a bag of named properties
+</ul>
+
+<p>
+The <code>SEE_value</code> structure can represent values of all of
+these types.
+</p>
+
+<pre><dfn id="struct_SEE_value">struct SEE_value</dfn> {
+    enum { <i>...</i> }            _type;
+    union {
+        SEE_boolean_t       boolean;
+        SEE_number_t        number;
+        struct SEE_string * string;
+        struct SEE_object * object;
+        <i>...</i>
+    } u;
+};</pre>
+
+<p>
+The first member, <code>_type</code>, is the discriminator,
+and must be one of the enumerated values
+<code>SEE_UNDEFINED</code>, <code>SEE_NULL</code>, 
+<code>SEE_BOOLEAN</code>, <code>SEE_NUMBER</code>, <code>SEE_STRING</code> or
+<code>SEE_OBJECT</code>.
+You should access the <code>_type</code> member using the 
+<code>SEE_VALUE_GET_TYPE()</code> macro.
+</p>
+
+<pre>enum { <i>...</i> } <dfn id="SEE_VALUE_GET_TYPE">SEE_VALUE_GET_TYPE</dfn>(struct SEE_value *value);</pre>
+
+<p>
+Depending on the type,
+you can directly access the corresponding value of a 
+<code>SEE_value</code>.
+If the value variable is declared as:
+</p>
+
+<pre>struct SEE_value v;</pre>
+
+<p>then the value that it holds is directly accessed through
+its union member, <code>v.u</code>.
+The following table shows when the union fields of <code>v.u</code> are valid:
+</p>
+
+<table>
+<thead>
+<tr>    <th><code>SEE_VALUE_GET_TYPE(&amp;v)</code></th>
+        <th>Valid member</th>
+        <th>Member's type</th>  </tr>
+</thead>
+<tbody>
+<tr>    <td><code>SEE_UNDEFINED</code></td>
+        <td><i>n/a</i></td>
+        <td><i>n/a</i></td>                                     </tr>
+<tr>    <td><code>SEE_NULL</code></td>
+        <td><i>n/a</i></td>
+        <td><i>n/a</i></td>                                     </tr>
+<tr>    <td><code>SEE_BOOLEAN</code></td>
+        <td><code>v.u.boolean</code></td>
+        <td><code>SEE_boolean_t</code></td>             </tr>
+<tr>    <td><code>SEE_NUMBER</code></td>
+        <td><code>v.u.number</code></td>
+        <td><code>SEE_number_t</code></td>              </tr>
+<tr>    <td><code>SEE_STRING</code></td>
+        <td><code>v.u.string</code></td>
+        <td><code>struct SEE_string *</code></td>       </tr>
+<tr>    <td><code>SEE_OBJECT</code></td>
+        <td><code>v.u.object</code></td>
+        <td><code>struct SEE_object *</code></td>       </tr>
+</tbody></table>
+
+<p>
+Two other types (<code>SEE_COMPLETION</code> and <code>SEE_REFERENCE</code>)
+are only used internally to SEE and are not documented here.
+</p>
+
+<p>
+To convert/coerce values into values of a different types, use the 
+utility functions describe in <a href="#conversion">&sect;5.1</a>.
+</p>
+
+<p>
+To create new values in <code>struct SEE_value</code> structures, 
+use the following initialisation macros. They first set the <code>_type</code> 
+field and then copy the second parameter into the appropriate union field.
+It is fine to use a local variable for a <code>struct SEE_value</code>,
+because the garbage collector can see what is being used from the stack.
+</p>
+
+<pre>void <dfn id="SEE_SET_UNDEFINED">SEE_SET_UNDEFINED</dfn>(struct SEE_value *val);
+void <dfn id="SEE_SET_NULL">SEE_SET_NULL</dfn>(struct SEE_value *val);
+void <dfn id="SEE_SET_OBJECT">SEE_SET_OBJECT</dfn>(struct SEE_value *val, struct SEE_object *obj);
+void <dfn id="SEE_SET_STRING">SEE_SET_STRING</dfn>(struct SEE_value *val, struct SEE_string *str);
+void <dfn id="SEE_SET_NUMBER">SEE_SET_NUMBER</dfn>(struct SEE_value *val, SEE_number_t num);
+void <dfn id="SEE_SET_BOOLEAN">SEE_SET_BOOLEAN</dfn>(struct SEE_value *val, SEE_boolean_t bool);</pre>
+
+<p>
+Most <code>SEE_value</code>s are passed about the SEE library functions using 
+pointers. This is because the general contract is that the caller supplies
+storage for the return value (usually named <code>ret</code>), while
+other pointer arguments are treated as read-only.
+Conventionally, the result value pointer is provided as the last argument 
+to these functions and is named <code>res</code>.
+</p>
+
+<p>
+Avoid <em>storing</em> a <code>struct SEE_value</code> as a pointer.
+Instead, extract and copy values into storage using the following macro:
+</p>
+
+<pre>void <dfn id="SEE_VALUE_COPY">SEE_VALUE_COPY</dfn>(struct SEE_value *dst, struct SEE_value *src);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_VALUE_COPY()</code> macro breaks the convention of
+putting the result pointer last
+by instead following the better-known idiom of <code>memcpy()</code>, which
+places the destination first.
+</p>
+
+<p>
+A simple pitfall to avoid when passing values to SEE functions is to
+use a single value as both a parameter to the function and as the return
+result storage.
+Do not do this.
+It is possible that the function will initialise its return storage before it
+accesses its parameters.
+</p>
+
+<h3 id="conversion">5.1 Value conversion</h3>
+
+<p>
+The ECMAScript language specification provides for conversion functions
+that the host application developer may find useful. They convert arbitrary
+values into values of a known type:
+</p>
+
+<ul>
+<li><code>SEE_ToPrimitive()</code>
+    - Returns a non-object value. It calls the
+        object's <code>DefaultValue()</code> method
+        (see <a href="#objimpl">&sect;6.3</a>)
+<li><code>SEE_ToBoolean()</code>
+    - Returns a value of type <code>SEE_BOOLEAN</code>
+<li><code>SEE_ToNumber()</code>
+    - Returns a value of type <code>SEE_NUMBER</code>
+<li><code>SEE_ToInteger()</code>
+    - Returns a value of type <code>SEE_NUMBER</code>
+        that is also a finite integer
+<li><code>SEE_ToString()</code>
+    - Returns a value of type <code>SEE_STRING</code>
+<li><code>SEE_ToObject()</code>
+    - Returns a value of type <code>SEE_OBJECT</code>
+        using the <code class="js">String</code>, 
+        <code class="js">Number</code> and
+        <code class="js">Boolean</code>
+        constructors
+</ul>
+
+<pre>void <dfn id="SEE_ToPrimitive">SEE_ToPrimitive</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *hint,
+                struct SEE_value *res);
+void <dfn id="SEE_ToBoolean">SEE_ToBoolean</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *res);
+void <dfn id="SEE_ToNumber">SEE_ToNumber</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *res);
+void <dfn id="SEE_ToInteger">SEE_ToInteger</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *res);
+void <dfn id="SEE_ToString">SEE_ToString</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *res);
+void <dfn id="SEE_ToObject">SEE_ToObject</dfn>(struct SEE_interpreter *interp,
+                struct SEE_value *val, struct SEE_value *res);</pre>
+
+<p>
+See also the <a href="#SEE_parse_args"><code>SEE_parse_args()</code></a>
+function for a convenient way to extract C types from SEE values.
+
+<h3 id="undef">5.2 Undefined, null, boolean and number values</h3>
+
+<p>
+The undefined and null types have exactly one implied value each, namely
+<code class="js">undefined</code> and <code class="js">null</code>. 
+</p>
+
+<p class="note">
+&#9888; Note:
+ECMAScript's
+<code class="js">null</code> is <em>not</em> an object type, and is
+not related to C's <code>NULL</code> constant.
+</p>
+
+<p>
+Boolean types (<code>SEE_boolean_t</code>) have values of either true (non-zero) or false (zero). 
+</p>
+
+<p>
+Number values (<code>SEE_number_t</code>) are IEEE 754 signed floating 
+point numbers, normally corresponding to the C compiler's built-in
+<code>double</code> type.
+</p>
+
+<p>
+The following macros may be used to find information about a number value.
+(They assume that the <code>type</code> is <code>SEE_NUMBER</code>):
+</p>
+
+<ul>
+<li><code>SEE_NUMBER_ISNAN()</code>  - return true if the value represents an error condition (not a number)
+<li><code>SEE_NUMBER_ISPINF()</code> - return true if the value is +&infin;
+<li><code>SEE_NUMBER_ISNINF()</code> - return true if the value is -&infin;
+<li><code>SEE_NUMBER_ISFINITE()</code> - return true if the value is a finite number
+</ul>
+
+<pre>int <dfn id="SEE_NUMBER_ISNAN">SEE_NUMBER_ISNAN</dfn>(struct SEE_value *val);
+int <dfn id="SEE_NUMBER_ISPINF">SEE_NUMBER_ISPINF</dfn>(struct SEE_value *val);
+int <dfn id="SEE_NUMBER_ISNINF">SEE_NUMBER_ISNINF</dfn>(struct SEE_value *val);
+int <dfn id="SEE_NUMBER_ISFINITE">SEE_NUMBER_ISFINITE</dfn>(struct SEE_value *val);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_NUMBER_ISINF()</code> and
+<code>SEE_ISINF()</code> macros of API 1.0 were deprecated in API 2.0.
+Previously, it returned true for values of &plusmn;&infin;
+</p>
+
+<p>While the <code>SEE_NUMBER_xx()</code> macros work on values, the
+following macros are provided for operating on <code>SEE_number_t</code> types directly:</p>
+
+<ul>
+<li><code>SEE_ISNAN()</code> - return true if the argument represents an error condition (not a number)
+<li><code>SEE_ISFINITE()</code> - return true if the argument is a finite number
+<li><code>SEE_ISPINF()</code> - return true if the argument is +&infin;
+<li><code>SEE_ISNINF()</code> - return true if the argument is -&infin;
+<li><code>SEE_COPYSIGN()</code> - returns the first argument converted to have the sign of the second
+</ul>
+
+<pre>int <dfn id="SEE_ISNAN">SEE_ISNAN</dfn>(SEE_number_t);
+int <dfn id="SEE_ISFINITE">SEE_ISFINITE</dfn>(SEE_number_t);
+int <dfn id="SEE_ISPINF">SEE_ISPINF</dfn>(SEE_number_t);
+int <dfn id="SEE_ISNINF">SEE_ISNINF</dfn>(SEE_number_t);
+SEE_number_t <dfn id="SEE_COPYSIGN">SEE_COPYSIGN</dfn>(SEE_number_t, SEE_number_t);</pre>
+
+<p>
+SEE also provides constants <code>SEE_Infinity</code> and <code>SEE_NaN</code>
+which may be stored in number values, but should not be used 
+to compare number values with C's <code>==</code> operator.
+Use the macros mentioned previously, instead.
+</p>
+
+<pre>const SEE_number_t <dfn id="SEE_Infinity">SEE_Infinity</dfn>;
+const SEE_number_t <dfn id="SEE_NaN">SEE_NaN</dfn>;</pre>
+
+<p>
+Numbers (and other values) may be converted to integers using the functions
+<code>SEE_ToInt32()</code>, <code>SEE_ToUint32()</code> or 
+<code>SEE_ToUint16()</code>.
+</p>
+
+<pre>SEE_int32_t  <dfn id="SEE_ToInt32">SEE_ToInt32</dfn>(struct SEE_interpreter *interp, struct SEE_value *val);
+SEE_uint32_t <dfn id="SEE_ToUint32">SEE_ToUint32</dfn>(struct SEE_interpreter *interp, struct SEE_value *val);
+SEE_uint16_t <dfn id="SEE_ToUint16">SEE_ToUint16</dfn>(struct SEE_interpreter *interp, struct SEE_value *val);</pre>
+
+<p>
+SEE provides three data types
+for integers:
+</p>
+
+<ul>
+  <li> <code>SEE_uint16_t</code>        - 16 bit unsigned integer
+  <li> <code>SEE_uint32_t</code>        - 32 bit unsigned integer
+  <li> <code>SEE_int32_t</code>         - 32 bit signed integer
+</ul>
+
+<h3 id="string">5.3 String values</h3>
+
+<p>
+String values are pointers to <code>SEE_string</code> structures, 
+that hold UTF-16 strings.
+Strings are stored as arrays of 16-bit unicode character codepoints.
+The <code>SEE_string</code> structure is defined something like this:
+</p>
+
+<pre><dfn id="struct_SEE_string">struct SEE_string</dfn> {
+        unsigned int     length;
+        SEE_char_t      *data;
+        <i>...</i>
+};</pre>
+
+<p>The useful members are:</p>
+
+<ul>
+<li><code>length</code>
+- Length of string content
+<li><code>data</code>
+- Read-only storage for the string content (UTF-16 characters)
+</ul>
+
+<p>
+Be aware that other strings may come to share the string's data, such
+as by forming substrings. 
+A string's content must not be modified after construction because of this
+risk. However, the <code>length</code>
+field of a string may be changed to a <strong>smaller</strong> value
+at any time without concern.
+</p>
+
+<p>
+The <code>SEE_char_t</code> type represents a UTF-16 character in the
+string.  It is equivalent to a 16-bit unsigned integer.
+</p>
+
+<p>
+To manipulate a string, first create a new string using one of the following:
+</p>
+
+<ul>    
+  <li><code>SEE_string_new()</code> - create a new, empty string
+  <li><code>SEE_string_dup()</code> - create a new string with duplicate content
+  <li><code>SEE_string_sprintf()</code> - create a new string using 
+        <code>printf</code>-like arguments
+  <li><code>SEE_string_vsprintf()</code> - create a new string using
+        <code>vprintf</code>-like arguments
+</ul>
+
+<pre>struct SEE_string *<dfn id="SEE_string_new">SEE_string_new</dfn>(struct SEE_interpreter *interp,
+                unsigned int space);
+struct SEE_string *<dfn id="SEE_string_dup">SEE_string_dup</dfn>(struct SEE_interpreter *interp,
+                const struct SEE_string *s);
+struct SEE_string *<dfn id="SEE_string_sprintf">SEE_string_sprintf</dfn>(struct SEE_interpreter *interp,
+                const char *fmt, ...);
+struct SEE_string *<dfn id="SEE_string_vsprintf">SEE_string_vsprintf</dfn>(struct SEE_interpreter *interp,
+                const char *fmt, va_list ap);</pre>
+
+<p>
+And then, before passing your new string to any other function, append 
+characters to it using the following:
+</p>
+
+<ul>
+  <li><code>SEE_string_addch()</code> - append a UTF-16 character
+  <li><code>SEE_string_append()</code> - append contents of another string
+  <li><code>SEE_string_append_ascii()</code> - convert 7bit ASCII to Unicode and append to another string
+  <li><code>SEE_string_append_int()</code> - append a signed integer's
+                                                representation in base 10
+  <li><code>SEE_string_append_unicode()</code> - append an unencoded Unicode character
+</ul>
+
+<pre>void <dfn id="SEE_string_addch">SEE_string_addch</dfn>(struct SEE_string *s, SEE_char_t ch);
+void <dfn id="SEE_string_append">SEE_string_append</dfn>(struct SEE_string *s, const struct SEE_string *sffx);
+void <dfn id="SEE_string_append_ascii">SEE_string_append</dfn>(struct SEE_string *s, const char *);
+void <dfn id="SEE_string_append_int">SEE_string_append_int</dfn>(struct SEE_string *s, int i);
+void <dfn id="SEE_string_append_unicode">SEE_string_append_unicode</dfn>(struct SEE_string *s, SEE_unicode_t c);</pre>
+
+<p>
+Once a new string has been passed to any other SEE function, it should not
+have its contents modified in any way.
+This is because string data can end up being shared between strings.
+</p>
+
+<p>
+Strings themselves should not be passed
+between different interpreters, unless internalised with 
+<code>SEE_intern_global()</code> (see <a href="#staticstr">&sect;5.3.1</a>)
+or 'fixed' with
+<code>SEE_string_fix()</code>.
+<q>Fixing</q> a string ensures that its content will not be modified or extended by another interpreter.
+</p>
+
+<pre>struct SEE_string *<dfn id="SEE_string_fix">SEE_string_fix</dfn>(struct SEE_string *s);</pre>
+
+<p>
+All strings in SEE use UTF-16 encoding, meaning that in some cases
+you may need to be aware of Unicode 'surrogate' characters. If the host
+application really needs UCS-4 strings (which are subtly different to UTF-16),
+you will need to write your own converter function. Use the implementation of 
+<code>SEE_input_string()</code> (<a href="#input">&sect;4.2</a>) as 
+the basis for such a converter because it understands UTF-16 combiner codes.
+</p>
+
+<p>
+The functions 
+<code>SEE_string_sprintf()</code> and <code>SEE_string_vsprintf()</code>
+do not exactly have the same formats
+as the standard <code>printf()</code> function, although they are
+substantially similar. 
+Follows is a table of understood formats:
+</p>
+
+<table>
+<thead>
+<tr><th>Format</th>
+    <th>Type</th>
+    <th>Comment</th></tr>
+</thead>
+<tbody>
+<tr><td><code class="meta">%<i>[</i>+<i>][</i>-<i>][</i>0<i>][#]</i>d</code></td>
+    <td><code>signed int</td>
+    <td>decimal</td></tr>
+<tr><td><code class="meta">%<i>[</i>+<i>][</i>-<i>][</i>0<i>][#]</i>u</code></td>
+    <td><code>unsigned int<code></td>
+    <td>decimal</td></tr>
+<tr><td><code class="meta">%<i>[</i>+<i>][</i>-<i>][</i>0<i>][#]</i>x</code></td>
+    <td><code>unsigned int</code></td>
+    <td>hexadecimal (base 16)</td></tr>
+<tr><td><code class="meta">%c</code></td>
+    <td><code>char</code></td>
+    <td>ASCII only</td></tr>
+<tr><td><code class="meta">%C</code></td>
+    <td><code>SEE_char_t</code></td></tr>
+<tr><td><code class="meta">%<i>[</i>-<i>][#][</i>.<i>#]</i>s</code></td>
+    <td><code>const char *</code></td>
+    <td>ASCII only</td></tr>
+<tr><td><code class="meta">%<i>[</i>-<i>][#][</i>.<i>#]</i>S</code></td>
+    <td><code>struct SEE_string *</code></td></tr>
+<tr><td><code class="meta">%<i>[</i>-<i>][#]</i>p</code></td>
+    <td><code>void *</code></td></tr>
+<tr><td><code class="meta">%%</code></td>
+    <td></td>
+    <td>single <code>%</code></td></tr>
+<tr><td><code class="meta">%</code><i>other</i></td>
+    <td></td>
+    <td>literal <code>%</code><i>other</i></td>
+</tbody>
+</table>
+
+<p class="note">
+&#9888; Note:
+Pror to API 2.0, the <code>SEE_string_sprintf()</code> and
+<code>SEE_string_vsprintf()</code> used the system
+<code>snprintf</code> forcing its output to 7-bit ASCII.
+</p>
+
+<p>
+Where a hash (<code class="meta"><i>#</i></code>) appears in the format column above, it means that either a positive
+integer in base 10 may be supplied to indicate padding or precision, 
+(eg <code>%4d</code>)
+or an asterisk (<code>*</code>) can be used instead
+to indicate that the next <code>int</code> argument provides the padding or precision value. 
+This follows the behaviour of <code>printf()</code>.
+</p>
+
+<p>
+Other string functions provided are:
+</p>
+
+<ul>
+ <li><code>SEE_string_substr()</code> 
+        - create a read-only substring string
+ <li><code>SEE_string_literal()</code>  
+        - create a copy of the string, escaping chars and
+          enclosing it in double quotes (<code>"</code>)
+ <li><code>SEE_string_fputs()</code>    
+        - write the string to the stdio file using UTF-8 encoding,
+          returns <code>EOF</code> on error
+ <li><code>SEE_string_toutf8()</code>    
+        - copy the string into a C string buffer, using UTF-8 encoding,
+          throwing an error if the buffer is too small.
+	  Space is required for the trailing null character.
+ <li><code>SEE_string_utf8_size()</code>    
+        - returns the size in bytes, excluding the trailing null
+	  character, of a UTF-8 conversion of the given string.
+ <li><code>SEE_string_concat()</code>    
+        - efficiently concatenate two strings, creating a new string
+ <li><code>SEE_string_cmp()</code>      
+        - compares two strings, like <code>strcmp()</code>
+</ul>
+
+<pre>struct SEE_string *<dfn id="SEE_string_substr">SEE_string_substr</dfn>(struct SEE_interpreter *interp,
+                struct SEE_string *s, int index, int length);
+struct SEE_string *<dfn id="SEE_string_literal">SEE_string_literal</dfn>(struct SEE_interpreter *interp,
+                const struct SEE_string *s);
+int <dfn id="SEE_string_fputs">SEE_string_fputs</dfn>(const struct SEE_string *s, FILE *file);
+void <dfn id="SEE_string_toutf8">SEE_string_toutf8</dfn>(struct SEE_interpreter *interp, 
+                char *buffer, SEE_size_t buffer_size,
+                const struct SEE_string *s);
+SEE_size_t <dfn id="SEE_string_utf8_size">SEE_string_utf8_size</dfn>(struct SEE_interpreter *interp, 
+                const struct SEE_string *s);
+struct SEE_string *<dfn id="SEE_string_concat">SEE_string_concat</dfn>(struct SEE_interpreter *interp,
+                struct SEE_string *s1, struct SEE_string *s2);
+int <dfn id="SEE_string_cmp">SEE_string_cmp</dfn>(const struct SEE_string *s1,
+                const struct SEE_string *s2);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_string_toutf8()</code> function does not check for
+null characters in the output.
+Consider using <code>SEE_string_literal()</code> to make the
+string well-formed before converting to UTF-8.
+</p>
+
+<h4 id="intern">5.3.1 Internalised strings</h4>
+
+<p>
+If you find yourself comparing strings a lot, you may find it easier to
+compare <em>internalised</em> strings. 
+These are strings that are kept in a fast
+hash table and may be compared equal using pointer equality. 
+The <code>SEE_intern()</code> function returns an 'internalized' copy of the 
+given string and is very fast on already-interned strings.
+It is worth using in lieu of <code>SEE_string_cmp()</code> if the strings 
+are likely to be internalized already. (For example, all property names in
+the standard library are internalized.)
+</p>
+
+<p>
+The function <code>SEE_intern_ascii()</code> is a convenience function
+that first converts the C string into a <code>SEE_string</code> before
+internalizing. The C string must be an ASCII string terminated by a null
+character.
+</p>
+
+<pre>struct SEE_string *<dfn id="SEE_intern">SEE_intern</dfn>(struct SEE_interpreter *interp,
+                struct SEE_string *s);
+struct SEE_string *<dfn id="SEE_intern_ascii">SEE_intern_ascii</dfn>(struct SEE_interpreter *interp,
+                const char *s);</pre>
+
+<h4 id="staticstr">5.3.2 Statically initialised strings</h4>
+
+<p>
+SEE supports statically initialised strings.
+If you have a large number of strings to create and use (e.g. properties
+and method names) over many interpreter instances, statically initialised
+strings can save space, and slightly improve performance.
+</p>
+
+<div class="example">Example:
+<pre><i>/* Example of a statically-initialised UTF-16 string */</i>
+static SEE_char_t hello_world_chars[12] = {
+    'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd'
+};
+static struct SEE_string hello_world = {
+    12,                                                <i>/* length */</i>
+    hello_world_chars                                  <i>/* data */</i>
+};
+
+<i>...</i>
+struct SEE_string *text = <b>&amp;hello_world</b>;
+</pre>
+</div>
+
+<p>
+The main problem with static strings is finding an elegant way
+to initialise the strings' content. 
+There is no simple way in ANSI C to have the compiler convert 
+common ASCII strings into UTF-16 arrays.
+The internal approach taken by SEE in supporting
+all the standard ECMAScript object property names,
+is to generate C program text from a file of
+ASCII strings during the build process.
+</p>
+
+<p>
+If an application wishes to internalise strings <em>across interpreters</em>,
+it can add all its global strings into the global
+intern table <strong>before creating any interpreters</strong>.
+This is done by calling
+<code>SEE_intern_global()</code> for each string.
+Doing this can save a moderate amount of overhead, and can
+improve performance if the internalized string needs to be used often.
+</p>
+
+<pre>struct SEE_string * <dfn id="SEE_intern_global">SEE_intern_global</dfn>(const char *str);</pre>
+
+<p class="note">
+&#9888; Note:
+Prior to API 2.0, <code>SEE_intern_global()</code> had a 
+very different signature.
+See <a href="#port10_20">&sect;8.3</a>.
+</p>
+
+<h2 id="object">6 Objects</h2>
+
+<p>
+ECMAScript uses a prototype-inheritance object model with simple named
+properties. More information on the object model can be found in the 
+<a href="#ref-ecma">ECMA-262 standard</a>, and in other JavaScript references.
+</p>
+
+<p>
+This section describes how in-memory objects can be accessed
+and manipualated (the 'client interface'),
+and also how host applications can expose their own application objects
+and methods (the 'implementation interface').
+</p>
+
+<p>
+Object instances are implemented as in-memory structures, with an 
+<code>objectclass</code> pointer to a table of operational methods.
+Object references are held inside values with a type field
+of <code>SEE_OBJECT</code> (see <a href="#value">&sect;5</a>).
+</p>
+
+<p>
+If you want to create a plain object quickly from C, 
+the convenience function
+<code>SEE_Object_new()</code>
+is the same as evaluating
+<code class="js">new Object()</code>.
+
+<pre>struct SEE_object *<dfn id="SEE_Object_new">SEE_Object_new</dfn>(struct SEE_interpreter *interp);</pre>
+
+<h3 id="objclient">6.1 Object values, and the object client interface</h3>
+
+<p>
+All object values are pointers to object instances.
+The pointers are of type <code>struct SEE_object *</code>.
+No object pointer in a <code>SEE_value</code> should ever point to
+<code>NULL</code>.
+I find working with <code>struct SEE_object *</code> pointer 
+types directly, instead of using <code>struct SEE_value</code> to be
+convenient, when I know that I am dealing with objects.
+</p>
+
+<p>
+To use an object instance, you should interact with it using 
+the following <q>internal method</q> macros:
+</p>
+
+<ul>
+<li><code>SEE_OBJECT_GET()</code>
+	  <a href="#propintern" class="footnote">*</a>
+        - retrieve a named property or return <code class="js">undefined</code>
+          ('<code class="js">o.prop</code>');
+          also known as the <code class="js">[[Get]]</code> internal method
+<li><code>SEE_OBJECT_PUT()</code>
+	  <a href="#propintern" class="footnote">*</a>
+        - create/update a named property
+          ('<code class="js">o.prop = val</code>');
+          also known as the <code class="js">[[Put]]</code> internal method
+<li><code>SEE_OBJECT_CANPUT()</code>
+	  <a href="#propintern" class="footnote">*</a>
+        - returns true if the property can be changed;
+          also known as the <code class="js">[[CanPut]]</code> internal method;
+          assumes <code>prop</code> is an internalised string
+<li><code>SEE_OBJECT_HASPROPERTY()</code>
+	  <a href="#propintern" class="footnote">*</a>
+        - tests for existence of a property
+          ('<code class="js">"prop" in o</code>');
+          also known as the <code class="js">[[HasProperty]]</code> 
+          internal method;
+          assumes <code>prop</code> is an internalised string
+<li><code>SEE_OBJECT_DELETE()</code>
+	  <a href="#propintern" class="footnote">*</a>
+        - delete a property; returns true on success 
+          ('<code class="js">delete o.prop</code>');
+          also known as the <code class="js">[[Delete]]</code> internal method;
+          assumes <code>prop</code> is an internalised string
+<li><code>SEE_OBJECT_DEFAULTVALUE()</code>
+        - returns the string or number value associated with the object;
+          also known as the <code class="js">[[DefaultValue]]</code> 
+          internal method
+<li><code>SEE_OBJECT_CONSTRUCT()</code>
+          <a href="#objcheck" class="footnote">&dagger;</a>
+        - call object as a constructor
+          ('<code class="js">new o(<i>...</i>)</code>');
+          also known as the <code class="js">[[Construct]]</code> 
+          internal method
+	  (Note: the <code>thisobj</code> parameter of the construct macro
+	  is not used and should be set to <code>NULL</code>)
+<li><code>SEE_OBJECT_CALL()</code>
+          <a href="#objcheck" class="footnote">&dagger;</a>
+        - call object as a function ('<code class="js">o(<i>...</i>)</code>');
+          also known as the <code class="js">[[Call]]</code> 
+          internal method
+<li><code>SEE_OBJECT_HASINSTANCE()</code>
+          <a href="#objcheck" class="footnote">&dagger;</a>
+        - return true if the objects are related
+          ('<code class="js">x instanceof o</code>');
+          also known as the <code class="js">[[HasInstance]]</code> 
+          internal method
+<li><code>SEE_OBJECT_ENUMERATOR()</code>
+          <a href="#objcheck" class="footnote">&dagger;</a>
+        - create a property enumerator
+          ('<code class="js">for (i in o) <i>...</i></code>')
+<li><code>SEE_OBJECT_GET_SEC_DOMAIN()</code>
+          <a href="#objcheck" class="footnote">&dagger;</a>
+        - returns the security domain associated with callable objects only
+          (see <a href="#security">&sect;9</a>)
+</ul>
+
+<pre>void <dfn id="SEE_OBJECT_GET">SEE_OBJECT_GET</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_string *prop,
+                struct SEE_value *res);
+void <dfn id="SEE_OBJECT_PUT">SEE_OBJECT_PUT</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_string *prop,
+                struct SEE_value *res, int flags);
+int <dfn id="SEE_OBJECT_CANPUT">SEE_OBJECT_CANPUT</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_string *prop);
+int <dfn id="SEE_OBJECT_HASPROPERTY">SEE_OBJECT_HASPROPERTY</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_string *prop);
+int <dfn id="SEE_OBJECT_DELETE">SEE_OBJECT_DELETE</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_string *prop);
+void <dfn id="SEE_OBJECT_DEFAULTVALUE">SEE_OBJECT_DEFAULTVALUE</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_value *hint,
+                struct SEE_value *res);
+void <dfn id="SEE_OBJECT_CONSTRUCT">SEE_OBJECT_CONSTRUCT</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_object *thisobj,
+                int argc, struct SEE_value **argv,
+                struct SEE_value *res);
+void <dfn id="SEE_OBJECT_CALL">SEE_OBJECT_CALL</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_object *thisobj,
+                int argc, struct SEE_value **argv,
+                struct SEE_value *res);
+int <dfn id="SEE_OBJECT_HASINSTANCE">SEE_OBJECT_HASINSTANCE</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, struct SEE_value *instance);
+struct SEE_enum *<dfn id="SEE_OBJECT_ENUMERATOR">SEE_OBJECT_ENUMERATOR</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj);
+void *<dfn id="SEE_OBJECT_GET_SEC_DOMAIN">SEE_OBJECT_GET_SEC_DOMAIN</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj);</pre>
+
+<p id="propintern">
+<span class="footnote">*</span>
+The property <code>SEE_string</code> arguments to the property
+operation macros <strong>must</strong> have been
+internalised with <code>SEE_intern()</code>.
+This requirement appeared in API 3.0
+</p>
+
+<p id="objcheck">
+<span class="footnote">&dagger;</span>
+Five of the macros above (<code>CONSTRUCT</code>, 
+<code>CALL</code>, <code>HASINSTANCE</code>,
+<code>ENUMERATOR</code> and <code>GET_SEC_DOMAIN</code>) 
+call optional internal methods, and
+<strong>do not check</strong> if the object class has not provided them.
+This means the macros may try to call through a <code>NULL</code> function 
+pointer, which will cause an error.
+You can determine if the object's class provides 
+the optional methods by using the following macros before you use one of the
+four marked above.
+These check macros returns true if the method they check for is valid
+(i.e. they check the function pointer in the object class is
+non-<code>NULL</code>):
+</p>
+
+<ul>
+<li><code>SEE_OBJECT_HAS_CALL()</code>
+         - object can be called with <code>SEE_OBJECT_CALL()</code>
+<li><code>SEE_OBJECT_HAS_CONSTRUCT()</code>
+         - object can be called with <code>SEE_OBJECT_CONSTRUCT()</code>
+<li><code>SEE_OBJECT_HAS_HASINSTANCE()</code>
+         - object can be called with <code>SEE_OBJECT_HASINSTANCE()</code>
+<li><code>SEE_OBJECT_HAS_ENUMERATOR()</code>
+         - object can be called with <code>SEE_OBJECT_ENUMERATOR()</code>
+<li><code>SEE_OBJECT_HAS_GET_SEC_DOMAIN()</code>
+         - object can be called with <code>SEE_OBJECT_GET_SEC_DOMAIN()</code>
+</ul>
+
+<pre>int <dfn id="SEE_OBJECT_HAS_CALL">SEE_OBJECT_HAS_CALL</dfn>(struct SEE_object *obj);
+int <dfn id="SEE_OBJECT_HAS_CONSTRUCT">SEE_OBJECT_HAS_CONSTRUCT</dfn>(struct SEE_object *obj);
+int <dfn id="SEE_OBJECT_HAS_HASINSTANCE">SEE_OBJECT_HAS_HASINSTANCE</dfn>(struct SEE_object *obj);
+int <dfn id="SEE_OBJECT_HAS_ENUMERATOR">SEE_OBJECT_HAS_ENUMERATOR</dfn>(struct SEE_object *obj);
+int <dfn id="SEE_OBJECT_HAS_GET_SEC_DOMAIN">SEE_OBJECT_HAS_GET_SEC_DOMAIN</dfn>(struct SEE_object *obj);</pre>
+
+<p>
+Because it is frequently convenient to provide property names using
+ASCII C strings instead of with <code>struct SEE_string</code> pointers,
+the following convenience macros are provided. 
+They are functionally identical to their counterparts, except that they
+convert their property name argument with <code>SEE_intern_ascii()</code>:
+
+<pre>void <dfn id="SEE_OBJECT_GETA">SEE_OBJECT_GETA</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, const char *ascii_prop,
+                struct SEE_value *res);
+void <dfn id="SEE_OBJECT_PUTA">SEE_OBJECT_PUTA</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, const char *ascii_prop,
+                struct SEE_value *res, int flags);
+int <dfn id="SEE_OBJECT_CANPUTA">SEE_OBJECT_CANPUTA</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, const char *ascii_prop);
+int <dfn id="SEE_OBJECT_HASPROPERTYA">SEE_OBJECT_HASPROPERTYA</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, const char *ascii_prop);
+int <dfn id="SEE_OBJECT_DELETEA">SEE_OBJECT_DELETEA</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *obj, const char *ascii_prop);</pre>
+
+<p class="note">
+&#9888; Note:
+The convenience macros <code>SEE_OBJECT_*A</code> were introduced in API 2.0.
+</p>
+
+<p>
+When storing properties in an object with <code>SEE_OBJECT_PUT()</code>, 
+a <code>flags</code> parameter is required. 
+In normal operation, this flag should be supplied as zero, but when populating
+an object with its properties for the first time, the following bit
+flags can be used:
+</p>
+
+<table>
+<thead>
+<tr><th>Flag</th>
+    <th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>SEE_ATTR_READONLY</code></td>
+    <td>Future assignments (puts) on this property will fail</td></tr>
+<tr><td><code>SEE_ATTR_DONTENUM</code></td>
+    <td>Enumerators will not list this property
+        and will hide inherited prototype properties of
+        the same name until this property is <code class="js">delete</code>d.
+        (see <a href="#enum">&sect;6.2</a>)</td></tr>
+<tr><td><code>SEE_ATTR_DONTDELETE</code></td>
+    <td>Future <code class="js">delete</code>s on this property will 
+        fail</td></tr>
+</tbody>
+</table>
+
+<h3 id="enum">6.2 Property enumerators</h3>
+
+<p>
+A property enumerator is a mechanism for discovering the properties that
+an object contains. The language exercises this with its
+<code class="js">for (var v in <i>...</i>)</code> construct.
+The results of the enumeration need not be sorted, nor even
+to be the same order each time. 
+</p>
+
+<p>
+Calling <code>SEE_OBJECT_ENUMERATOR()</code> returns a 
+newly created <i>enumerator</i> which is a pointer to a
+<code>struct SEE_enum</code>.
+Once obtained, the following macros can be used to access the enumerator:
+</p>
+
+<ul>
+ <li><code>SEE_ENUM_NEXT()</code>
+        - return a pointer to an internalized property name string, 
+	  or <code>NULL</code> when the properties have been exhausted.
+</ul>
+
+<pre>struct SEE_string *<dfn id="SEE_ENUM_NEXT">SEE_ENUM_NEXT</dfn>(struct SEE_interpreter *interp,
+                struct SEE_enum *e, int *flags_return);</pre>
+
+<p>
+Enumerators can assume that the underlying object does not change during
+enumeration. 
+A suggested strategy for a caller that does need to remove or add an object's
+properties while enumerating them
+is to first create a private list of its property names, ensuring that it
+has exhausted the enumerator before attempting to modify the object.
+</p>
+
+<div class="example">Example:
+of enumerating properties on an object from C:
+<pre>
+void
+print_properties(struct SEE_interpreter *interp, struct SEE_object *obj)
+{
+        struct SEE_enum *enumerator;
+        struct SEE_string *prop;
+
+        <i>/* Ignore objects that don't provide an enumerator */</i>
+        if (!<b>SEE_OBJECT_HAS_ENUMERATOR</b>(obj))
+                return;
+
+        enumerator = <b>SEE_OBJECT_ENUMERATOR</b>(interp, obj);
+        while ((prop = <b>SEE_ENUM_NEXT</b>(interp, enumerator, NULL)) != NULL) {
+                SEE_PrintString(interp, prop, stdout);
+                printf("\n");
+        }
+}</pre>
+</div>
+
+<h3 id="objimpl">6.3 The object implementation interface</h3>
+
+<p>
+When a host application wishes to expose its own 'host objects' to 
+ECMAScript programs, it must use the object implementation API
+described in this section.
+</p>
+
+<p>
+All SEE objects are in-memory structures starting with a 
+<code>struct SEE_object</code>:
+</p>
+
+<pre><dfn id="struct_SEE_object">struct SEE_object</dfn> {
+        struct SEE_objectclass *objectclass;
+        struct SEE_object *     Prototype;
+	void *                  host_data;
+};</pre>
+
+<p>
+The <code>host_data</code> field is for use by the host application.
+It is initialised to NULL in objects created by SEE.
+</p>
+
+<p class="note">
+&#9888; Note:
+The <code>host_data</code> field was added in API 3.0.
+</p>
+
+<p>
+Normally, the <code>SEE_object</code> structure
+is part of a larger structure that maintains the
+object's private state. 
+</p>
+
+<div class="example">Example:
+Implementing native <code class="js">Number</code>
+instance objects:
+
+<pre>struct number_object {             <i>/* example implementation of Number */</i>
+        struct SEE_object object;
+        SEE_number_t      number;
+};</pre>
+</div>
+
+<p>
+Keeping the <code>object</code> part at the top of the 
+<code>number_object</code> structure means that pointers of type
+<code>struct number_object *</code> can be cast to and from pointers of type
+<code>struct SEE_object *</code>. This is a general idiom: begin all
+host object structures with a field member of type
+<code>struct SEE_object</code> named <code>object</code>.
+</p>
+
+<p>
+Although the ECMAScript language does not use classes <i>per se</i>,
+SEE's internal object implementation does use a class 'abstraction'
+to speed up execution and make implementation re-use easier.
+Each object has a field, <code>object.objectclass</code>, that must
+be initialised to point to a <code>struct SEE_objectclass</code> that 
+provides the object's behaviour. The class structure looks like this:
+</p>
+
+<pre><dfn id="struct_SEE_objectclass">struct SEE_objectclass</dfn> {
+        const char *            Class;          <i>/* mandatory */</i>
+        SEE_get_fn_t            Get;            <i>/* mandatory */</i>
+        SEE_put_fn_t            Put;            <i>/* mandatory */</i>
+        SEE_boolean_fn_t        CanPut;         <i>/* mandatory */</i>
+        SEE_boolean_fn_t        HasProperty;    <i>/* mandatory */</i>
+        SEE_boolean_fn_t        Delete;         <i>/* mandatory */</i>
+        SEE_default_fn_t        DefaultValue;   <i>/* mandatory */</i>
+        SEE_enumerator_fn_t     enumerator;     <i>/* optional */</i>
+        SEE_call_fn_t           Construct;      <i>/* optional */</i>
+        SEE_call_fn_t           Call;           <i>/* optional */</i>
+        SEE_hasinstance_fn_t    HasInstance;    <i>/* optional */</i>
+        SEE_get_sec_domain_fn_t get_sec_domain; <i>/* optional (API 2.0) */</i>
+};</pre>
+
+<p class="note">
+&#9888; Note:
+The type of the <code>Class</code> field changed from
+<code>struct SEE_string *</code> in API 1.0 to
+<code>const char *</code> in API 2.0.
+</p>
+
+<p>
+The application generally provides this structure in static storage, as
+most of its members are function pointers or strings known at compile time.
+A member marked <i>optional</i> should be set to <code>NULL</code> if it is
+meaningless.
+</p>
+
+<p>
+The object methods marked <i>mandatory</i>
+(<code>Get</code>, <code>Put</code>, etc.)
+are never <code>NULL</code>, and should provide the precise behaviours 
+that SEE expects on native objects.
+These behaviours are fully described in the 
+ECMA-262 standard, and are summarised in the following table:
+</p>
+
+<table>
+<thead>
+<tr><th>Field</th>
+    <th>Behaviour</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Class</code></td>
+    <td>name of the class as revealed by <code class="js">toString()</code></td></tr>
+<tr><td><code>Get</code></td>
+    <td>retrieve a named property (or return <code class="js">undefined</code>)</td></tr>
+<tr><td><code>Put</code></td>
+    <td>create/update a named property</td></tr>
+<tr><td><code>Delete</code></td>
+    <td>delete a property or return 0</td></tr>
+<tr><td><code>HasProperty</code></td>
+    <td>returns 0 if the property doesn't exist</td></tr>
+<tr><td><code>CanPut</code></td>
+    <td>returns 0 if the property cannot be changed</td></tr>
+<tr><td><code>DefaultValue</code></td>
+    <td>turns the object into a string or number value</td></tr>
+<tr><td><code>enumerator</code></td>
+    <td>allow enumeration of the properties (see above)</td></tr>
+<tr><td><code>Construct</code></td>
+    <td>constructs a new object; as per the
+        <code class="js">new</code> keyword</td></tr>
+<tr><td><code>Call</code></td>
+    <td>the object has been called as a function</td></tr>
+<tr><td><code>HasInstance</code></td>
+    <td>returns 0 if the objects are unrelated</td></tr>
+<tr><td><code>get_sec_domain</code></td>
+    <td>returns the security domain associated with functions</td></tr>
+</tbody>
+</table>
+
+<p class="note">
+&#9888; Note:
+The <i>thisobj</i> argument to the <code>Construct</code> 
+method is unused and should be ignored by implementations.
+
+<p>
+It is up to the host application to provide storage for the properties, and
+so forth. The simplest strategy is to ignore property calls to
+<code>Put</code> and <code>Get</code> that are meaningless.
+To this end, if the host object does not want to expend effort
+supporting some of the mandatory operations, it can use the 
+corresponding 'do-nothing' function(s) from this list:
+</p>
+
+<ul>
+  <li><code>SEE_no_get()</code>
+  <li><code>SEE_no_put()</code>
+  <li><code>SEE_no_canput()</code>
+  <li><code>SEE_no_hasproperty()</code>
+  <li><code>SEE_no_delete()</code>
+  <li><code>SEE_no_defaultvalue()</code>
+</ul>
+
+<p class="note">
+&#9888; Note:
+<code>SEE_no_enumerator()</code> was deprecated in API 2.0.
+Use <code>NULL</code> instead.
+</p>
+
+<p class="note">
+&#9888; Note:
+Property strings returned from an enumerator's <code>next()</code> method
+are required to have been internalised, e.g. with <code>SEE_intern()</code>.
+This requirement was added in API 3.0.
+</p>
+
+<p>
+The <code>Prototype</code> field of an object instance
+can either be set to:
+</p>
+
+<ul><li>the interpreter's <code>Object_prototype</code>, 
+<li><code>NULL</code>, meaning no prototype, or 
+<li>some other object. (Be careful to avoid a prototype cycle!)</ul>
+If you choose to use <code>NULL</code>, it is recommended you provide a 
+<code class="js">toString()</code> method (to help with debugging).
+
+<p>
+Once the host application has constructed its own objects that
+conform to the API, they can be inserted into the 'Global object'
+as object-valued properties.
+</p>
+
+<p>
+The 'Global object' is an unnamed, top-level object whose sole purpose
+is to 'hold' all the built-in objects, such as <code class="js">Object</code>,
+<code class="js">Function</code>, <code class="js">Math</code>,
+etc., as well as all user-declared global variables. The host
+application can access it through the <code>Global</code> member of the
+<code>SEE_interpreter</code> structure.
+</p>
+
+<p>
+If you need to test an object's prototype chain, then
+the <code class="js">instanceof</code> operator can be
+simulated with a call to <code>SEE_object_instanceof()</code>.
+This function tests if <code>val</code> is an instanceof <code>obj</code>:
+</p>
+
+<pre>int <dfn id="SEE_object_instanceof">SEE_object_instanceof</dfn>(struct SEE_interpreter *,
+                struct SEE_value *val, struct SEE_object *obj);</pre>
+
+<h3 id="native">6.4 Native objects</h3>
+
+<p>
+SEE provides support for a special kind of object class called <em>native 
+objects</em>. Native objects maintain a hash table of properties, and 
+implement the mandatory methods (plus <code>enumerator</code>), and 
+correctly observe the <code>Prototype</code> field.
+</p>
+
+<pre><dfn id="struct_SEE_native">struct SEE_native</dfn> {
+        struct SEE_object       object;
+        struct SEE_property *   properties[SEE_NATIVE_HASHLEN];
+};</pre>
+
+<p>
+An application can create host objects based on native objects.
+First, place a <code>struct SEE_native</code> at the beginning of a
+structure:
+</p>
+
+<pre>struct some_host_object {
+        struct SEE_native       native;
+        int                     host_specific_info;
+};</pre>
+
+<p>
+Then, use the following objects methods, either directly in the 
+<code>SEE_objectclass</code> structure, or by calling them indirectly 
+from method implementations:
+</p>
+
+<ul>
+  <li><code>SEE_native_get()</code>
+  <li><code>SEE_native_put()</code>
+  <li><code>SEE_native_canput()</code>
+  <li><code>SEE_native_hasproperty()</code>
+  <li><code>SEE_native_delete()</code>
+  <li><code>SEE_native_defaultvalue()</code>
+  <li><code>SEE_native_enumerator()</code>
+</ul>
+
+<p>
+It is very important that you initialize the <code>native</code>
+field when constructing your host object.
+Do this using the <code>SEE_native_init()</code> function.
+</p>
+
+<pre>void <dfn id="SEE_native_init">SEE_native_init</dfn>(struct SEE_native *obj, struct SEE_interpreter *i,
+                const struct SEE_objectclass *obj_class, 
+                struct SEE_object *prototype);</pre>
+
+<h3 id="cfunction">6.5 C function objects</h3>
+
+<p>
+The host application will likely want a C function to be able
+to be called directly from a user script.
+SEE supports this by wrapping C function pointers in 'cfunction' objects.
+
+<p>
+The convenience function <code>SEE_cfunction_make()</code> constructs
+an object whose
+<code>Prototype</code> field points to
+<code class="js">Function.prototype</code>,
+and whose <code>objectclass</code>'s <code>Call</code> method points to a 
+given C function that contains the desired code.
+</p>
+
+<p>
+The <code>SEE_cfunction_make()</code> takes a pointer to the C 
+function, and an integer indicating the expected number of arguments. 
+The integer becomes the function object's
+<code class="js">length</code> property, which is advisory only.
+</p>
+
+<p>
+Function objects are usually added as a property of another object.
+Remember that top level functions in ECMAScript (like 
+<code class="js">parseInt()</code> are actually properties of the 
+unamed [[Global]] object.
+</p>
+
+<pre>struct SEE_object *<dfn id="SEE_cfunction_make">SEE_cfunction_make</dfn>(struct SEE_interpreter *interp,
+                SEE_call_fn_t func, struct SEE_string *name, int argc);</pre>
+
+<p class="note">
+&#9888; Note:
+Objects returned by <code>SEE_cfunction_make()</code> should really only 
+be used in the interpreter context in which they were created, but the 
+current version of SEE does not check for this. (Because cfunction objects 
+are essentially read-only after construction, and if memory allocation
+operates independently of the interpreters, sharing cfunction objects 
+across interpreters will be OK, but it is not recommended for future
+portability.)
+</p>
+
+<div class="example">Example:
+This C function is 
+the actual code behind the <code class="js">Math.sqrt</code> object:
+<pre><i>/* Implementation of Math.sqrt() method */</i>
+static void
+math_sqrt(interp, self, thisobj, argc, argv, res)
+        struct SEE_interpreter *interp;
+        struct SEE_object *self, *thisobj;
+        int argc;
+        struct SEE_value **argv, *res;
+{
+        struct SEE_value v;
+
+        if (argc == 0)
+                SEE_SET_NUMBER(res, SEE_NaN);
+        else {
+                SEE_ToNumber(interp, argv[0], &amp;v);
+                SEE_SET_NUMBER(res, sqrt(v.u.number));
+        }
+}</pre>
+</div>
+
+<p>
+When attaching cfunctions to an object, you may find
+the <code>SEE_CFUNCTION_PUTA()</code> macro useful.
+It performs both the <code>SEE_cfunction_make()</code> and
+<code>SEE_OBJECT_PUT()</code> operations in one step.
+Its signature is:
+
+<pre>void <dfn id="SEE_CFUNCTION_PUTA">SEE_CFUNCTION_PUTA</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_object *obj, const char *name,
+                SEE_call_fn_t func, int length, int attr);</pre>
+
+<p>
+The C function implementation must conform to the <code>SEE_call_fn_t</code>
+signature:
+</p>
+
+<pre>typedef void (*<dfn id="SEE_call_fn_t">SEE_call_fn_t</dfn>)(struct SEE_interpreter *i,
+                struct SEE_object *obj, struct SEE_object *thisobj,
+                int argc, struct SEE_value **argv,
+                struct SEE_value *res);</pre>
+
+<div class="example">Example:
+If you wanted to be able to call the C function <code>math_sqrt()</code> using
+the ECMAScript expression <code class="js">sqrt()</code> from the [[Global]] 
+name space, then use:
+<pre>SEE_CFUNCTION_PUTA(interp, interp-&gt;Global, "sqrt", math_sqrt, 1, 0);</pre>
+</div>
+
+<p>
+<!-- from <code>SEE_OBJECT_CALL</code> -->
+The arguments to this function
+are described in the following table:
+</p>
+
+<table>
+<thead>
+<tr><th>Argument</th>
+    <th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td><code>interp</code></td>
+    <td>the current interpreter context</td></tr>
+<tr><td><code>self</code></td>
+    <td>a pointer to the object called 
+        (<code class="js">Math.sqrt</code> here)</td></tr>
+<tr><td><code>thisobj</code></td>
+    <td>the <code class="js">this</code> object 
+        (the <code class="js">Math</code> object here)
+	- may be <code>NULL</code></td></tr>
+<tr><td><code>argc</code></td>
+    <td>number of arguments</td></tr>
+<tr><td><code>argv</code></td>
+    <td>array of value pointers, of length <code>argc</code></td></tr>
+<tr><td><code>res</code></td>
+    <td>uninitialised value location in which to store the result</td></tr>
+</tbody>
+</table>
+
+<p>
+A common convention in all ECMAScript functions is that unspecified
+arguments should be treated as <code class="js">undefined</code>, and
+extraneous arguments should just be ignored.
+If the function uses <code>thisobj</code>, 
+it should check any assumptions made about it, especially if it is expected
+to be a host object.
+This is because method functions can easily be attached to
+other objects by user code, and
+under other circumstances, the function can be called in a way that
+makes the <code>thisobj</code> pointer <code>NULL</code>.
+</p>
+
+<p>
+When writing cfunctions, you can use the <code>SEE_parse_args()</code>
+convenience function to make argument processing easier.
+This function takes a format string and converts arguments according to
+the table below.
+It can throw a <code class="js">TypeError</code> exception if a
+conversion error occurs.
+
+<pre>void <dfn id="SEE_parse_args">SEE_parse_args</dfn>(struct SEE_interpreter *interp,
+        int argc, struct SEE_value **argv, const char *fmt, ...);
+void <dfn id="SEE_parse_args_va">SEE_parse_args_va</dfn>(struct SEE_interpreter *interp,
+        int argc, struct SEE_value **argv, const char *fmt, va_list ap);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_parse_args()</code> function first appeared in API 2.0,
+and <code>SEE_parse_args_va()</code> in 3.0.
+</p>
+
+<table>
+<thead>
+<tr><th>Format</th>
+    <th>Parameter type</th>
+    <th>Conversion applied</th>
+    <th>Result when <code class="js">undefined</code></th></tr>
+</thead>
+<tbody>
+<tr><td><code>a</code></td>
+    <td><code>char **</code>
+    <td><code><a href="#SEE_ToString">SEE_ToString</a>()</code>,
+        then into an ASCII C string</td>
+    <td><code>"undefined"</code></td>
+<tr><td><code>A</code></td>
+    <td><code>char **</code>
+    <td><code>NULL</code> if <code class="js">undefined</code>,
+        otherwise the same as format '<code>a</code>'</td>
+    <td><code>NULL</code></td>
+<tr><td><code>b</code></td>
+    <td><code>int *</code>
+    <td><code><a href="#SEE_ToBoolean">SEE_ToBoolean</a>()</code>,
+	then to <code>0</code> or <code>1</code></td>
+    <td><code>0</code></td>
+<tr><td><code>h</code></td>
+    <td><code>SEE_uint16_t *</code>
+    <td><code><a href="#SEE_ToUint16">SEE_ToUint16</a>()</code></td>
+    <td><code>0</code></td>
+<tr><td><code>i</code></td>
+    <td><code>SEE_int32_t *</code>
+    <td><code><a href="#SEE_ToInt32">SEE_ToInt32</a>()</code></td>
+    <td><code>0</code></td>
+<tr><td><code>n</code></td>
+    <td><code>SEE_number_t *</code>
+    <td><code><a href="#SEE_ToNumber">SEE_ToNumber</a>()</code></td>
+    <td><code>SEE_NaN</code></td>
+<tr><td><code>o</code></td>
+    <td><code>struct SEE_object **</code>
+    <td><code><a href="#SEE_ToObject">SEE_ToObject</a>()</code></td>
+    <td><code class="js">TypeError</code></td>
+<tr><td><code>O</code></td>
+    <td><code>struct SEE_object **</code>
+    <td><code>NULL</code> if <code class="js">undefined</code>
+    	or <code class="js">null</code>,
+        otherwise the same as format '<code>o</code>'</td>
+    <td><code>NULL</code></td>
+<tr><td><code>p</code></td>
+    <td><code>struct SEE_value *</code>
+    <td><code><a href="#SEE_ToPrimitive">SEE_ToPrimitive</a>()</code></td>
+    <td><code class="js">undefined</code></td>
+<tr><td><code>s</code></td>
+    <td><code>struct SEE_string **</code>
+    <td><code><a href="#SEE_ToString">SEE_ToString</a>()</code></td>
+    <td><code class="js">"undefined"</code></td>
+<tr><td><code>u</code></td>
+    <td><code>SEE_uint32_t *</code>
+    <td><code><a href="#SEE_ToUint32">SEE_ToUint32</a>()</code></td>
+    <td><code>0</code></td>
+<tr><td><code>v</code></td>
+    <td><code>struct SEE_value *</code>
+    <td>the argument is copied without conversion</td>
+    <td><code class="js">undefined</code></td>
+<tr><td><code>x</code></td>
+    <td></td>
+    <td>the argument is ignored</td>
+    <td></td>
+<tr><td><code>z</code></td>
+    <td><code>char **</code>
+    <td><code><a href="#SEE_ToString">SEE_ToString</a>()</code>,
+        then into a UTF-8 C string</td>
+    <td><code>"undefined"</code></td>
+<tr><td><code>Z</code></td>
+    <td><code>char **</code>
+    <td><code>NULL</code> if <code class="js">undefined</code>,
+        otherwise the same as format '<code>z</code>'</td>
+    <td><code>NULL</code></td>
+<tr><td><code>|</code></td>
+    <td></td>
+    <td>optional argument marker
+<tr><td><code>.</code></td>
+    <td></td>
+    <td>throws a <code class="js">TypeError</code> on further
+        arguments</td>
+<tr><td>space</td>
+    <td></td>
+    <td>space character is ignored</td>
+</tbody>
+</table>
+
+<p>The optional argument marker ('<code>|</code>') disables
+storing a result when the argument is 
+<code class="js">undefined</code> or not provided by the caller.
+This allows storage to be initialised to default values.
+
+<p>The '<code>a</code>' and '<code>A</code>' formats will
+throw a <code class="js">TypeError</code> if the string contains
+non-ASCII characters. 
+The '<code>a</code>', '<code>A</code>',
+'<code>z</code>' and '<code>Z</code>' formats will throw
+an error if the resulting string would contain a null character.
+
+<div class="example">Example:
+Using <code>SEE_parse_args()</code>
+in an alternate implementation of
+<code class="js">Math.sqrt()</code> method:
+
+<pre>static void
+math_sqrt_possible(interp, self, thisobj, argc, argv, res)
+        struct SEE_interpreter *interp;
+        struct SEE_object *self, *thisobj;
+        int argc;
+        struct SEE_value **argv, *res;
+{
+        SEE_number_t n;
+
+	<b>SEE_parse_args</b>(interp, argc, argv, "n", &amp;n);
+	SEE_SET_NUMBER(res, sqrt(n));
+}</pre>
+</div>
+
+<p>
+A corresponding convenience function is provided for calling
+SEE function objects.
+
+<pre>void <dfn id="SEE_call_args">SEE_call_args</dfn>(struct SEE_interpreter *interp,
+        struct SEE_object *func, struct SEE_object *thisobj, 
+	struct SEE_value *ret, const char *format, ...);
+void <dfn id="SEE_call_args_va">SEE_call_args_va</dfn>(struct SEE_interpreter *interp,
+        struct SEE_object *func, struct SEE_object *thisobj, 
+	struct SEE_value *ret, const char *format, va_list ap);</pre>
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_call_args()</code> 
+and <code>SEE_call_args_va()</code> functions first appeared in API 3.0.
+
+<p>
+The <code>SEE_call_args()</code> function
+constructs a value argument array and then invokes
+<code>SEE_OBJECT_CALL()</code>.
+The format argument is explained
+in the following table.
+
+<table>
+<thead>
+<tr><th>Format</th>
+    <th>Parameter type</th>
+    <th>Conversion applied</th>
+    <th>Value generated</th>
+</thead>
+<tbody>
+<tr><td><code>a</code></td>
+    <td><code>char *</code>
+    <td>ASCII C string
+    <td>string</td>
+<tr><td><code>A</code></td>
+    <td><code>char *</code>
+    <td>ASCII C string, or NULL
+    <td>string or <code class="js">undefined</code>
+<tr><td><code>b</code></td>
+    <td><code>int</code></td>
+    <td>none</td>
+    <td>boolean</td>
+<tr><td><code>h</code></td>
+    <td><code>SEE_uint16_t</code></td>
+    <td>none</td>
+    <td>number</td>
+<tr><td><code>i</code></td>
+    <td><code>SEE_int32_t</code></td>
+    <td>none</td>
+    <td>number</td>
+<tr><td><code>l</code></td>
+    <td></td>
+    <td>generates a <code class="js">null</code> value</td>
+    <td><code class="js">null</code></td>
+<tr><td><code>n</code></td>
+    <td><code>SEE_number_t</code></td>
+    <td>none</td>
+    <td>number</td>
+<tr><td><code>o</code></td>
+    <td><code>struct SEE_object *</code></td>
+    <td>none</td>
+    <td>object</td>
+<tr><td><code>O</code></td>
+    <td><code>struct SEE_object *</code></td>
+    <td>none, unless <code>NULL</code></td>
+    <td>object or <code class="js">undefined</code></td>
+<tr><td><code>p</code></td>
+    <td><code>struct SEE_value *</code></td>
+    <td><code><a href="#SEE_ToObject">SEE_ToObject</a>()</code></td>
+    <td>object</td>
+<tr><td><code>s</code></td>
+    <td><code>struct SEE_string *</code></td>
+    <td>none, unless <code>NULL</code></td>
+    <td>string or <code class="js">undefined</code></td>
+<tr><td><code>u</code></td>
+    <td><code>SEE_uint32_t</code></td>
+    <td>none</td>
+    <td>number</td>
+<tr><td><code>v</code></td>
+    <td><code>struct SEE_value *</code></td>
+    <td>the argument pointer is copied without conversion</td>
+    <td>same as input parameter type</td>
+<tr><td><code>x</code></td>
+    <td></td>
+    <td>generates an <code class="js">undefined</code> value</td>
+    <td><code class="js">undefined</code></td>
+<tr><td><code>z</code></td>
+    <td><code>char *</code></td>
+    <td>UTF-8 C string</td>
+    <td>string</td>
+<tr><td><code>Z</code></td>
+    <td><code>char *</code></td>
+    <td>UTF-8 C string or <code>NULL</code></td>
+    <td>string or <code class="js">undefined</code></td>
+<tr><td><code>*</code></td>
+    <td><code>unsigned char *, SEE_size_t</td>
+    <td>8-bit binary buffer copied byte-for-byte</td>
+    <td>string</td>
+<tr><td>space</td>
+    <td></td>
+    <td>space character is ignored</td>
+</tbody>
+</table>
+
+<p>
+A cfunction may call 'back' into SEE using <code>SEE_Global_eval()</code>.
+In other words, cfunctions may be re-entrant. 
+The traceback context is automatically maintained by SEE.
+</p>
+
+<h3 id="function">6.6 User function objects</h3>
+
+<p>
+Occasionally, a host application will wish to take some user text and 
+create a callable function object from it. An example of this problem is 
+in attaching the JavaScript code from HTML attributes onto form 
+elements of a web page.
+One way to achieve this is to invoke the <code class="js">Function</code> 
+constructor object with the
+<code>SEE_OBJECT_CONSTRUCT()</code> macro, passing it the formal arguments
+text and body text as arguments.
+(See <a href="#ref-ecma">the ECMAScript standard</a> for details on the
+<code class="js">Function</code> constructor.)
+</p>
+
+<p>
+Another way, that is more convenient if the user text is available as 
+an input stream, is to use the <code>SEE_Function_new()</code> function:
+</p>
+
+<pre>struct SEE_object *<dfn id="SEE_Function_new">SEE_Function_new</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_string *name, struct SEE_input *param_input, 
+                struct SEE_input *body_input);</pre>
+
+<p>
+where any of the the <code>name</code>, <code>param_input</code> and
+<code>body_input</code> parameters may be <code>NULL</code>
+(indicating to use the empty string).
+</p>
+
+<p>
+The returned function object may be called with the 
+<code>SEE_OBJECT_CALL()</code> macro.
+</p>
+
+<p class="note">
+&#9888; Note:
+Although the example above uses <code>SEE_Function_new()</code>, if you 
+really are using SEE to build a web browser, this is probably
+not the best way to approach it. For implementing event handlers such 
+as "onclick", you should instead look at using <code>SEE_eval()</code>
+on a string-valued attribute, and/or <code>SEE_OBJECT_CALL()</code> for
+when the attribute is exposed through a DOM.
+</p>
+
+<h3 id="error">6.7 Errors and Error objects</h3>
+
+<p>
+Host applications sometimes need to convey errors to ECMAScript programs.
+Errors in ECMAScript are typically indicated by throwing an exception
+with an object value.  The thrown objects conventionally have 
+<code class="js">Error.prototype</code> somewhere in their prototype chain, 
+and provide a <code class="js">message</code> and <code class="js">name</code> 
+property which the <code class="js">Error.prototype</code> reads to generate
+a human-readable error message.
+</p>
+
+<p>
+Host applications can conveniently construct and throw error exceptions using 
+the following macros:
+</p>
+
+<pre>void <dfn id="SEE_error_throw">SEE_error_throw</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *error_constructor,
+                const char *fmt, ...);
+void <dfn id="SEE_error_throw_va">SEE_error_throw_va</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *error_constructor,
+                const char *fmt, va_list ap);
+void <dfn id="SEE_error_throw_string">SEE_error_throw_string</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_object *error_constructor,
+                struct SEE_string *string);
+void <dfn id="SEE_error_throw_sys">SEE_error_throw_sys</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *error_constructor,
+                const char *fmt, ...);
+void <dfn id="SEE_error_throw_sys_va">SEE_error_throw_sys_va</dfn>(struct SEE_interpreter *interp,
+                struct SEE_object *error_constructor,
+                const char *fmt, va_list ap);</pre>
+
+<p>
+These convenience macros construct a new error object, and throw it as an 
+exception using <code>SEE_THROW()</code>.
+The object thrown is given a <code class="js">message</code>
+string property that reflects the rest of the arguments provided 
+to the called macro.
+The <code>SEE_error_throw_sys()</code> macro works like
+<code>SEE_error_throw()</code> but appends a textual 
+description of <code>errno</code> using <code>strerror()</code>.
+</p>
+
+<p>
+The <code>error_constructor</code> argument should be one of the error 
+constructor objects found in the <code>SEE_interpreter</code> structure:
+</p>
+
+<table>
+<thead>
+<tr><th>Member</th>
+    <th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td><code>Error</code></td>
+    <td>runtime error</td></tr>
+<tr><td><code>EvalError</code></td>
+    <td>error in <code class="js">eval()</code></td></tr>
+<tr><td><code>RangeError</code></td>
+    <td>numeric argument has exceeded allowable range</td></tr>
+<tr><td><code>ReferenceError</code></td>
+    <td>invalid reference was detected</td></tr>
+<tr><td><code>SyntaxError</code></td>
+    <td>parsing error</td></tr>
+<tr><td><code>TypeError</code></td>
+    <td>actual type of an operand different to that expected</td></tr>
+<tr><td><code>URIError</code></td>
+    <td>error in a global URI handling function</td></tr>
+</tbody>
+</table>
+
+<div class="example">Example:
+of how to throw a basic error:
+<pre>if (something_is_wrong)
+        SEE_error_throw(interp, interp-&gt;Error, "something is wrong!");</pre>
+</div>
+
+<p>
+Although <code>Error</code> is usually sufficient for most errors,
+host applications can create their own error constructor object with the
+<code>SEE_Error_make()</code> convenience function. Only one constructor
+of the same name should be created per interpreter.
+</p>
+
+<pre>struct SEE_object *<dfn id="SEE_Error_make">SEE_Error_make</dfn>(struct SEE_interpreter *interp,
+                struct SEE_string *name);</pre>
+
+<h2 id="modules">7 Modules</h2>
+
+<p>
+SEE provides a module abstraction for host implementations that want
+a structured approach to adding their objects into a SEE interpreter.
+</p>
+
+<p class="note">
+&#9888; Note:
+The module abstraction was introduced in API 2.0.
+</p>
+
+<p>
+A <code>struct SEE_module</code> is a collection of functions
+that are automatically called by SEE at various stages of each intepreter 
+initialisation. The module may initialise and insert its own objects into 
+each interpreter before user scripts can be run.
+</p>
+
+<pre><dfn id="struct_SEE_module">struct SEE_module</dfn> {
+        SEE_uint32_t      magic;
+        const char       *name;
+        const char       *version;
+        unsigned int      index;        <i>/* Set by SEE_module_add() */</i>
+        int             (*mod_init)(void);
+        void            (*alloc)(struct SEE_interpreter *);
+        void            (*init)(struct SEE_interpreter *);
+};</pre>
+
+<p>
+The <code>magic</code> field must be initialised to the constant value
+<code>SEE_MODULE_MAGIC</code>.
+The <code>name</code> field is currently unused, but should consist
+of a short, unique identifier corresponding to the name of the module.
+The <code>version</code> field is currently unused, and should be
+set to <code>NULL</code>.
+The <code>index</code> field is set by the <code>SEE_module_add()</code>
+function as the module is added to SEE. 
+Each added module is given a unique index. Do not change the index.
+</p>
+
+<p>
+The <code>mod_init</code> function pointer is called immediately the module
+is loaded (by <code>SEE_module_add()</code>). 
+This is an opportunity for
+a module to obtain pointers to globally interned strings.
+(See <code>SEE_intern_global()</code> in <a href="#staticstr">&sect;5.3.2</a>.)
+The <code>mod_init</code> function is expected to return zero to indicate
+a successful initialisation.
+This pointer may be set to <code>NULL</code> if unneeded.
+</p>
+
+<p>
+The <code>alloc</code> function is called after built-in objects have
+been allocated but before any other modules or built-in objects have been
+initialised. It is dangerous to make use of the interpreter at this stage.
+The main use of the <code>alloc</code> function pointer is to allow 
+circular dependencies between modules. 
+For most modules, the <code>alloc</code> pointer can be left as 
+<code>NULL</code>.
+</p>
+
+<p>
+The <code>init</code> function is called after all built-in objects and
+modules have been allocated, and after all built-in objects have been
+initialised.
+It is safe to make use of the interpreter built-ins at this stage, but
+not to make use of other modules.
+For most modules, the <code>init</code> function is the place to
+insert newly-created host objects into a pristine 
+<code>interp-&gt;Global</code>.
+</p>
+
+<p>
+A pointer to your module structure must be passed to 
+<code>SEE_module_add()</code> before any interpreters are created.
+It is not possible to dynamically add modules once interpreters have
+been created because of the way the global intern table is managed.
+(If your module does not modify the global intern table, and your system
+is single-threaded, then you may be able to add the module dynamically.)
+</p>
+
+<p>Finally, per-interpreter private storage for each module is 
+provided through the <code>SEE_MODULE_PRIVATE()</code> macro.
+This macro evaluates to a <code>void *</code> lvalue that may be 
+assigned dynamic storage during <code>alloc</code>.
+</p>
+
+<pre>const SEE_uint32_t <dfn id="SEE_MODULE_MAGIC">SEE_MODULE_MAGIC</dfn>;
+int <dfn id="SEE_module_add">SEE_module_add</dfn>(struct SEE_module *module);
+void *<dfn id="SEE_MODULE_PRIVATE">SEE_MODULE_PRIVATE</dfn>(struct SEE_interpreter *, struct SEE_module *);</pre>
+
+<p>
+The <code>SEE_module_add()</code> function adds a module to the
+global list of modules initialised whenever a new interpreter
+is constructed. This function returns zero if the module was added
+successfully. It returns <code>-1</code> if an internal error occurred.
+Otherwise it returns the same non-zero value that the module's 
+<code>mod_init</code> function hook returned.
+Once added, a module cannot be removed.
+</p>
+
+<p>
+The interested reader is referred to the <i>mod_File.c</i> module example
+under the <i>shell</i> directory of the SEE source code.
+</p>
+
+<h2 id="compat">8 Compatibility features</h2>
+<h3 id="compatjs">8.1 Compatibility with other JavaScript implementations</h3>
+
+<p>
+SEE provides backward-compatibility with earlier versions of JavaScript
+and JScript.
+These features ought never be used, since JavaScript program authors should be
+mindful of standards.
+Nevertheless, this section documents the compatibility modes that SEE supplies.
+</p>
+
+<p>
+The behaviour of the SEE library is modified on a per-interpreter basis,
+by passing special flags to a variant of the interpreter's initialisation
+routine, <code>SEE_interpreter_init_compat()</code>. This function otherwise
+behaves just like <code>SEE_interpreter_init()</code>
+(see <a href="#interp">&sect;2</a>).
+</p>
+
+<pre>void <dfn id="SEE_interpreter_init_compat">SEE_interpreter_init_compat</dfn>(struct SEE_interpreter *interp,
+                int flags);</pre>
+
+<p>The <code>flags</code> parameter is a bitwise OR of the constants
+described in the following table.
+</p>
+
+<p class="note">
+&#9888; Note:
+API 2.0 removed the <code>SEE_COMPAT_UNDEFDEF</code> 
+and <code>SEE_COMPAT_EXT1</code> flags and
+introduced the <code>SEE_COMPAT_JSxx</code> flags.
+</p>
+
+<table>
+<tr>
+<th>Flag</th>
+<th>Behaviour</th>
+</tr>
+
+<tr><td><code>SEE_COMPAT_STRICT</code>
+<td>This is not really a flag. It is defined as zero, and can be used
+when no compatibility flags are wanted. SEE will operate in its default
+ECMA compliance mode.
+
+<tr><td><code>SEE_COMPAT_UTF_UNSAFE</code>
+<td>Treats overlong UTF-8 encodings as valid unicode characters.
+You should never need this.
+
+<tr><td><code>SEE_COMPAT_262_3B</code>
+<td>
+Enables optional features from Appendix B of ECMA-262 ed3, namely:
+<ul>
+<li>defines <code class="js">Date.prototype.toGMTString()</code>, equivalent to <code class="js">toUTCString()</code>
+<li>defines <code class="js">Date.prototype.getYear()</code> and <code class="js">Date.setYear()</code>
+<li>defines <code class="js">escape()</code> and <code class="js">unescape()</code> in the global object
+<li>defines <code class="js">String.prototype.substr()</code>
+</ul>
+
+<tr><td><code>SEE_COMPAT_ERRATA</code>
+<td>
+Enables compatibility with Mozilla's 
+<a href="http://www.mozilla.org/js/language/E262-3-errata.html">ECMAScript Edition 3 Errata</a>.
+(Added in API 3.0)
+<ul>
+<li><code class="js">String.prototype.match()</code> returns <code class="js">null</code> instead of an empty array when there are no matches.
+</ul>
+
+<tr><td><code>SEE_COMPAT_SGMLCOM</code>
+<td>
+        This flag makes the lexical analyser stage 
+        treat the 4-character sequence
+        '<code class="js">&lt;!--</code>' 
+	(at any place)
+	and the 3-character sequence
+        '<code class="js">--&gt;</code>' 
+	(when preceded by whitespace only)
+	as if they were the
+        '<code class="js">//</code>' comment introducer. 
+        This is useful when parsing HTML SCRIPT elements.
+
+<tr><td><code>SEE_COMPAT_JS11</code>
+<td>
+        Enables JavaScript 1.1 compatibility:
+<ul>
+<li>    The string representation of a bad date 
+        (e.g. <code class="js">String(new Date(NaN))</code>) 
+        is returned as the string
+        <code class="js">"Invalid Date"</code>,
+        instead of <code class="js">"NaN"</code>.
+
+<li>    Calling <code class="js">Date</code> as a constructor or function
+        will recognise Netscape-style date strings of which one
+        form is '<code class="js">1/1/1999 12:30 AM</code>'.
+<li>
+        Conversions from a date to a string will include the timezone.
+
+<li>    Native objects synthesize a property called
+        <code class="js">__proto__</code> with the same
+        value as the internal [[Prototype]] property 
+        (or <code class="js">null</code>). Assignments
+        to <code class="js">__proto__</code> are accepted if 
+        they don't cause a cycle. 
+	[EXT:7 + EXT:8]
+
+<li>    Invalid <code class="js">\u</code> or <code class="js">\x</code>
+        escapes will treat the leading
+        <code class="js">\u</code> or <code class="js">\x</code> as
+        a single-letter escape.
+        This would be a lexical analyser error under ECMA.
+
+<li>    Regular expression instances have a [[Call]] property, which
+        is essentially equivalent to <code class="js">RegExp.prototype.exec()</code>.
+        This has the side-effect of changing what the <code class="js">typeof</code>
+        operator returns when applied to regular expression instances.
+
+<li>    The <code class="js">String.prototype</code> object 
+        is given the following methods that simply return the string, and
+        ignore their arguments:
+        <code class="js">anchor</code>,
+        <code class="js">big</code>,
+        <code class="js">blink</code>,
+        <code class="js">bold</code>,
+        <code class="js">fixed</code>,
+        <code class="js">fontcolor</code>,
+        <code class="js">fontsize</code>,
+        <code class="js">italics</code>,
+        <code class="js">link</code>,
+        <code class="js">small</code>,
+        <code class="js">strike</code>,
+        <code class="js">sub</code> and
+        <code class="js">sup</code>.
+        The <code class="js">substr</code> method is also added.
+
+<!--- old EXT1 stuff starts here -->
+
+<li>    Enumerating over properties is done in a sorted fashion. 
+        During sort, property names are ordered arithmetically if they
+        are suitable as array indicies, otherwise they are ordered
+        lexicographically. 
+	[EXT:1]
+
+<li>    SEE's lexical analyser will recognise octal integers (i.e.
+        integers starting with '0') and will fall back to decimal if
+        the token contains
+        a non-octal digit.
+	Same with parseInt().
+	[EXT:4 + EXT:18]
+
+<li>    Coercing native values that do not have a 
+        [[DefaultValue]] internal
+        property will return an object-unique string, instead of throwing
+        a <code class="js">TypeError</code>.
+	[EXT:5 + EXT:6]
+
+
+<li>    <code class="js">Function.prototype</code> will not have a
+        <code class="js">prototype</code> property of its own.
+	[EXT:9]
+
+<li>    <code class="js">Function.prototype.toString()</code>
+        applied to built-in functions and
+        constructors (which are not function instances) will return a bogus
+        do-nothing FunctionDeclaration instead of throwing a
+        <code class="js">TypeError</code>.
+	[EXT:13]
+
+<li>    The global object has its property [[Prototype]] property set to
+        <code class="js">Object.prototype</code>,
+        effectively making all its properties available to the global scope,
+        but having the good side effect of allowing 
+        <code class="js">toString()</code> to
+        work anywhere.
+	[EXT:17]
+
+<li>    Calling <code class="js">eval()</code> with a 
+        <code class="js">this</code> different to the global object executes
+        its contents with the scope and variable object always set to
+        <code class="js">this</code>
+        (instead of inheriting the caller's context as per
+        s10.2.2 of the standard).
+	[EXT:23]
+
+<li>    Native functions assign themselves an
+        <code class="js">arguments</code>
+        property when called, so that the old idiom of using
+        <code class="js">f.arguments</code> inside the function 
+        <code class="js">f</code> will work.
+	[EXT:2 + EXT:11 + EXT:12]
+
+<li>    The system-generated <code class="js">arguments</code> object
+        created inside a function has a default-value (a comma-separated
+        string representing the arguments), instead of raising a
+        <code class="js">TypeError</code>. The upshot of this is that
+        <code class="js">arguments</code> can be coerced into a string.
+	[EXT:14]
+
+<li>
+        Reserved words can be used as identifiers (with a warning message)
+	[EXT:3]
+<li>
+        Invalid quantifiers in regular expressions
+        (e.g. <code>/a{12x}/</code>) are treated as literals instead
+        of raising a SyntaxError.
+	[EXT:24]
+<li>
+        <code class="js">RegExp</code> supports the [[HasInstance]] operator,
+        meaning that <code class="js">/x*/ instanceof RegExp</code>
+        will work.
+	[EXT:20]
+<li>
+        Change the token grammar to recognise simple character classes 
+        in literal regular expressions.
+        This means the expression <code class="js">/[/]/</code> will
+        be parsed as if it were <code class="js">/[\/]/</code>.
+	[EXT:15]
+
+<li>	In regex character classes,
+	three digit octal escape sequences beginning with 
+        <code class="js">\0</code> are understood.
+	[EXT:25]
+
+<li>
+        Regex execution leaves results in the 
+        <code class="js">RegExp</code> object, in the properteis
+        <code class="js">$1</code> ...
+        <code class="js">$9</code>,
+        <code class="js">$_</code>,
+        <code class="js">$*</code>,
+        <code class="js">$+</code>,
+        <code class="js">$`</code>,
+        <code class="js">$'</code>,
+        <code class="js">global</code>,
+        <code class="js">ignoreCase</code>,
+        <code class="js">input</code>,
+        <code class="js">lastIndex</code>,
+        <code class="js">lastMatch</code>,
+        <code class="js">lastParen</code>,
+        <code class="js">leftContext</code>,
+        <code class="js">multiline</code>,
+        <code class="js">rightContext</code>, and
+        <code class="js">source</code>.
+	[EXT:21]
+
+<li>
+	The global function escape() returns uppercase hex digits,
+	instead of lowercase. 
+	[EXT:19]
+
+<li>
+        <code class="js">Array.join(undefined)</code> uses
+        the string '<code class="js">undefined</code>'
+        as the join string instead of '<code class="js">,</code>'.
+        However when called without arguments will still use
+        '<code class="js">,</code>'.
+        Also, <code class="js">String.split(undefined)</code> will
+        work in a corresponding reverse way.
+	[EXT:16]
+
+<li>
+	String literals may contain LineTerminators only if escaped with
+	backslash, in which case the escaped LineTerminator is ignored.
+
+</ul>
+
+
+<tr><td><code>SEE_COMPAT_JS12</code>
+<td>
+        Enables JavaScript 1.2 compatibility:
+<ul>
+<li>    Includes all JavaScript 1.1 compatibility behaviour.
+<li>
+        The constructor <code class="js">new Array()</code> when given
+        a single numeric argument will return an array consisting of
+        just that argument. e.g. <code class="js">new Array(3)</code>
+        is the same as <code class="js">[3]</code>. 
+        This differs from the ECMA standard where an array of length 3
+        would be created, viz
+        <code class="js">[undefined,undefined,undefined]</code>.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>
+        <code class="js">Boolean</code> instance objects are converted
+        to their logical value in expressions that are converted to boolean.
+        This differs from the ECMA standard where all object instances
+        are to be converted to <code class="js">true</code>.
+        For example, the condition in the statement 
+        <code class="js">if (new Boolean(false))<code> statement, will
+        be evaluated as <code class="js">true</code> in ECMA, and 
+        <code class="js">false</code> by JavaScript 1.2.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>
+        <code class="js">Array.prototype.toString()</code> and 
+        <code class="js">Object.prototype.toString()</code> return
+        string forms in literal notation, 
+        e.g. <code class="js">"[1,2,3]"</code>, and
+        <code class="js">"{a:1, b:2}"</code>.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>    <code class="js">String.prototype.split()</code> when
+        operating on the empty string <code class="js">""</code>
+        will return 
+        an empty array <code class="js">[]</code>
+        instead of
+        an array consisting of the empty string, <code class="js">[""]</code>.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>    <code class="js">String.prototype.split()</code>, when
+        given a delimiter of exactly one space character
+        (<code class="js">" "</code>), will
+        strip the leading whitespace from the string, and then split on
+        <code class="js">/\s+/</code>.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>	The <code class="js">Number()</code> function when applied to
+	an array will return the array length, instead of 
+	<code class="js">NaN</code>.
+        (JavaScript 1.2 <strong>only</strong>.)
+
+<li>	The <code class="js">Object.prototype.eval()</code> function
+	is equivalent to the global <code class="js">eval()</code> function
+	and sets <code class="js">this</code> to the object expected.
+        (JavaScript 1.1 and 1.2 <strong>only</strong>.)
+
+</ul>
+
+<tr><td><code>SEE_COMPAT_JS13</code>
+<td>
+        Enables JavaScript 1.3 compatibility:
+<ul>
+<li>    Includes JavaScript 1.1&mdash;1.2 compatibility behaviour.
+</ul>
+
+<tr><td><code>SEE_COMPAT_JS14</code>
+<td>
+        Enables JavaScript 1.4 compatibility:
+<ul>
+<li>    Includes JavaScript 1.1&mdash;1.3 compatibility behaviour.
+<li>	The expression <code class="js">v instanceof o</code> 
+	behaves differently when <code class="js">o</code> has no
+	[[HasInstance]] method. Instead of throwing an error, the
+	[[Prototype]] chain of <code class="js">v</code> is searched
+	for <code class="js">o.prototype</code>. If found, the expression
+	results in true, otherwise false.
+<ul>
+</ul>
+
+<tr><td><code>SEE_COMPAT_JS15</code>
+<td>
+        Enables JavaScript 1.5 compatibility:
+<ul>
+<li>    Includes JavaScript 1.1&mdash;1.4 compatibility behaviour.
+<li>
+        Permit conditional function declarations of the form
+        <code class="js">if (1) function foo (args) { body; }</code>.
+        The statement becomes syntactically identical to
+        <code class="js">if (1) foo = function foo (args) { body; }</code>.
+</ul>
+
+</table>
+
+<p>
+SEE now always optimises empty function calls
+by skipping the expensive 
+process of extending the scope chain, creating an
+<code class="js">arguments</code> property, etc. and just
+synthesizing <code class="js">undefined</code> for the call, instead.
+This was an optional optimisation prior to SEE 2.0, but is now always
+in effect.
+
+<h3 id="compatsee">8.2 Compatibility with future versions of SEE</h3>
+
+<p>
+As distributed, SEE has two different version numbers:
+<ol>
+<li>the package, release and shared library version number (e.g. 2.0)
+<li>the API version number (e.g. 1.0)
+</ol>
+
+<p>
+The library version is available to programs to query through the
+<code>SEE_version()</code> function. 
+This function returns a pointer to a static C string containing 
+identifiers separated by a space character (<code>0x20</code>).
+The first identifier is the name of the library (e.g. <code>"see"</code>)
+and the second identifier is the package version number
+(e.g. <code>2.0</code>).
+Further identifiers indicate the features used when compiling the library.
+This string is useful for end users to determine what capabilities
+their library implementation has.
+
+<pre>const char *<dfn id="SEE_version">SEE_version</dfn>(void);</pre>
+
+<p>
+The major and minor API version numbers indicate backward-compatible
+and backward-incompatible changes to the API, i.e the interface
+described in this documentation and the header files.
+The API version number is independent of the package and library
+version number.
+
+<p>
+Practically, developers should use the following code to signal the
+case of compiling against a future version of SEE with an API
+that isn't backward compatible with this document.
+<pre>
+#define DESIRED_SEE_API_MAJOR 2
+#if SEE_VERSION_API_MAJOR &gt; DESIRED_SEE_API_MAJOR
+ #warning "SEE API major version mismatch " #SEE_VERSION_API_MAJOR
+#endif</pre>
+
+<p>
+The rules I use for versioning future APIs are:
+<ul>
+<li>If a function, type, extern or macro has been 
+<strong>removed or changed</strong> since last
+release so that previous use is incompatible with future use, then
+the major version number is incremented and the minor version number
+is reset to zero.
+<li>If a function, type, extern or macro has been 
+<strong>added</strong> since last
+release such that its future use is incompatible with previous headers
+with the same API major version number, then the minor version number
+is incremented.
+</ul>
+
+<p>
+This document will indicate at what API version new API elements are added,
+defaulting to 1.0.
+
+<pre>const int <dfn id="SEE_VERSION_API_MAJOR">SEE_VERSION_API_MAJOR</dfn>;
+const int <dfn id="SEE_VERSION_API_MINOR">SEE_VERSION_API_MINOR</dfn>;</pre>
+
+<h3 id="port10_20">8.3 Porting from API 1.0 to API 2.0</h3>
+
+<p>
+Applications previously written for SEE-1.3.1 (API 1.0) can be changed
+to compile against SEE-2.0 (API 2.0).
+If you want, both APIs can be supported by testing the macro
+<code>SEE_VERSION_API_MAJOR</code>.
+The following list indicates the differences and steps to take
+when porting API 1.0 code to API 2.0:
+
+<ul>
+
+<li>
+The first field of a <code>struct SEE_objectclass</code>, 
+has changed type from <code>struct SEE_string *Class</code> to
+<code>const char *Class</code>.
+You should use a simple C constant string to name the class.
+
+<li>
+<code>void SEE_intern_global(struct SEE_string *)</code>
+has been replaced with 
+<code>struct SEE_string *SEE_intern_global(const char *s)</code>.
+You can remove the static arrays of <code>SEE_char_t</code>, and
+use a simple C constant string. 
+For example: <code>s_Foo = SEE_intern_global("Foo");</code>
+
+<li>
+The interpreter <code>trace</code> callback function is called far 
+less frequently and now takes an extra parameter of 
+type <code>enum SEE_trace_event</code>.
+You may need to change the signature of functions you assign to
+the <code>trace</code> hook, and make use of the event information.
+
+<li>
+The constants
+<code>SEE_COMPAT_UNDEFDEF</code> and
+<code>SEE_COMPAT_ARRAYJOIN1</code> 
+has been removed. Replace them with zero.
+
+</ul>
+
+<h3 id="port20_21">8.4 Porting from API 2.0 to API 3.0</h3>
+
+<p>
+Applications previously written for SEE-2.0 (API 2.0) should be
+changed in order to compile against SEE-3.0 (API 3.0).
+</p>
+
+<ul>
+
+<li>
+Applications should call <code>SEE_init()</code> early in
+<code>main()</code>, and after any garbage collectors have been
+initialised.
+(This is currently optional, but will become mandatory in the next major
+version of SEE.)
+
+<li>
+The most important change is that the property string 
+argument of the following functions must have been internalised, usually
+with a call to <code>SEE_intern()</code>, or 
+<code>SEE_global_intern()</code>.
+
+<ul>
+<li><code>SEE_OBJECT_CANPUT()</code>
+<li><code>SEE_OBJECT_DELETE()</code>
+<li><code>SEE_OBJECT_GET()</code>
+<li><code>SEE_OBJECT_HASPROPERTY()</code>
+<li><code>SEE_OBJECT_PUT()</code>
+</ul>
+
+Similarly, if you have written a property enumerator, then the
+enumerator class's <code>next()</code> method must return
+property strings that are already internalised.
+
+<li>
+The function <code>SEE_no_enumerator</code> has been deprecated.
+Please use <code>NULL</code> instead.
+This usually occurs when initialising the <code>Enumerator</code> field of a
+<code>SEE_objectclass</code> structure.
+
+<li>
+The <code>SEE_STRING_FLAG_STATIC</code> flag for strings
+has been deprecated. Do not use it.
+
+</ul>
+
+
+<h2 id="security">9 Security</h2>
+<p>
+The SEE library provides a simple framework for the host application 
+to manage security contexts for scripts and host functions.
+
+<p class="note">
+&#9888; Note:
+The <code>SEE_interpreter.sec_domain</code>,
+<code>SEE_objectclass.get_sec_domain</code>, and
+<code>SEE_system.transit_sec_domain</code> fields were introduced in API 2.0.
+</p>
+
+<p>
+The host application manages the 'current' security domain
+by setting the interpreter's <code>sec_domain</code> field.
+During execution, when callable objects are created, they inherit the 
+value of the interpreter's <code>sec_domain</code> field.
+When an object is called, the host application is given the opportunity
+of changing the current security domain.
+
+<p>
+Just before an object is called (either through the
+<code>SEE_OBJECT_CALL()</code> or
+<code>SEE_OBJECT_CONSTRUCT()</code> macro),
+SEE takes the following steps:
+<ol>
+<li>If <code>SEE_system.transit_sec_domain</code> is <code>NULL</code>,
+	then no security domain modification occurs, 
+	and execution continues; otherwise
+<li>If the object's class does not provide a <code>get_sec_domain()</code>
+	method, then no modification occurs, and execution continues; otherwise
+<li>The <code>SEE_OBJECT_GET_SEC_DOMAIN()</code> macro is called to
+	obtain the function's security domain. 
+<li>If the function's security domain is identical to the current 
+	security domain (pointer comparison), then no modification occurs,
+	and execution continues; otherwise
+<li>SEE calls the <code>SEE_system.transit_sec_domain()</code> function,
+	which is expected to change the <code>sec_domain</code> field
+	of the interpreter if needed.
+<li>Execution continues, but if an exception occurs during the call, 
+	or the object's call completes successfully, then the 
+	old value of <code>sec_domain</code> is restored to the
+	interpreter before the return value or exeception is propagated.
+</ol>
+
+<p>
+The interpreter's <code>sec_domain</code>
+field is initially set to <code>NULL</code> by <code>SEE_interpreter_init()</code>.  
+Consequently, all built-in SEE function objects constructed during
+initialisation will have a security domain of <code>NULL</code>.
+This also applies to modules, unless they explicitly change the current
+security context during their <code>init()</code> handler.
+
+<p>
+The following functions (amongst others) are sensitive to the interpreter's
+<code>sec_domain</code> field and will record it in any callable objects 
+they produce:
+<ul>
+<li><code>SEE_Global_eval()</code>,
+<li><code>SEE_Function_new()</code>,
+<li><code>SEE_cfunction_make()</code>,
+</ul>
+
+<p>
+Apart from the
+<code>SEE_OBJECT_CALL()</code> and
+<code>SEE_OBJECT_CONSTRUCT()</code> macros,
+which only restore the <code>sec_domain</code>,
+no other function in the SEE library changes the 
+interpreter's <code>sec_domain</code> value.
+
+<p class="note">
+&#9888; Note:
+If the interpreter's <code>sec_domain</code> field is somehow changed without
+restoration during an inner function, it will eventually be restored to 
+its original value as the function returns.
+This is simply a consequence of a caller invoking 
+<code>SEE_OBJECT_CALL()</code> or <code>SEE_OBJECT_CONSTRUCT()</code>.
+You should not rely on this side-effect.
+
+
+<h3 id="secguide">9.1 Guidelines for using the security framework</h3>
+<p>
+If you plan to make use of SEE's security framework for
+foreign code, I recommend you follow the 
+Java principals model
+used both by 
+<a href="http://java.sun.com/j2se/1.5.0/docs/guide/security/spec/security-spec.doc.html">Java</a> and 
+<a href="http://www.mozilla.org/projects/security/components/signed-scripts.html">Mozilla</a> by following these guidelines:
+<ol>
+<li>
+Design a domain structure that represents a <i>set of principals</i>.
+A principal is a named entity which the user would recognise; 
+e.g. another user, or a web site.
+You should provide functions for checking if a principal is in a set,
+and also to compute the intersection of two sets.
+You should also provide an 'empty' set constant which is not the
+<code>NULL</code> pointer.
+<li>
+Design a structure to hold 
+<i>authorization statements</i>
+depening on the way your user will express them.
+These statements relate <i>permisions</i> to individual principals.
+These questions could be prompted dynamically, or might be read from an
+authorization file.
+For example, the user may want to express the authorization statement
+<blockquote>all principals matching <i>foo@bar.com</i> are granted
+<i>FileRead</i> permission on resources matching <i>/public/*</i></blockquote>
+<li>
+Write a function 
+<code>checkPermission(interp, permission, resource)</code>
+that searches the authorization statements and
+throws an exception if the current domain (the principal set stored in
+<code>interp-&gt;sec_domain</code>)
+does not have the required permission.
+Call this function from the sensitive places of your code.
+<li>
+Implement the domain transition function 
+<code>SEE_system.transit_sec_domain()</code>
+so that it efficiently computes the intersection of the current and 
+the callee's 
+security domain and sets it to be the current domain.
+Note that SEE's built-in functions will have a <code>NULL</code> domain
+and can be treated as completed trusted, 
+that is <code>NULL</code> makes no change to the current security domain.
+<li>
+When your application receives source text from a trusted or untrusted source, 
+then before calling 
+<code>SEE_Global_eval()</code>,
+<code>SEE_Function_new()</code>, or even
+<code>SEE_cfunction_make()</code>,
+first set the interpreter's <code>sec_domain</code> field
+to reflect exactly the principal that controls the source.
+Be mindful to restore the security domain when you have finished,
+especially during exceptions, like so:
+<pre>void
+eval_in_domain(interp, input, <b>input_sec_domain</b>, result)
+	struct SEE_interpreter *interp;
+	struct SEE_input *input;
+	void *input_sec_domain;
+	struct SEE_value *result;
+{
+	SEE_try_context_t c;
+	void *saved_sec_domain;
+
+	<b>saved_sec_domain = interp-&gt;sec_domain;</b>
+	<b>interp-&gt;sec_domain = input_sec_domain;</b>
+	SEE_TRY(interp, c) {
+                SEE_Global_eval(interp, input, result);
+	}
+	<b>interp-&gt;sec_domain = saved_sec_domain;</b>
+	SEE_DEFAULT_CATCH(interp, c);
+}</pre>
+</ol>
+
+<h2 id="debug">10 Debugging facilities</h2>
+
+<h3 id="debug-see">10.1 Debugging the SEE library (for developers)</h3>
+
+<p>
+The SEE library contains various debugging facilities that are
+omitted if it is compiled with the <code>NDEBUG</code> preprocessor define.
+</p>
+
+<p>
+These functions are intended for the developer to use while application 
+debugging, and not for general use.
+</p>
+
+<pre>void <dfn id="SEE_PrintValue">SEE_PrintValue</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_value *val, FILE *file);
+void <dfn id="SEE_PrintObject">SEE_PrintObject</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_object *obj, FILE *file);
+void <dfn id="SEE_PrintString">SEE_PrintString</dfn>(struct SEE_interpreter *interp, 
+                struct SEE_string *str, FILE *file);
+void <dfn id="SEE_PrintContextTraceback">SEE_PrintContextTraceback</dfn>(struct SEE_interpreter *interp, 
+                SEE_try_context_t *context, FILE *file);
+void <dfn id="SEE_PrintTraceback">SEE_PrintTraceback</dfn>(struct SEE_interpreter *interp, 
+                FILE *file);</pre>
+
+<p>
+If debugging the library itself, it is worth reading the source code to
+find the debug flag variables that can be turned on by the host 
+application to enable verbose traces during execution.
+</p>
+
+<p>
+Defining the
+<code>NDEBUG</code> preprocessor symbol when building the library
+also disables (slow) internal assertions that would otherwise
+help show up application misuse of the API.
+</p>
+
+<p>
+When using <i>gdb</i> on Unix, you can save a lot of heartache
+by using <i>libtool</i> to invoke it. Libtool knows what to do.
+<pre>$ <b>./libtool --mode=execute gdb shell/see-shell</b></pre>
+
+<h3 id="debug-js">10.2 Debugging scripts (for users)</h3>
+
+<p>
+The SEE library does not contain a script debugger, however it
+does provide an interpreter hook for external debuggers and the
+<i>see-shell</i>
+example tool contains an example of using it.
+</p>
+
+<p>
+The interpreter structure provides a <code>trace</code> callback field, 
+which is called on certain events during execution
+(function call, return, throw or statement).
+The callback is also passed a handle to the current execution context,
+(a <code>struct SEE_context *</code>)
+and an external debugger may examine it directly, or indirectly via the
+<code>SEE_context_eval()</code> utility function, which is otherwise 
+functionally identical to <code>SEE_Global_eval()</code>. 
+<code>SEE_context_eval()</code>
+is intended only for use by external debuggers attached to the 
+<code>trace</code> callback.
+</p>
+
+<p class="note">
+&#9888; Note:
+During a debugger's execution,
+the <code>trace</code> callback should be disabled
+by setting it to <code>NULL</code>,
+otherwise re-entrant tracing can occur.
+</p>
+
+<p class="note">
+&#9888; Note:
+The signature and frequency of calling the <code>trace</code> hook changed 
+between API 1.0 and API 2.0.
+</p>
+
+<pre>void <dfn id="SEE_context_eval">SEE_context_eval</dfn>(struct SEE_context *context,
+                struct SEE_string *expr, struct SEE_value *res);</pre>
+
+If <i>see-shell</i> is invoked with the <i>-g</i> option, then
+immediately before it executes the first script, it will prompt
+the user for debugging operations.
+
+<p>
+Commands available at the '<code>%</code>' prompt include:
+
+<dl>
+<dt><code>break</code> <i>[filename</i><code>:</code><i>]lineno</i>
+<dd>add a new breakpoint
+<dt><code>show</code>
+<dd>show current breakpoints
+<dt><code>delete</code> <i>number</i>
+<dd>delete existing breakpoint
+<dt><code>step</code>
+<dd>step to a new line
+<dt><code>cont</code>
+<dd>continue execution
+<dt><code>where</code>
+<dd>print traceback information
+<dt><code>info</code>
+<dd>print context information
+<dt><code>eval</code> <i>expr</i>
+<dd>evaluate and print an expression in the current context
+<dt><code>throw</code> <i>expr</i>
+<dd>throw an exception
+</dl>
+
+<h2 id="ref">References</h2>
+
+<ul>
+<li id="ref-ecma"><a href="http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf">ECMA-262, ECMAScript language specification</a>, 3rd edition, December 1999.
+<li id="ref-ecma-errata">W Horwat, <a href="http://www.mozilla.org/js/language/E262-3-errata.html">ECMAScript Edition 3 Errata</a>
+<li id="ref-boehm"><a href="http://www.hpl.hp.com/personal/Hans_Boehm/gc/">The Boehm-Weiser garbage collection package for C and C++</a>, accessed March 2004
+<!-- <li id="ref-gc"><a href="http://www.iecc.com/gclist/GC-faq.html">GC-LIST FAQ</a>, accessed April 2004 -->
+<li id="ref-utf16">Hoffman et al., <a href="http://www.ietf.org/rfc/rfc2781.txt">UTF-16, an encoding of ISO 10646</a> [RFC 2781], February 2000
+<li id="ref-issues">Boehm, <a href="http://www.hpl.hp.com/personal/Hans_Boehm/gc/issues.html">Advantages and Disadvantages of Conservative Garbage Collection</a>, accessed March 2004
+<li id="ref-unicode">Unicode Inc., <a href="http://www.unicode.org/versions/enumeratedversions.html#Unicode_2_1_9">Unicode 2.1.9</a>, April 1999
+<li id="netscape-js13">Netscape Communications Corp., <a href="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.3/reference/">Client-Side JavaScript Reference 1.3</a>, 1997
+<li id="netscape-js14">Netscape Communications Corp., <a href="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.4/reference/">Client-Side JavaScript Reference 1.4</a>, 1998
+<li id="netscape-js15">Netscape Communications Corp., <a href="http://devedge-temp.mozilla.org/library/manuals/2000/javascript/1.5/reference/">Client-Side JavaScript Reference 1.5</a>, 2000
+</ul>
+
+<h2 id="idx">Name index</h2>
+
+<table class="index">
+<tr>
+<td>
+<a href="#SEE_ABORT">SEE_ABORT</a><br>
+<a href="#SEE_ALLOCA">SEE_ALLOCA</a><br>
+<a href="#SEE_CFUNCTION_PUTA">SEE_CFUNCTION_PUTA</a> (2.0)<br>
+<a href="#SEE_CAUGHT">SEE_CAUGHT</a><br>
+<a href="#SEE_call_args">SEE_call_args</a> (3.0)<br>
+<a href="#SEE_call_args_va">SEE_call_args_va</a> (3.0)<br>
+<a href="#SEE_cfunction_make">SEE_cfunction_make</a><br>
+<a href="#SEE_context_eval">SEE_context_eval</a><br>
+<a href="#SEE_COPYSIGN">SEE_COPYSIGN</a> (3.0)<br>
+<a href="#SEE_DEFAULT_CATCH">SEE_DEFAULT_CATCH</a><br>
+<a href="#SEE_ENUM_NEXT">SEE_ENUM_NEXT</a><br>
+<a href="#SEE_Error_make">SEE_Error_make</a><br>
+<a href="#SEE_error_throw">SEE_error_throw</a><br>
+<a href="#SEE_error_throw_string">SEE_error_throw_string</a><br>
+<a href="#SEE_error_throw_sys">SEE_error_throw_sys</a><br>
+<a href="#SEE_error_throw_sys_va">SEE_error_throw_sys_va</a> (3.0)<br>
+<a href="#SEE_error_throw_va">SEE_error_throw_va</a> (3.0)<br>
+<a href="#SEE_eval">SEE_eval</a> (3.0)<br>
+<a href="#SEE_Function_new">SEE_Function_new</a><br>
+<a href="#SEE_gcollect">SEE_gcollect</a> (2.0)<br>
+<a href="#SEE_Global_eval">SEE_Global_eval</a><br>
+<a href="#struct_SEE_growable">SEE_growable</a> struct (3.0)<br>
+<a href="#SEE_GROW_INIT">SEE_GROW_INIT</a> (3.0)<br>
+<a href="#SEE_grow_to">SEE_grow_to</a> (3.0)<br>
+<a href="#SEE_Infinity">SEE_Infinity</a><br>
+<a href="#SEE_init">SEE_init</a> (3.0)<br>
+<a href="#struct_SEE_input">SEE_input</a> struct<br>
+<a href="#struct_SEE_inputclass">SEE_inputclass</a> struct<br>
+<a href="#SEE_INPUT_CLOSE">SEE_INPUT_CLOSE</a><br>
+<a href="#SEE_input_file">SEE_input_file</a><br>
+<a href="#SEE_INPUT_NEXT">SEE_INPUT_NEXT</a><br>
+<a href="#SEE_input_string">SEE_input_string</a><br>
+<a href="#SEE_input_utf8">SEE_input_utf8</a><br>
+<a href="#SEE_intern">SEE_intern</a><br>
+<a href="#SEE_intern_ascii">SEE_intern_ascii</a> (2.0)<br>
+<a href="#SEE_intern_global">SEE_intern_global</a> (2.0*)<br>
+<td>
+<a href="#SEE_interpreter_init">SEE_interpreter_init</a><br>
+<a href="#SEE_interpreter_init_compat">SEE_interpreter_init_compat</a><br>
+<a href="#SEE_interpreter_restore_state">SEE_interpreter_restore_state</a> (3.0)<br>
+<a href="#SEE_interpreter_save_state">SEE_interpreter_save_state</a> (3.0)<br>
+<a href="#SEE_ISFINITE">SEE_ISFINITE</a><br>
+<a href="#SEE_ISNAN">SEE_ISNAN</a><br>
+<a href="#SEE_ISNINF">SEE_ISNINF</a> (3.0)<br>
+<a href="#SEE_ISPINF">SEE_ISPINF</a> (3.0)<br>
+<a href="#SEE_malloc">SEE_malloc</a><br>
+<a href="#SEE_malloc_string">SEE_malloc_string</a><br>
+<a href="#SEE_malloc_finalize">SEE_malloc_finalize</a> (2.0)<br>
+<a href="#SEE_mem_exhausted_hook">SEE_mem_exhausted_hook</a><br>
+<a href="#SEE_mem_free_hook">SEE_mem_free_hook</a><br>
+<a href="#SEE_mem_malloc_hook">SEE_mem_malloc_hook</a><br>
+<a href="#SEE_mem_malloc_string_hook">SEE_mem_malloc_string_hook</a><br>
+<a href="#struct_SEE_module">SEE_module</a> struct (2.0)<br>
+<a href="#SEE_module_add">SEE_module_add</a> (2.0)<br>
+<a href="#SEE_MODULE_MAGIC">SEE_MODULE_MAGIC</a> (2.0)<br>
+<a href="#SEE_MODULE_PRIVATE">SEE_MODULE_PRIVATE</a> (2.0)<br>
+<a href="#SEE_NaN">SEE_NaN</a><br>
+<a href="#struct_SEE_native">SEE_native</a> struct<br>
+<a href="#SEE_native_init">SEE_native_init</a><br>
+<a href="#SEE_NEW">SEE_NEW</a><br>
+<a href="#SEE_NEW_ARRAY">SEE_NEW_ARRAY</a><br>
+<a href="#SEE_NEW_FINALIZE">SEE_NEW_FINALIZE</a> (2.0)<br>
+<a href="#SEE_NEW_STRING_ARRAY">SEE_NEW_STRING_ARRAY</a><br>
+<a href="#SEE_NUMBER_ISFINITE">SEE_NUMBER_ISFINITE</a><br>
+<a href="#SEE_NUMBER_ISNAN">SEE_NUMBER_ISNAN</a><br>
+<a href="#SEE_NUMBER_ISNINF">SEE_NUMBER_ISNINF</a><br>
+<a href="#SEE_NUMBER_ISPINF">SEE_NUMBER_ISPINF</a><br>
+<a href="#struct_SEE_object">SEE_object</a> struct<br>
+<a href="#struct_SEE_objectclass">SEE_objectclass</a> struct<br>
+<a href="#SEE_OBJECT_CALL">SEE_OBJECT_CALL</a><br>
+<a href="#SEE_OBJECT_CANPUT">SEE_OBJECT_CANPUT</a><br>
+<a href="#SEE_OBJECT_CANPUTA">SEE_OBJECT_CANPUTA</a> (2.0)<br>
+<a href="#SEE_OBJECT_CONSTRUCT">SEE_OBJECT_CONSTRUCT</a><br>
+<td>
+<a href="#SEE_OBJECT_DEFAULTVALUE">SEE_OBJECT_DEFAULTVALUE</a><br>
+<a href="#SEE_OBJECT_DELETE">SEE_OBJECT_DELETE</a><br>
+<a href="#SEE_OBJECT_DELETEA">SEE_OBJECT_DELETEA</a> (2.0)<br>
+<a href="#SEE_OBJECT_ENUMERATOR">SEE_OBJECT_ENUMERATOR</a><br>
+<a href="#SEE_OBJECT_GET">SEE_OBJECT_GET</a><br>
+<a href="#SEE_OBJECT_GETA">SEE_OBJECT_GETA</a> (2.0)<br>
+<a href="#SEE_OBJECT_GET_SEC_DOMAIN">SEE_OBJECT_GET_SEC_DOMAIN</a> (2.0)<br>
+<a href="#SEE_OBJECT_HASINSTANCE">SEE_OBJECT_HASINSTANCE</a><br>
+<a href="#SEE_OBJECT_HASPROPERTY">SEE_OBJECT_HASPROPERTY</a><br>
+<a href="#SEE_OBJECT_HASPROPERTYA">SEE_OBJECT_HASPROPERTYA</a> (2.0)<br>
+<a href="#SEE_OBJECT_HAS_CALL">SEE_OBJECT_HAS_CALL</a><br>
+<a href="#SEE_OBJECT_HAS_CONSTRUCT">SEE_OBJECT_HAS_CONSTRUCT</a><br>
+<a href="#SEE_OBJECT_HAS_ENUMERATOR">SEE_OBJECT_HAS_ENUMERATOR</a><br>
+<a href="#SEE_OBJECT_HAS_GET_SEC_DOMAIN">SEE_OBJECT_HAS_GET_SEC_DOMAIN</a> (2.0)<br>
+<a href="#SEE_OBJECT_HAS_HASINSTANCE">SEE_OBJECT_HAS_HASINSTANCE</a><br>
+<a href="#SEE_Object_new">SEE_Object_new</a><br>
+<a href="#SEE_OBJECT_PUT">SEE_OBJECT_PUT</a><br>
+<a href="#SEE_OBJECT_PUTA">SEE_OBJECT_PUTA</a> (2.0)<br>
+<a href="#SEE_object_instanceof">SEE_object_instanceof</a> (3.0)<br>
+<a href="#SEE_parse_args">SEE_parse_args</a> (2.0)<br>
+<a href="#SEE_parse_args_va">SEE_parse_args_va</a> (3.0)<br>
+<a href="#SEE_PrintObject">SEE_PrintObject</a><br>
+<a href="#SEE_PrintString">SEE_PrintString</a><br>
+<a href="#SEE_PrintContextTraceback">SEE_PrintContextTraceback</a> (3.0)<br>
+<a href="#SEE_PrintTraceback">SEE_PrintTraceback</a><br>
+<a href="#SEE_PrintValue">SEE_PrintValue</a><br>
+<a href="#SEE_RETHROW">SEE_RETHROW</a> (3.0)<br>
+<a href="#SEE_SET_BOOLEAN">SEE_SET_BOOLEAN</a><br>
+<a href="#SEE_SET_NULL">SEE_SET_NULL</a><br>
+<a href="#SEE_SET_NUMBER">SEE_SET_NUMBER</a><br>
+<a href="#SEE_SET_OBJECT">SEE_SET_OBJECT</a><br>
+<a href="#SEE_SET_STRING">SEE_SET_STRING</a><br>
+<a href="#SEE_SET_UNDEFINED">SEE_SET_UNDEFINED</a><br>
+<a href="#struct_SEE_string">SEE_string</a> struct<br>
+<a href="#SEE_string_addch">SEE_string_addch</a><br>
+<a href="#SEE_STRING_ALLOCA">SEE_STRING_ALLOCA</a><br>
+<td>
+<a href="#SEE_string_append">SEE_string_append</a><br>
+<a href="#SEE_string_append_ascii">SEE_string_append_ascii</a> (2.0)<br>
+<a href="#SEE_string_append_int">SEE_string_append_int</a><br>
+<a href="#SEE_string_append_unicode">SEE_string_append_unicode</a> (3.0)<br>
+<a href="#SEE_string_cmp">SEE_string_cmp</a><br>
+<a href="#SEE_string_concat">SEE_string_concat</a><br>
+<a href="#SEE_string_dup">SEE_string_dup</a> (2.0*)<br>
+<a href="#SEE_string_fix">SEE_string_fix</a> (3.0)<br>
+<a href="#SEE_string_fputs">SEE_string_fputs</a><br>
+<a href="#SEE_string_literal">SEE_string_literal</a><br>
+<a href="#SEE_string_new">SEE_string_new</a><br>
+<a href="#SEE_string_sprintf">SEE_string_sprintf</a><br>
+<a href="#SEE_string_substr">SEE_string_substr</a><br>
+<a href="#SEE_string_toutf8">SEE_string_toutf8</a> (2.0)<br>
+<a href="#SEE_string_utf8_size">SEE_string_utf8_size</a> (2.0)<br>
+<a href="#SEE_string_vsprintf">SEE_string_vsprintf</a><br>
+<a href="#SEE_THROW">SEE_THROW</a><br>
+<a href="#SEE_ToBoolean">SEE_ToBoolean</a><br>
+<a href="#SEE_ToInt32">SEE_ToInt32</a><br>
+<a href="#SEE_ToInteger">SEE_ToInteger</a><br>
+<a href="#SEE_ToNumber">SEE_ToNumber</a><br>
+<a href="#SEE_ToObject">SEE_ToObject</a><br>
+<a href="#SEE_ToPrimitive">SEE_ToPrimitive</a><br>
+<a href="#SEE_ToString">SEE_ToString</a><br>
+<a href="#SEE_ToUint16">SEE_ToUint16</a><br>
+<a href="#SEE_ToUint32">SEE_ToUint32</a><br>
+<a href="#SEE_TRY">SEE_TRY</a><br>
+<a href="#SEE_TRY_BREAK">SEE_TRY_BREAK</a> (3.0)<br>
+<a href="#struct_SEE_value">SEE_value</a> struct<br>
+<a href="#SEE_VALUE_COPY">SEE_VALUE_COPY</a><br>
+<a href="#SEE_VALUE_GET_TYPE">SEE_VALUE_GET_TYPE</a><br>
+<a href="#SEE_version">SEE_version</a><br>
+<a href="#SEE_VERSION_API_MAJOR">SEE_VERSION_API_MAJOR</a><br>
+<a href="#SEE_VERSION_API_MINOR">SEE_VERSION_API_MINOR</a><br>
+<!-- td -->
+</table>
+
+<hr>
+<p class="misc">
+&copy; David Leonard, 2008.
+This documentation may be entirely reproduced and freely distributed,
+as long as this copyright notice remains intact, and either the 
+distributed reproduction or translation is a complete and bona fide copy, or
+the modified reproduction is subtantially the same and includes below this
+copyright statement a brief summary of the modifications made. 
+</p>
+
+<pre>$Id: USAGE.html 1369 2008-02-09 12:41:33Z d $</pre>
+
+<!-- outdated
+<ul class="misc">
+<li>Jan 2004: clean up and more examples
+<li>Mar 2004: add compatibility section, prototypes, index
+<li>Aug 2004: remove references to deprecated <code>SEE_ENUM_RESET</code>
+<li>Jan 2005: add <code>SEE_native_init</code>
+</ul>
+-->
+
+</body>
+</html>

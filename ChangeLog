@@ -1,0 +1,2846 @@
+2005-10-30 06:43  d
+
+	* [r796] libsee/lex.c: remove dead variables; correct bug where an
+	  illegal unicode char may access an uninitialised buffer
+
+2005-10-30 06:44  d
+
+	* [r797] libsee/string.defs: improve on error messages
+	* [r798] README.svn: change notes to refer to subversion
+	* [r799] README.cvs: change notes to refer to subversion
+
+2005-10-30 06:46  d
+
+	* [r800] unicode/gencase.c: make note of where case is used
+
+2005-11-25 11:10  d
+
+	* [r801] NEWS: document r796 fix in libsee/lex.c
+
+2005-11-25 11:12  d
+
+	* [r802] libsee/context.c, libsee/context.h, libsee/function.c,
+	  libsee/function.h, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/parse.c, libsee/parse.h: rename 'struct context' ->
+	  'struct SEE_context' in preparation for exposing context
+	  information to external debuggers
+
+2005-11-25 11:25  d
+
+	* [r803] shell/Makefile.am, shell/main.c, shell/readline.c,
+	  shell/shell.h: move readline() implementation into its own file
+
+2005-11-25 11:44  d
+
+	* [r804] include/see/Makefile.am, include/see/context.h,
+	  include/see/see.h, libsee/Makefile.am, libsee/context.c,
+	  libsee/context.h, libsee/function.c, libsee/interpreter.c,
+	  libsee/obj_Function.c, libsee/obj_Global.c, libsee/parse.c: move
+	  context.h to public API
+
+2005-11-25 11:58  d
+
+	* [r805] libsee/Makefile.am, libsee/context.c, libsee/scope.c:
+	  rename context.c to scope.c
+
+2005-11-25 12:13  d
+
+	* [r806] include/see/context.h, libsee/Makefile.am,
+	  libsee/obj_Function.c, libsee/obj_Global.c, libsee/parse.c,
+	  libsee/scope.c, libsee/scope.h: rename and hide private scope
+	  functions
+
+2005-11-25 12:14  d
+
+	* [r807] include/see/interpreter.h: rename and hide private scope
+	  functions
+
+2005-11-25 12:44  d
+
+	* [r808] doc/USAGE.html, include/see/context.h, libsee/parse.c:
+	  Provide simplified SEE_context_eval() function
+
+2005-11-25 14:13  d
+
+	* [r809] NEWS, shell/Makefile.am, shell/debug.c, shell/debug.h,
+	  shell/main.c: Add a simple interactive debugger to see-shell
+
+2005-11-25 14:19  d
+
+	* [r810] shell/README: document the interactive debugger
+
+2005-12-03 13:29  d
+
+	* [r811] libsee/parse.c: add missing visitor functions
+
+2005-12-03 14:59  d
+
+	* [r812] libsee/parse.c: Add a CAST_NODE() macro, and a
+	  'superclass' field to the nodeclass structures. This gets rid of
+	  the hundred or so 'initialization from incompatible pointer
+	  type' warnings, and allows for checked typecasting of AST nodes.
+
+2005-12-03 15:14  d
+
+	* [r813] libsee/parse.c: correct a few missing superclass
+	  dependencies. record the line number of the miscast class
+
+2005-12-04 10:50  d
+
+	* [r814] shell/test/README.mozilla, shell/test/RUN.mozilla,
+	  shell/test/mozilla, shell/test/mozilla/README.mozilla,
+	  shell/test/mozilla/RUN.mozilla: move mozilla tests into their
+	  own directory
+
+2005-12-05 10:57  d
+
+	* [r815] libsee/obj_Function.c: remove unnecessary semicolon
+	  (jeff%activescript.com)
+
+2005-12-05 11:27  d
+
+	* [r816] libsee/enumerate.c, libsee/native.c, libsee/obj_Array.c,
+	  libsee/obj_Date.c, libsee/obj_Global.c, libsee/obj_String.c,
+	  libsee/parse.c, libsee/regex.c, libsee/string.c: remove warnings
+	  arising from gcc -Wall
+
+2005-12-05 11:36  d
+
+	* [r817] include/see/Makefile.am: Put a /* Do not edit */ message
+	  at the top of generated files
+	* [r818] include/see/type.h.in: Add <stdlib.h> for alloca
+
+2005-12-05 11:59  d
+
+	* [r819] configure.ac: add --enable-developer which adds
+	  strictness flags to CFLAGS
+
+2005-12-05 13:57  d
+
+	* [r820] configure.ac, include/see/error.h.in,
+	  include/see/try.h.in, include/see/type.h.in,
+	  include/see/value.h, libsee/Makefile.am, libsee/cfunction.c,
+	  libsee/cfunction_private.h, libsee/debug.c, libsee/function.h,
+	  libsee/lex.c, libsee/obj_Array.c, libsee/obj_Date.c,
+	  libsee/obj_Error.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/parse.c, shell/debug.c, shell/main.c, shell/shell.c: A
+	  starting attempt to remove warnings that come up with
+	  -traditional. Some type information has been changed with
+	  obj_Date which needs careful study.
+
+2005-12-06 22:17  d
+
+	* [r821] libsee/unicode.h: properly protect macro arguments
+
+2005-12-09 11:43  d
+
+	* [r822] libsee/debug.c: replace 'if(a=b)' with 'a=b;if(a)'
+
+2005-12-09 11:55  d
+
+	* [r823] libsee/string.defs: spelling mistake
+
+2005-12-09 12:47  d
+
+	* [r824] libsee/Makefile.am, libsee/dprint.c, libsee/dprint.h,
+	  libsee/error.c, libsee/lex.c, libsee/native.c,
+	  libsee/obj_Date.c, libsee/obj_Error.c, libsee/obj_Global.c,
+	  libsee/parse.c, libsee/regex.c, libsee/scope.c, libsee/try.c:
+	  Move all debug printing into a special dprint module, rather
+	  than assume stderr exists
+
+2005-12-09 12:58  d
+
+	* [r825] libsee/obj_Global.c: compiler warning: cast int to
+	  SEE_number for pow()
+
+2005-12-10 05:19  d
+
+	* [r826] doc/USAGE.html, include/see/Makefile.am,
+	  include/see/see.h, include/see/version.h, libsee/Makefile.am,
+	  libsee/version.c: Add SEE_version(), SEE_VERSION_API_MAJOR and
+	  _MINOR
+
+2005-12-10 13:41  d
+
+	* [r827] NEWS, configure.ac, libsee/obj_Global.c, libsee/regex.c,
+	  libsee/unicode.c, libsee/unicode.h, libsee/version.c,
+	  unicode/Makefile: New option: --disable-full-unicode which omits
+	  unicode tables
+
+2005-12-10 13:43  d
+
+	* [r828] libsee/Makefile.am: oops; depend on unicode.inc
+
+2005-12-10 13:44  d
+
+	* [r829] libsee/value.c: variable rename; readability
+
+2005-12-10 14:09  d
+
+	* [r830] libsee/version.c: fix function name
+	* [r831] shell/main.c: new shell option -V prints API and library
+	  version
+
+2005-12-10 14:41  d
+
+	* [r832] NEWS, configure.ac, libsee/parse.c, libsee/version.c: Add
+	  --disable-parser-print and --disable-parser-visit options
+
+2005-12-11 00:52  d
+
+	* [r833] configure.ac, shell/test/mozilla/Makefile.am,
+	  shell/test/mozilla/RUN.mozilla,
+	  shell/test/mozilla/run-mozilla-tests.in: add mozilla test suite
+	  testing
+
+2005-12-11 01:37  d
+
+	* [r834] shell/test/mozilla/Makefile.am,
+	  shell/test/mozilla/run-mozilla-tests.in: fix tests to run
+	  properly
+
+2005-12-11 06:51  d
+
+	* [r835] doc/USAGE.html, include/see/mem.h, libsee/mem.c,
+	  libsee/regex.c, libsee/string.c: bug 2: allocate strings so they
+	  are not scanned by the GC system
+
+2005-12-11 06:53  d
+
+	* [r836] libsee/parse.c: gcc pedantic warning
+
+2005-12-11 07:11  d
+
+	* [r837] doc/USAGE.html, include/see/type.h.in,
+	  libsee/enumerate.c, libsee/lex.c, libsee/obj_Function.c,
+	  libsee/obj_Global.c, libsee/obj_RegExp.c, libsee/obj_String.c,
+	  libsee/parse.c, libsee/regex.c, libsee/string.c: bug 7:
+	  SEE_ALLOCA now takes an interpreter argument
+
+2005-12-11 07:12  d
+
+	* [r838] shell/test/mozilla/run-mozilla-tests.in: Warn if the
+	  timezone isn't PST (an assumption made by the mozilla test suite)
+
+2005-12-11 07:13  d
+
+	* [r839] shell/test/mozilla/Makefile.am: cleanup '.out' file from
+	  tests
+	* [r840] NEWS: update with bug 2, bug 3, bug 7 information
+
+2005-12-11 13:11  d
+
+	* [r841] shell/test/Makefile.am, shell/test/common.js,
+	  shell/test/function.js, shell/test/grammar.js,
+	  shell/test/regex.js, shell/test/test-grammar.in: Add function
+	  testing, colour and split the tests up into separate files,
+	  while removing need for a separate driver script.
+
+2005-12-11 13:14  d
+
+	* [r842] shell/test/function.js: oops
+	* [r843] shell/test/mozilla/README.mozilla: Explain why some of
+	  the date tests will fail.
+
+2005-12-11 13:16  d
+
+	* [r844] libsee/parse.c: Fix function prototype warings; more
+	  --disable-parser-print ifdefs
+
+2005-12-11 13:21  d
+
+	* [r845] libsee/obj_Date.c: Correct Date.setMilliseconds() which
+	  assumed UTC. Correct incorrect timezone calculation. Parsed
+	  dates now assume local timezone unless "GMT" at end of text.
+	  Parsed Netscape dates are always assumed local timezone.
+	  Date.toUTCString() appends "GMT" to its result.
+
+2005-12-11 14:17  d
+
+	* [r846] shell/test/Makefile.am, shell/test/function.js,
+	  shell/test/regress.js: Add regression testing. Start with bug #9
+
+2005-12-11 14:23  d
+
+	* [r847] shell/test/common.js: prettier test output
+
+2005-12-11 14:27  d
+
+	* [r848] NEWS, libsee/function.c, libsee/function.h,
+	  libsee/obj_Function.c: bug 9: correct function's
+	  prototype.constructor
+
+2005-12-11 15:00  d
+
+	* [r849] libsee/obj_RegExp.c: RegExp special case fix (s15.10.4)
+
+2005-12-11 15:16  d
+
+	* [r850] NEWS, doc/USAGE.html, libsee/lex.c: include the use of
+	  reserved words as identifiers in EXT1 compatibility mode
+
+2005-12-11 15:22  d
+
+	* [r851] configure.ac: test-grammar was deleted
+
+2005-12-12 11:50  d
+
+	* [r852] libsee/object.c: when recursion limit is hit and being
+	  handled, temporarily disable
+
+2005-12-12 11:51  d
+
+	* [r853] shell/README, shell/main.c: -r <num> option for see-shell
+	  to set recursion limit
+
+2005-12-12 12:33  d
+
+	* [r854] doc/USAGE.html, include/see/mem.h, include/see/type.h.in,
+	  libsee/alloca.c, libsee/mem.c: bug 10: new derived type
+	  SEE_size_t for use by allocators
+
+2005-12-12 13:03  d
+
+	* [r855] NEWS, configure.ac, include/see/string.h,
+	  libsee/string.c, libsee/string.defs: bug 11: grow strings
+	  carefully, and try to raise an exception before the allocator
+	  does
+
+2005-12-13 10:21  d
+
+	* [r856] libsee/obj_Date.c: bug 13: do not return from void
+	  function
+
+2005-12-13 10:22  d
+
+	* [r857] libsee/obj_String.c: bug 15: do not return from void
+	  function
+
+2005-12-13 10:57  d
+
+	* [r858] libsee/obj_RegExp.c: regex constructor now throws a
+	  SyntaxError when the flags are unknown (15.10.4.1)
+
+2005-12-13 10:58  d
+
+	* [r859] libsee/string.defs: oops; this was needed with r858
+
+2005-12-13 11:00  d
+
+	* [r860] libsee/dprint.c, libsee/dprint.h: use more const, less
+	  includes
+
+2005-12-13 11:58  d
+
+	* [r861] libsee/native.c: reorder some fields to avoid structure
+	  padding
+
+2005-12-13 12:51  d
+
+	* [r862] libsee/debug.c, libsee/obj_Global.c, libsee/obj_String.c,
+	  libsee/parse.c, libsee/regex.c, libsee/string.c,
+	  libsee/string.pl, libsee/value.c: fix warnings from gcc
+	  -pedantic. Also, enable SEE_free for bug 21
+
+2005-12-13 12:53  d
+
+	* [r863] include/see/string.h: changed SEE_string_addch() for
+	  r862. (NOTE: USAGE.html is not being changed)
+
+2005-12-13 13:08  d
+
+	* [r864] libsee/dprint.c: style
+
+2005-12-14 12:37  d
+
+	* [r865] libsee/obj_Date.c: from bug 14: correct #ifndef NDEBUG
+
+2005-12-14 13:05  d
+
+	* [r866] libsee/obj_String.c: remove logicaly unnecessary if
+
+2005-12-14 13:27  d
+
+	* [r867] libsee/obj_Array.c: improve readbility; stricter types
+
+2005-12-14 14:02  d
+
+	* [r868] shell/test/Makefile.am: fix for when srcdir != builddir
+
+2005-12-14 14:31  d
+
+	* [r869] libsee/obj_Date.c: remove obsolete 'f' suffix
+
+2005-12-14 14:56  d
+
+	* [r870] shell/main.c: -g was missing from the usage
+
+2005-12-14 21:21  d
+
+	* [r871] configure.ac: add -pedantic
+
+2005-12-14 21:22  d
+
+	* [r872] libsee/obj_Number.c: Get rid of warning
+
+2005-12-14 21:29  d
+
+	* [r873] libsee/obj_Array.c, libsee/string.defs: Use stringdef
+	  strings for common array indicies (0..9)
+
+2005-12-15 12:55  d
+
+	* [r874] libsee/obj_Date.c: bug 23: year problem with new Date()
+	  and Date.UTC()
+
+2005-12-20 03:52  d
+
+	* [r875] configure.ac, shell/shell.c: Rename the shell's gc_dump
+	  to GC_dump and add GC_gcollect
+
+2005-12-20 03:53  d
+
+	* [r876] libsee/native.c: print out attributes when native debug
+	  is enabled
+
+2005-12-20 03:54  d
+
+	* [r877] include/see/mem.h, libsee/mem.c, shell/main.c: Add memory
+	  debugging, and a -dm switch to the shell
+
+2005-12-20 03:55  d
+
+	* [r878] libsee/obj_Array.c: [optimisation] when converting an
+	  integer to a string, allocate just the right amount of storage
+
+2005-12-20 03:57  d
+
+	* [r879] libsee/lex.c: make use of calculated interp pointer
+
+2005-12-20 04:02  d
+
+	* [r880] shell/test/mozilla/Makefile.am: remove test results on
+	  clean
+
+2005-12-20 04:06  d
+
+	* [r881] libsee/parse.c: remove pedantic warnings about unary
+	  plus: +1 -> 1
+
+2005-12-20 04:20  d
+
+	* [r882] libsee/obj_Array.c: remove unused variable warning.
+	  (logically it is always used)
+
+2005-12-20 05:44  d
+
+	* [r883] include/see/value.h, libsee/Makefile.am, libsee/lex.c,
+	  libsee/nmath.h, libsee/obj_Date.c, libsee/obj_Global.c,
+	  libsee/obj_Math.c, libsee/obj_Number.c, libsee/obj_RegExp.c,
+	  libsee/value.c: Remove lots of floating point cast warnings.
+	  Factor the float/double variants from math.h to nmath.h. Remove
+	  unary pluses where possible.
+
+2005-12-20 06:12  d
+
+	* [r884] configure.ac: Add --disable-debug option to configure,
+	  which adds -DNDEBUG to the preprocessor flags
+
+2005-12-20 11:54  d
+
+	* [r885] libsee/string.c: remove a unary +
+
+2005-12-20 11:55  d
+
+	* [r886] libsee/intern.c, libsee/string.pl: change the way the
+	  string table is generated.
+
+2005-12-20 11:56  d
+
+	* [r887] doc/USAGE.html, libsee/Makefile.am, libsee/obj_String.c,
+	  libsee/regex.c, libsee/unicase.c, libsee/unicode.h,
+	  shell/test/regress.js, unicode/Makefile, unicode/gencase.c,
+	  unicode/gencase.pl: bug 4: unicode tables for single-char
+	  toUpperCase/toLowerCase using binary search. (No locale support,
+	  though)
+
+2005-12-20 12:04  d
+
+	* [r888] NEWS: note bug 4 fix
+
+2005-12-20 13:06  d
+
+	* [r889] Makefile.am: use svn2cl to build changelogs
+
+2005-12-20 13:11  d
+
+	* [r890] doc/USAGE.html: documentation is now for 1.3
+
+2005-12-21 04:37  d
+
+	* [r891] libsee/lex.c: correct prototypes; fix some comments
+
+2005-12-21 04:38  d
+
+	* [r892] libsee/unicase.c, libsee/unicode.h: correctly handle
+	  promoted types
+	* [r893] libsee/input_file.c, libsee/interpreter.c,
+	  libsee/native.c, libsee/no.c, libsee/obj_Array.c,
+	  libsee/obj_Error.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/obj_Math.c, libsee/obj_Number.c, libsee/obj_Object.c,
+	  libsee/obj_RegExp.c, libsee/regex.c, libsee/string.c,
+	  shell/debug.c, shell/main.c, shell/readline.c, shell/shell.c:
+	  regenerate prototypes
+
+2005-12-21 07:26  d
+
+	* [r894] libsee/mem.c: redo the debug functions so there is less
+	  redundancy
+
+2005-12-21 10:35  d
+
+	* [r895] libsee/nmath.h, libsee/obj_Array.c: move MIN() and MAX()
+	  into nmath.h
+
+2005-12-21 10:46  d
+
+	* [r896] NEWS, libsee/obj_String.c: bug 24: lastIndexOf() boundary
+	  condition. carefully rewritten using spec
+
+2005-12-21 13:38  d
+
+	* [r897] shell/test/regress.js: add regression test for bug 24
+
+2005-12-21 14:51  d
+
+	* [r898] NEWS, configure.ac, doc/USAGE.html,
+	  include/see/Makefile.am, include/see/intern.h,
+	  include/see/interpreter.h, include/see/mem.h, include/see/see.h,
+	  include/see/string.h, include/see/system.h, libsee/Makefile.am,
+	  libsee/intern.c, libsee/interpreter.c, libsee/lex.c,
+	  libsee/mem.c, libsee/native.c, libsee/obj_Array.c,
+	  libsee/parse.c, libsee/string.c, libsee/system.c, libsee/try.c,
+	  shell/main.c: Moved a lot of global configuration vars into one
+	  structure, SEE_system. SEE_free is trusted a bit more. New
+	  function SEE_intern_and_free() used by lexer. Memory allocator
+	  defaults to system malloc() instead of NULL (ie error). Random
+	  number seed is factored out to a hookable function too.
+
+2005-12-22 13:47  d
+
+	* [r899] NEWS, doc/USAGE.html, libsee/regex.c: treat invalid
+	  quantifiers as literal in EXT1
+
+2005-12-22 13:52  d
+
+	* [r900] NEWS, libsee/obj_Function.c, shell/test/regress.js:
+	  correct [[Prototype]] for function instances. It is now
+	  duplicated across the instance aliases and their common native
+
+2005-12-22 13:55  d
+
+	* [r901] shell/test/mozilla/run-mozilla-tests.in: Improve output.
+	  Allow argument that narrows down the tests to run
+
+2005-12-22 14:00  d
+
+	* [r902] shell/test/mozilla/README.mozilla: bring notes up to date
+
+2005-12-22 14:15  d
+
+	* [r903] NEWS, libsee/parse.c, shell/test/regress.js: fix typeof
+	  from throwing ReferenceErrors
+
+2005-12-23 12:58  d
+
+	* [r904] NEWS, README, shell/test/mozilla/Makefile.am,
+	  shell/test/mozilla/run-mozilla-tests.in: prepare for 1.3 release
+
+2005-12-23 13:18  d
+
+	* [r906] shell/test/Makefile.am: include the mozilla directory in
+	  dists
+
+2005-12-23 13:24  d
+
+	* [r907] shell/test/Makefile.am: yet more madness to make
+	  distcheck work
+
+2005-12-23 13:38  d
+
+	* [r908] libsee/Makefile.am: correct some dependencies
+
+2005-12-23 13:44  d
+
+	* [r909] libsee/system.c: correct return type of simple_malloc
+
+2005-12-23 13:52  d
+
+	* [r910] shell/test/Makefile.am: add tests for distribution
+
+2005-12-23 13:59  d
+
+	* [r911] shell/test/common.js, shell/test/regress.js: Use string
+	  equality instead of object identity in some tests
+
+2005-12-23 14:11  d
+
+	* [r912] shell/test/common.js, shell/test/regress.js: reverse
+	  r910. (I am tired)
+
+2005-12-23 14:19  d
+
+	* [r913] unicode/Makefile: Use Unicode 2.1.9 when downloading
+
+2005-12-23 14:29  d
+
+	* [r914] Makefile.am: Add rule about updating ChangeLog
+
+2005-12-23 14:38  d
+
+	* [r915] Makefile.am: Improve ChangeLog management
+
+2005-12-23 14:43  d
+
+	* [r917] configure.ac: increment trunk version to 1.4 after
+	  releasing 1.3
+
+2005-12-23 16:35  d
+
+	* [r918] libsee/alloca.c: bug 26: use new memory api for alloca
+	  replacement
+
+2005-12-24 10:30  d
+
+	* [r919] libsee/cfunction.c, libsee/enumerate.c,
+	  libsee/input_file.c, libsee/mem.c, libsee/native.c,
+	  libsee/obj_Array.c, libsee/obj_Boolean.c, libsee/obj_Date.c,
+	  libsee/obj_Error.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/obj_Math.c, libsee/obj_Number.c, libsee/obj_Object.c,
+	  libsee/obj_RegExp.c, libsee/obj_String.c, libsee/parse.c,
+	  libsee/regex.c, libsee/string.c, libsee/try.c: style: keep lines
+	  under 79 columns where possible
+	* [r920] include/see/input.h, include/see/interpreter.h,
+	  include/see/mem.h, include/see/native.h, include/see/try.h.in,
+	  include/see/type.h.in, shell/debug.c, shell/main.c,
+	  unicode/gen.c: style: keep lines under 79 columns where possible
+
+2006-01-07 05:58  d
+
+	* [r921] libsee/intern.c: fix some signed/unsigned warnings
+
+2006-01-07 11:26  d
+
+	* [r922] include/see/mem.h, include/see/system.h, libsee/mem.c,
+	  libsee/system.c: Add finalization callback support
+
+2006-01-07 11:30  d
+
+	* [r923] libsee/enumerate.c, libsee/enumerate.h, libsee/parse.c:
+	  fast-free enumerator temporary data
+
+2006-01-07 11:31  d
+
+	* [r924] libsee/native.c: fix typos in a comment
+
+2006-01-07 11:32  d
+
+	* [r925] libsee/obj_Array.c, libsee/obj_Date.c: remove some
+	  compiler warnings about signedness
+
+2006-01-09 00:31  d
+
+	* [r926] libsee/scope.c, shell/main.c: rename SEE_context_debug to
+	  SEE_scope_debug
+
+2006-01-18 11:50  d
+
+	* [r927] libsee/system.c: missing argument to SEE_ABORT
+
+2006-01-18 13:15  d
+
+	* [r929] Makefile.am, configure.ac, test1.c: bug 31: correct
+	  include dir name used in install (was foreign), and add install
+	  test to check libsee-config
+
+2006-01-19 13:18  d
+
+	* [r933] libsee/simple_gc.c, libsee/simple_gc.h: a simple garabage
+	  collector implementation that may help other people
+
+2006-01-19 13:20  d
+
+	* [r934] libsee/simple_gc.c: use header
+
+2006-01-21 03:49  d
+
+	* [r935] NEWS: up to date
+
+2006-01-21 03:51  d
+
+	* [r936] include/see/object.h, libsee/cfunction.c, libsee/debug.c,
+	  libsee/native.c, libsee/obj_Array.c, libsee/obj_Boolean.c,
+	  libsee/obj_Date.c, libsee/obj_Error.c, libsee/obj_Function.c,
+	  libsee/obj_Global.c, libsee/obj_Math.c, libsee/obj_Number.c,
+	  libsee/obj_Object.c, libsee/obj_RegExp.c, libsee/obj_String.c,
+	  libsee/string.defs: Major API change: Class field of
+	  SEE_objectclass is now a const char *. This removes the need for
+	  STR() macros to be constant at compile time.
+
+2006-01-21 07:18  d
+
+	* [r937] doc/USAGE.html: document change in [[Class]]
+
+2006-01-21 07:22  d
+
+	* [r938] include/see/interpreter.h, include/see/system.h,
+	  libsee/parse.c, libsee/regex.c, libsee/system.c, shell/debug.c:
+	  Major API change: trace callback function now takes a
+	  SEE_trace_event type. The parser now calls trace() a lot less
+	  frequently: only during significant flow-of-control events. The
+	  SEE_system structure now has a 'periodic' function pointer which
+	  is called at the same time as trace(), and also during the
+	  regular expression processing loop (bug 25). The debugger has
+	  been improved (added a 'list' command) and uses the trace event
+	  information rather than checking for location changes.
+
+2006-01-21 08:26  d
+
+	* [r939] libsee/obj_Global.c: Return global's [[Class]] to
+	  'Global' for mozilla compatibility
+
+2006-01-21 12:20  d
+
+	* [r940] unicode/copyright: update copyright year to 2006
+
+2006-01-21 13:13  d
+
+	* [r941] libsee/printf.c, libsee/printf.h: a printf implementation
+	  for systems that don't have vsnprintf
+
+2006-01-21 13:33  d
+
+	* [r942] libsee/Makefile.am, libsee/printf.c, libsee/printf.h,
+	  libsee/string.c: use internal _SEE_vsprintf() for strings
+
+2006-01-21 13:41  d
+
+	* [r943] libsee/Makefile.am, libsee/obj_Date.c, libsee/platform.h,
+	  libsee/platform_posix.c, libsee/platform_win32.c,
+	  libsee/system.c: Factor out platform-specific time functions and
+	  abort into platform files. Rewrote the daylight savings time
+	  code.
+
+2006-01-21 13:42  d
+
+	* [r944] configure.ac: add some test functions needed for timezone
+	  caluations. Also, bump version to 2.0
+	* [r945] NEWS: update NEWS with recent change summary
+
+2006-01-21 13:43  d
+
+	* [r946] include/see/version.h: bump API version number to 2.0
+	* [r947] doc/USAGE.html: correct URL to the ECMAScript document
+
+2006-01-21 13:44  d
+
+	* [r948] Makefile.am: Remove srcdir=builddir assumption in makefile
+	* [r949] README.svn: Update release steps: cvs2cl is now
+	  relatively automatic
+
+2006-01-21 14:10  d
+
+	* [r950] libsee/lex.c, libsee/tokens.c: remove reliance on snprintf
+
+2006-01-21 14:11  d
+
+	* [r951] include/see/system.h, libsee/system.c: include
+	  interpeter.h from system.h to get enum SEE_trace event
+	* [r952] libsee/platform_posix.c: include string.h to get memcpy
+
+2006-01-21 23:28  d
+
+	* [r953] shell/test/regress.js: insert test for bug 32
+
+2006-01-21 23:30  d
+
+	* [r954] unicode/gencase.pl: fix bad unicode case translations
+
+2006-01-21 23:31  d
+
+	* [r955] NEWS: note the unicode case translation fix
+
+2006-01-21 23:49  d
+
+	* [r956] shell/test/regress.js: correct test for bug 32
+
+2006-01-21 23:51  d
+
+	* [r957] NEWS, libsee/obj_Function.c: bug32: use activation class
+	  for activation objects so that this is propagated properly
+
+2006-01-22 04:26  d
+
+	* [r958] NEWS, libsee/obj_String.c, shell/test/regress.js: bug 33:
+	  String.prototype.indexOf() returned bad result when substring
+	  was longer than string
+
+2006-01-22 05:43  d
+
+	* [r959] libsee/string.c: make strings returned by
+	  SEE_string_sprintf() growable again
+
+2006-01-22 06:13  d
+
+	* [r960] libsee/lex.c, unicode/gen.c: Make the lexer use correct
+	  unicode tables
+
+2006-01-22 06:18  d
+
+	* [r961] shell/test/regress.js: test unicode table fix in r960
+
+2006-01-22 06:48  d
+
+	* [r962] libsee/simple_gc.c: collect during exponential usage
+
+2006-01-22 06:56  d
+
+	* [r963] libsee/tokens.c: fix SEGV on unknown tokens
+
+2006-01-22 12:20  d
+
+	* [r964] libsee/printf.c: support %+ formats in SEE_vsprintf()
+
+2006-01-22 12:23  d
+
+	* [r965] doc/USAGE.html, libsee/obj_String.c: another strange
+	  mozilla compatibility: distinguish undefined argument to
+	  String.split
+
+2006-01-22 12:39  d
+
+	* [r966] libsee/obj_Date.c: improve compatibility with mozilla
+	  date parsing/representation (EXT1 compat mode)
+
+2006-01-23 12:39  d
+
+	* [r967] NEWS, libsee/parse.c: bug 34: some boolean true values
+	  did not compare equal
+
+2006-01-23 12:40  d
+
+	* [r968] shell/test/regress.js: add regression test for bug 34
+
+2006-01-23 13:06  d
+
+	* [r969] doc/USAGE.html, libsee/obj_RegExp.c: mozilla compat:
+	  allow (/x*/ instanceof RegExp) to work with EXT1
+
+2006-01-23 13:07  d
+
+	* [r970] NEWS: mention RegExp [[HasInstance]] change
+
+2006-01-26 12:56  d
+
+	* [r971] doc/USAGE.html, libsee/lex.c: Compat: allow /[/]/ to be
+	  parsed as a regex literal in EXT1
+
+2006-01-26 13:34  d
+
+	* [r972] libsee/parse.c, shell/test/regress.js: bug 35: labels on
+	  blocks. (Large changes made to the labelling code to get this to
+	  adhere to the standard)
+
+2006-01-31 01:51  d
+
+	* [r988] libsee/printf.c, libsee/tokens.c: remove compiler warnings
+
+2006-01-31 01:52  d
+
+	* [r989] libsee/parse.c: correct bad macro definition of
+	  EVAL_DEBUG_LEAVE hit with -DNDEBUG
+
+2006-01-31 01:53  d
+
+	* [r990] libsee/obj_RegExp.c: correct comment text
+	* [r991] libsee/obj_Error.c: use the right attributes for Error
+	  objects
+
+2006-01-31 15:04  d
+
+	* [r992] NEWS, include/see/cfunction.h, include/see/intern.h,
+	  include/see/object.h, libsee/intern.c, shell/main.c,
+	  shell/shell.c: Improved API to use ASCII C strings in more
+	  places. SEE_intern_ascii() SEE_intern_global() SEE_OBJECT_GETA()
+	  SEE_OBJECT_PUTA() SEE_OBJECT_CANPUTA() SEE_OBJECT_HASPROPERTYA()
+	  SEE_OBJECT_DELETEA() SEE_CFUNCTION_PUTA() - creates a cfunction
+	  and adds to object
+
+2006-01-31 15:07  d
+
+	* [r993] include/see/mem.h, include/see/type.h.in,
+	  libsee/Makefile.am, libsee/alloca.c, libsee/enumerate.c,
+	  libsee/lex.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/obj_RegExp.c, libsee/obj_String.c, libsee/parse.c,
+	  libsee/regex.c: API change: SEE_ALLOCA() takes arguments in
+	  different order. New function SEE_STRING_ALLOCA() to provide
+	  hints to GC. No need to provide an alloca.c any more.
+	* [r994] configure.ac: clean up
+
+2006-01-31 15:08  d
+
+	* [r995] doc/USAGE.html: bring documentation up to date
+	* [r996] Makefile.am: add foreign to automake options to diminish
+	  warnings
+
+2006-01-31 21:10  d
+
+	* [r997] libsee/dtoa_config.h: bug 39: dtoa config support for
+	  ia64, and alpha (from Simun Mikecin)
+
+2006-02-03 10:18  d
+
+	* [r998] doc/USAGE.html, include/see/string.h, libsee/string.c:
+	  Add new libsee function SEE_string_append_ascii()
+	* [r999] libsee/intern.c: remove compielr warning
+
+2006-02-03 10:20  d
+
+	* [r1000] NEWS, shell/Makefile.am, shell/compat.c, shell/compat.h,
+	  shell/main.c, shell/shell.c: Add compat() function to shell, for
+	  changing compatibility flags
+
+2006-02-03 10:25  d
+
+	* [r1001] shell/test/regress.js: set compatibility flags explicitly
+
+2006-02-03 10:26  d
+
+	* [r1002] bootstrap.sh: remove gm4 define
+
+2006-02-04 08:35  d
+
+	* [r1003] libsee/simple_gc.c, libsee/simple_gc.h: change prefix
+	  from gc_ to sgc_; factor out machdep
+
+2006-02-04 10:06  d
+
+	* [r1004] libsee/obj_RegExp.c, libsee/parse.c, libsee/parse.h: bug
+	  40: RegExp.prototype.test() was returning reversed answer
+
+2006-02-04 10:09  d
+
+	* [r1005] shell/test/regress.js: add regression test for bug 40
+
+2006-02-04 12:03  d
+
+	* [r1006] NEWS, doc/USAGE.html, libsee/parse.c: Add conditional
+	  function declarations (from JS1.5)
+
+2006-02-05 12:49  d
+
+	* [r1007] libsee/parse.c: bug 34: fix boolean comparison for ===
+	  and !==
+
+2006-02-05 13:01  d
+
+	* [r1008] NEWS, doc/USAGE.html, libsee/obj_RegExp.c,
+	  libsee/regex.c, libsee/regex.h, libsee/string.defs: Add RegExp.
+	  and friends (EXT1)
+
+2006-02-07 10:19  d
+
+	* [r1009] shell/test/grammar.js: Add recent grammar corrections to
+	  the grammar.js test
+
+2006-02-07 15:13  d
+
+	* [r1010] libsee/native.c, libsee/obj_Array.c,
+	  libsee/obj_Object.c, libsee/parse.c: clarify intern requirement
+	  on [[HasProperty]] etc; added assertion to check for if this is
+	  ever violated
+
+2006-02-07 15:32  d
+
+	* [r1011] NEWS, doc/USAGE.html, libsee/regex.c: compat: allow
+	  octal escapes in regex with EXT1
+
+2006-02-07 15:33  d
+
+	* [r1012] libsee/obj_Object.c: add missing header to quell
+	  compiler warning
+
+2006-02-07 15:35  d
+
+	* [r1013] NEWS, libsee/obj_Function.c, shell/test/regress.js: bug
+	  36: arguments and activation objects now adhere to ecma
+
+2006-02-08 12:11  d
+
+	* [r1017] libsee/obj_Array.c: checks for too-long arrays
+
+2006-02-08 15:35  d
+
+	* [r1018] libsee/obj_Function.c: more corrections to the way that
+	  arguments and parameters are initialized to bring back in line
+	  with ECMA
+
+2006-02-08 15:37  d
+
+	* [r1019] include/see/interpreter.h, shell/compat.c,
+	  shell/shell.c: API change: compatibility flag names are
+	  changing; now we have JS12 thru JS15 which will enable/disable
+	  netscape js specific behaviour
+
+2006-02-08 15:38  d
+
+	* [r1020] libsee/obj_Date.c: fix compat flags
+
+2006-02-08 15:40  d
+
+	* [r1021] libsee/obj_Boolean.c, libsee/value.c: compat:
+	  ToBoolean() on JS1.2 understands Boolean instances
+
+2006-02-08 15:41  d
+
+	* [r1022] libsee/native.c: compat: __proto__ was with JS1.2 [??
+
+2006-02-08 15:42  d
+
+	* [r1023] shell/main.c: Make the shell more compliant with the
+	  shell expected by the mozilla test suite; especially in exit
+	  codes
+	* [r1024] libsee/obj_Array.c: JS1.2 compatibility: Array(3) <=> [3]
+
+2006-02-13 14:54  d
+
+	* [r1028] doc/USAGE.html: describe new SEE_COMPAT_JS* flags (just
+	  JS1.2 for now)
+
+2006-02-19 13:45  d
+
+	* [r1029] include/see/mem.h: Add SEE_NEW_FINALIZE() macro
+
+2006-02-19 13:53  d
+
+	* [r1030] NEWS, include/see/string.h, libsee/string.c: Add
+	  SEE_string_utf8()
+
+2006-02-19 13:55  d
+
+	* [r1031] libsee/obj_RegExp.c: add parentheses to avoid compiler
+	  warning
+
+2006-02-19 13:59  d
+
+	* [r1032] NEWS, include/see/Makefile.am,
+	  include/see/interpreter.h, include/see/module.h,
+	  include/see/see.h, libsee/init.h, libsee/interpreter.c,
+	  libsee/module.c: Add support for modules
+
+2006-02-19 14:00  d
+
+	* [r1033] libsee/Makefile.am, shell/Makefile.am, shell/README,
+	  shell/main.c, shell/module.c, shell/module.h: Add module loading
+	  support to the shell
+
+2006-02-19 14:01  d
+
+	* [r1034] shell/mod_File.c: Add mod_File.c - an example of writing
+	  a SEE module
+
+2006-02-19 14:13  d
+
+	* [r1035] bootstrap.sh: improve how bootstrap.sh works
+
+2006-02-19 14:15  d
+
+	* [r1036] shell/Makefile.am, shell/module.c: look in pkglib
+	  directory for modules (untested)
+
+2006-02-19 14:16  d
+
+	* [r1037] doc/USAGE.html: Document SEE_NEW_FINALIZE(),
+	  SEE_string_toutf8(), and start a section on modules (incomplete).
+
+2006-02-19 14:22  d
+
+	* [r1038] doc/USAGE.html: Set USAGE.html's mime type to text/html
+
+2006-02-19 15:37  d
+
+	* [r1039] shell/test/regress.js: Add regression tests for bug 36
+
+2006-02-20 12:01  d
+
+	* [r1040] doc/USAGE.html, libsee/lex.c: Compat: allow malformed \u
+	  and \x escapes in JS1.2
+
+2006-02-21 11:55  d
+
+	* [r1041] doc/USAGE.html: Correct some minor entities problems.
+	  Improve the documentation on modules. Lengthen the Name Index
+	  table
+
+2006-02-21 12:04  d
+
+	* [r1042] doc/USAGE.html: Augment document conventions; refer
+	  reader to mod_File.c
+
+2006-02-21 12:10  d
+
+	* [r1043] doc/USAGE.html: remove '[almost]' since unicode support
+	  is now fixed. Any remaining deviations from ECMA are bugs.
+
+2006-02-21 12:13  d
+
+	* [r1044] doc/USAGE.html: relativize font sizes
+
+2006-02-21 12:36  d
+
+	* [r1045] shell/mod_File.c: improve documentation in mod_File.c
+
+2006-02-22 11:16  d
+
+	* [r1046] shell/mod_File.c: Improve comments to make this a better
+	  SEE module tutorial. Expand whitespace.
+
+2006-02-22 12:22  d
+
+	* [r1047] include/see/interpreter.h, shell/compat.c,
+	  shell/shell.c: Add SEE_COMPAT_JS11 compat flag for JavaScript 1.1
+
+2006-02-22 13:21  d
+
+	* [r1048] libsee/obj_Array.c, libsee/obj_Object.c: compat:
+	  Array.prototype.toString() and Object.prototype.toString() will
+	  print re-parsable literals in JS12 mode. But only for JS12. It
+	  became ECMA-compliant again in JS13.
+
+2006-02-22 13:54  d
+
+	* [r1049] libsee/obj_String.c: compat: for JS 1.2, the special
+	  case str.split(' ') will strip leading whitespace from str and
+	  then split on /\s+/.
+
+2006-02-25 13:18  d
+
+	* [r1050] NEWS, libsee/obj_RegExp.c: Compat (JS11): Regular
+	  expression instances now have a [[Call]] property, which behaves
+	  essentially the same as calling the .exec method.
+
+2006-02-25 14:08  d
+
+	* [r1051] libsee/obj_String.c: Add some extra JS compat functions
+	  to String.prototype
+
+2006-02-25 14:09  d
+
+	* [r1052] doc/USAGE.html: bring documentation up to date with
+	  recent compatibility additions
+	* [r1053] libsee/string.defs: extra string defs needed for recent
+	  String.prototype compat additions
+
+2006-03-25 01:33  d
+
+	* [r1054] libsee/input_file.c: tidy up; allow empty encoding
+	  labels to be the same as NULL.
+
+2006-03-25 01:34  d
+
+	* [r1055] shell/main.c: Ignore '#!' leaders from files loaded with
+	  -f. (idea from phil?ipal.net)
+
+2006-03-25 01:36  d
+
+	* [r1056] libsee/module.c: Handle case where chained module
+	  loading fails.
+
+2006-03-25 01:38  d
+
+	* [r1057] NEWS: update NEWS with #! change to see-shell
+
+2006-04-14 13:23  d
+
+	* [r1058] doc/USAGE.html: document SEE_Object_new() in USAGE.html;
+	  thanks David Nicol
+
+2006-04-14 13:32  d
+
+	* [r1059] doc/USAGE.html: documentation improvements: make all
+	  refs to NULL appear in code font; improve wording
+
+2006-04-14 13:45  d
+
+	* [r1060] doc/USAGE.html: more minor documentation improvements;
+	  mention mod_File.c
+
+2006-04-18 13:44  d
+
+	* [r1061] unicode/gen.c: when generating unicode tables, use the
+	  more portable fgets instead of fgetln (thanks, David Nicol)
+
+2006-04-18 13:47  d
+
+	* [r1062] libsee/parse.c: remove use of UNDEFUNDEF from the parser
+	  (thanks, David Nicol)
+
+2006-04-19 14:02  d
+
+	* [r1063] doc/USAGE.html: Documentation improvements. Provided an
+	  example of how to use the enumerator. Correctly quoted some
+	  attributes of some HTML elements. New section (3.2) on how to
+	  use finalizers. Add internal methods names (e.g. [[Put]]) into
+	  document, and make it clearer how to use the check functions.
+
+2006-04-19 14:21  d
+
+	* [r1064] libsee/module.c: fix some compiler warnings in
+	  libsee/module.c
+
+2006-04-19 14:29  d
+
+	* [r1065] NEWS, doc/USAGE.html, include/see/mem.h,
+	  include/see/system.h, libsee/mem.c, libsee/system.c,
+	  shell/shell.c: Add SEE_gcollect() that tries to release all
+	  unreachable objects. Change the shell's gc_gcollect() to be
+	  named gc() to match Mozilla.
+
+2006-04-19 14:32  d
+
+	* [r1066] shell/mod_File.c: mod_File.c tries a gcollect if fopen()
+	  fails (follows finalization guidelines in USAGE.html)
+
+2006-04-20 11:58  d
+
+	* [r1067] doc/USAGE.html: in USAGE, document assumptions of
+	  internalised strings on some object methods; also clean up some
+	  language about the valid checks
+
+2006-04-20 12:44  d
+
+	* [r1068] libsee/system.c: add newline to libsee's non-release
+	  malloc warning; remove parenthetical recommendation
+
+2006-04-20 14:09  d
+
+	* [r1069] libsee/platform_posix.c: flush stderr and stdout before
+	  aborting
+
+2006-04-20 14:10  d
+
+	* [r1070] shell/test/common.js: factor out the pass/fail messages
+	  in shell/test/common.js
+
+2006-04-20 14:11  d
+
+	* [r1071] shell/shell.c: in the see-shell, introduce a new
+	  toplevel object Shell, and attach exit and gcdump to it.
+
+2006-04-20 14:15  d
+
+	* [r1072] Makefile.am, NEWS, bootstrap.sh, configure.ac,
+	  shell/Makefile.am, shell/module.c, shell/t-File,
+	  shell/t-File.js: Use libtool's dynamic loader API (libltdl); add
+	  test cases for the File module.
+
+2006-04-20 14:16  d
+
+	* [r1073] shell/mod_File.c: fix a problem in the File module where
+	  the In Out and Err objects were being created without a prototype
+
+2006-04-22 13:47  d
+
+	* [r1074] shell/mod_File.c: stop seg fault in File module when an
+	  argument is given to File.prototype.read()
+
+2006-04-25 05:44  d
+
+	* [r1075] shell/t-File: make sure we use the libFile.la from the
+	  build directory
+
+2006-04-26 21:40  d
+
+	* [r1076] shell/mod_File.c: add missing HasInstance field to the
+	  File class (David Nicol)
+
+2006-04-29 09:54  d
+
+	* [r1077] libsee/parse.c: Improve comments, rename & prototype the
+	  target_matches function
+
+2006-05-07 04:43  d
+
+	* [r1078] libsee/lex.c, libsee/native.c, libsee/obj_Date.c:
+	  Correct some compat logic to look for JS1.2 or above
+
+2006-05-07 04:45  d
+
+	* [r1079] libsee/simple_gc.c: improve the simple GC so that it
+	  doesn't find malloc's own pointers
+
+2006-05-07 05:57  d
+
+	* [r1080] include/see/string.h, libsee/parse.c, libsee/string.c:
+	  Make SEE_string_concat() more efficient. Improve comments in
+	  string.c Previously, loops such as for (var s = "", i = 1; i <
+	  1000; i++) s = s + "x"; were very very inefficient because
+	  string catenation involved complete duplication of strings. Now,
+	  SEE_string_concat(interp, a, b) uses data aliasing when the
+	  first string is 'simple'. Exponential storage prediction
+	  previously only available through the C interface is now
+	  implicitly available through ECMAScript's "<String> + <String>"
+	  operator. One side effect of this change to concatenation is
+	  that the first string in the C API is marked ungrowable. Extra
+	  assertions about growability have been added.
+
+2006-05-07 05:58  d
+
+	* [r1081] libsee/error.c, libsee/try.c: improve comments; move
+	  debug messages out of critical areas
+
+2006-05-07 06:03  d
+
+	* [r1082] doc/USAGE.html: - Add new section 3.2 "Interacting with
+	  an external allocator" - Replace tabs with spaces - Document
+	  SEE_string_concat() properly - Improve visual formatting of the
+	  *printf documentation tables - Don't use "input" and "output" as
+	  verbs
+
+2006-05-07 08:24  d
+
+	* [r1083] libsee/obj_String.c: fix bug 42: String.concat()
+
+2006-05-07 08:25  d
+
+	* [r1084] NEWS: record fix of bug 42
+
+2006-05-11 14:34  d
+
+	* [r1085] configure.ac: Set version to 2.0.revision_snapshot
+
+2006-06-21 14:44  d
+
+	* [r1090] shell/test/regress.js: news and regression test for bug
+	  42
+
+2006-06-21 14:45  d
+
+	* [r1091] libsee/intern.c: tighten constness of private hashing
+	  function
+
+2006-06-21 14:46  d
+
+	* [r1092] libsee/obj_Object.c: improve compatibility with netscape
+	  when printing object displays
+
+2006-06-21 14:47  d
+
+	* [r1093] libsee/string.pl: Make SEE_nstringtab and the STR()
+	  string content constant (part of bug 16)
+
+2006-06-21 14:48  d
+
+	* [r1094] NEWS: mention bug 12 fix in NEWS
+
+2006-07-02 12:07  d
+
+	* [r1095] NEWS, include/see/Makefile.am: bug 45 backslashes in a
+	  perl command somehow get through to perl on some platforms
+	  Thanks to Kalle Olavi Niemitalo
+
+2006-07-07 16:01  d
+
+	* [r1096] TODO: update TODO
+
+2006-07-07 16:03  d
+
+	* [r1097] doc/USAGE.html: Reference circular memory leak bug
+	  example
+
+2006-07-28 15:20  d
+
+	* [r1098] NEWS, doc/USAGE.html, include/see/cfunction.h,
+	  include/see/string.h, libsee/cfunction.c, libsee/string.c,
+	  libsee/string.defs, shell/mod_File.c: New function
+	  SEE_parse_args() for helping convert arguments into C types.
+
+2006-07-28 15:24  d
+
+	* [r1099] doc/USAGE.html, libsee/enumerate.c, libsee/function.c,
+	  libsee/lex.c, libsee/native.c, libsee/obj_Array.c,
+	  libsee/obj_Function.c, libsee/obj_Global.c, libsee/obj_RegExp.c,
+	  libsee/parse.c, libsee/regex.c, libsee/system.c: Mark
+	  unconverted EXT1 features with "EXT:nnn" where nn is a number. I
+	  plan to work on converting these to proper JS_COMPAT tests, as
+	  soon as I figure out which versions of JS they apply to!
+
+2006-07-28 15:52  d
+
+	* [r1100] doc/USAGE.html: consolidate definitions of ASCII; minor
+	  fixes
+
+2006-07-31 12:39  d
+
+	* [r1101] shell/test/regress.js: add regress for bug 46; add
+	  comments, tidy
+
+2006-07-31 13:06  d
+
+	* [r1102] libsee/system.c: relax requirement for malloc_finalize
+	  so that distcheck works
+
+2006-07-31 13:11  d
+
+	* [r1103] shell/Makefile.am: Add File module tests to distribution
+
+2006-07-31 13:21  d
+
+	* [r1104] Makefile.am, shell/t-File: improved cleanup
+
+2006-08-01 11:14  d
+
+	* [r1105] libsee/obj_Function.c: always optimize calls to empty
+	  functions
+
+2006-08-01 14:19  d
+
+	* [r1106] libsee/parse.c: conditional ifs are a JS1.5 feature
+	* [r1107] shell/test/grammar.js: test confitional ifs in a JS
+	  context
+
+2006-08-01 14:22  d
+
+	* [r1108] NEWS, doc/USAGE.html, include/see/interpreter.h,
+	  include/see/object.h, include/see/system.h, libsee/cfunction.c,
+	  libsee/function.c, libsee/function.h, libsee/interpreter.c,
+	  libsee/obj_Function.c, libsee/object.c: security domains
+	  framework
+	* [r1109] libsee/Makefile.am: add -version-info to libsee
+
+2006-08-01 14:24  d
+
+	* [r1110] doc/USAGE.html: html typo
+
+2006-08-01 15:02  d
+
+	* [r1111] doc/USAGE.html: improve documentation on the security
+	  framework
+
+2006-08-01 15:04  d
+
+	* [r1112] libsee/system.c: make default transit_sec_domain explicit
+
+2006-08-01 15:22  d
+
+	* [r1113] doc/USAGE.html: more security api documentation
+	  improvements
+
+2006-08-01 15:33  d
+
+	* [r1114] NOTES.spidermonkey: update security parts
+
+2006-08-01 15:37  d
+
+	* [r1115] shell/mod_File.c: clarify intent of the file
+
+2006-08-02 11:25  d
+
+	* [r1116] doc/USAGE.html: Improve security guidelines; document
+	  the shell debugger
+
+2006-08-02 15:13  d
+
+	* [r1117] libsee/printf.c: Protect against future use of %e/%f/%g
+
+2006-08-02 15:15  d
+
+	* [r1118] libsee/cfunction.c: throw an error if SEE_parse_args
+	  converts a string with nuls to ASCII or UTF-8
+	* [r1119] libsee/string.defs: Add missing error strings
+
+2006-08-02 15:16  d
+
+	* [r1120] shell/test/common.js: put more information into the
+	  exception results
+
+2006-08-02 15:18  d
+
+	* [r1121] doc/USAGE.html: Major improvements New sections: 4.4
+	  Periodic callbacks 8.3 Porting from API 1.0 to API 2.0 Added
+	  notes indicating API2.0 changes (i.e. from SEE-1.3.1) Documented
+	  many missing functions and macros
+
+2006-08-02 16:28  d
+
+	* [r1122] shell/test/common.js: correct conversion of strings to a
+	  literal form
+	* [r1123] libsee/string.pl: Add some comments to the string table
+
+2006-08-02 16:40  d
+
+	* [r1124] libsee/cfunction.c, libsee/string.pl, shell/shell.c:
+	  remove some compiler warnings
+
+2006-08-03 14:28  d
+
+	* [r1125] doc/USAGE.html, libsee/obj_Number.c: improve
+	  compatibility Number([1,2,3])==3 under js1.2
+
+2006-08-05 12:48  d
+
+	* [r1126] doc/USAGE.html, include/see/interpreter.h,
+	  libsee/enumerate.c, libsee/function.c, libsee/lex.c,
+	  libsee/native.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/obj_RegExp.c, libsee/parse.c, libsee/regex.c,
+	  libsee/system.c, shell/compat.c, shell/shell.c,
+	  shell/test/regress.js: remove EXT1 compat; move into JS11
+
+2006-08-06 12:00  d
+
+	* [r1127] libsee/PHILOSOPHY: A couple of notes on the
+	  implementation approach
+
+2006-08-06 12:03  d
+
+	* [r1128] NEWS: note the EXT1 removal
+
+2006-08-06 12:04  d
+
+	* [r1129] shell/test/mozilla/Makefile.am,
+	  shell/test/mozilla/README.mozilla,
+	  shell/test/mozilla/run-mozilla-tests.in: Improvements in running
+	  the tests against spidermonkey
+
+2006-08-06 12:20  d
+
+	* [r1130] NEWS: releasing today
+
+2006-08-06 12:36  d
+
+	* [r1131] configure.ac: Set version to 2.0.revision
+
+2006-08-10 12:45  d
+
+	* [r1133] configure.ac, include/see/version.h: increase version to
+	  2.1
+
+2006-08-10 12:46  d
+
+	* [r1134] libsee/platform.h: fix compiler warning
+
+2006-08-10 12:47  d
+
+	* [r1135] libsee/Makefile.am: include platform_* in distributions
+
+2006-08-10 12:49  d
+
+	* [r1136] NEWS, doc/USAGE.html, include/see/cfunction.h,
+	  libsee/cfunction.c: new API: SEE_call_args()
+
+2006-08-10 12:56  d
+
+	* [r1137] doc/USAGE.html: version 2.1
+
+2006-08-12 06:45  d
+
+	* [r1138] doc/USAGE.html, libsee/error.c, libsee/obj_Array.c,
+	  libsee/obj_RegExp.c, libsee/obj_String.c, libsee/object.c,
+	  libsee/parse.c, libsee/value.c: Pass NULL for the thisobj
+	  parameter when calling [[Construct]]. The signature of
+	  [[Construct]] really should have removed thisobj before API 2.0
+	  was released, but.. oh well :(
+
+2006-08-12 06:49  d
+
+	* [r1139] NEWS, libsee/obj_Object.c: more [[Construct]]/thisobj
+	  deprecation
+
+2006-08-12 06:50  d
+
+	* [r1140] configure.ac, libsee/Makefile.am, libsee/code.h,
+	  libsee/parse.c: Beginnings of code generator support. Activated
+	  with --enable-parser-codegen during configure
+
+2006-08-12 10:55  d
+
+	* [r1141] libsee/code.h, libsee/parse.c: more codegen
+
+2006-08-24 09:17  d
+
+	* [r1142] NEWS, include/see/value.h, libsee/code.h,
+	  libsee/obj_Date.c, libsee/obj_Global.c, libsee/obj_Math.c,
+	  libsee/obj_RegExp.c, libsee/value.c: bug 50: use !finite()
+	  instead of isinf()
+
+2006-08-24 13:36  d
+
+	* [r1143] libsee/platform_posix.c: bug 49: use a signed integer
+	  for time_t differences
+
+2006-08-24 13:38  d
+
+	* [r1144] NEWS, configure.ac: bug 49: configure.ac corrections:
+	  alloca, readline, noreturn
+
+2006-08-24 14:25  d
+
+	* [r1145] configure.ac: bug 51: correctly detect GC_malloc_atomic
+
+2006-08-27 07:25  d
+
+	* [r1146] NEWS, doc/USAGE.html, include/see/debug.h,
+	  include/see/try.h.in, libsee/debug.c, shell/main.c: bug 52:
+	  attach tracebacks to throw contexts Tracebacks are now reset
+	  after handled exceptions.
+
+2006-08-27 08:00  d
+
+	* [r1147] bootstrap.sh: autoconf 2.60
+
+2006-08-27 08:01  d
+
+	* [r1148] libsee/mem.c: if system.malloc_string is NULL, use
+	  system.malloc instead
+
+2006-08-27 08:05  d
+
+	* [r1149] Makefile.am, configure.ac, ssp, ssp/Makefile.am,
+	  ssp/README, ssp/httpd.c, ssp/httpd.h, ssp/pool.c, ssp/pool.h,
+	  ssp/ssp.c, ssp/ssp.h, ssp/test.ssp: Add SSP example - an
+	  embedded javascript HTTP server. Idea from J Brook Monroe
+
+2006-08-27 08:06  d
+
+	* [r1150] NEWS: mention ssp example
+
+2006-08-27 08:12  d
+
+	* [r1151] ssp/Makefile.am: add test.ssp and include.ssp to 'make
+	  dist'
+
+2006-08-27 08:15  d
+
+	* [r1152] ssp/README, ssp/include.ssp: Add include.ssp; better doc
+
+2006-09-05 10:31  d
+
+	* [r1153] NEWS, libsee/platform_posix.c: bug 49: change sign of
+	  value returned by _SEE_platform_dst; corrects daylight savings
+	  time calculation
+
+2006-12-12 09:43  d
+
+	* [r1177] libsee/input_utf8.c: fix bug 60: problem decoding UTF-8
+	  on systems where char is signed
+
+2007-01-18 13:31  d
+
+	* [r1178] NEWS, libsee/parse.c, shell/test/regress.js: bug 61:
+	  assignment operator -= was raising spurious typerror exceptions
+	  due to uninitialised variable not picked up because it was
+	  passed by addr.
+
+2007-01-18 14:17  d
+
+	* [r1179] doc/USAGE.html: bug 55: document that cfunctions may
+	  recurse via SEE_Global_eval)
+
+2007-01-19 10:24  d
+
+	* [r1181] NEWS, doc/USAGE.html, libsee/obj_Function.c,
+	  libsee/parse.c, shell/test/regress.js: bug 62: fix calls to
+	  SEE_OBJECT_DELETE that don't intern the property. Also, correct
+	  documentation to indicate that the property argument is expected
+	  to be internalised.
+
+2007-01-19 13:05  d
+
+	* [r1182] libsee/intern.c: Add assertion check to ASCII-only
+	  intern function
+
+2007-02-06 22:21  d
+
+	* [r1183] libsee/dtoa.c: Use #error instead of bad C syntax to
+	  force an error.
+
+2007-02-06 22:22  d
+
+	* [r1184] configure.ac, libsee/Makefile.am: Support cross
+	  compiling; new option --enable-native-dtoa
+
+2007-02-06 22:23  d
+
+	* [r1185] libsee/dtoa_native.c: missed this file for
+	  --enable-native-dtoa
+
+2007-02-06 22:34  d
+
+	* [r1186] libsee/dtoa_native.c: correct call, add licence
+
+2007-04-06 11:02  d
+
+	* [r1189] configure.ac: Use AC_TRY_COMPILE correctly. Variadic
+	  macros will be properly detected now.
+
+2007-04-09 05:46  d
+
+	* [r1190] libsee/dtoa_native.c: missing semicolon
+
+2007-04-09 10:36  d
+
+	* [r1191] configure.ac: improve the --enable option handling Added
+	  a macro SEE_ARG_ENABLE() to improve on AC_ARG_ENABLE() handling.
+	  e.g. --enable-dtoa=auto now searches for the wanted functions.
+	  If you supply --enable-dtoa[=yes] then it's enabled without
+	  checking if supported. Changed --enable-debug to
+	  --enable-diagnostic. This i son by default, and is simply a
+	  switch to enable/disable the (side-effect-free) SEE_assert()
+	  calls. (A bit dangerous, but possibly useful for performance).
+
+2007-04-09 10:37  d
+
+	* [r1192] libsee/parse.c, libsee/string.defs: eval() now uses the
+	  input name <eval> instead of <string>. This makes error messages
+	  read better.
+
+2007-04-10 12:35  d
+
+	* [r1193] NEWS, doc/USAGE.html, include/see/mem.h, libsee/mem.c,
+	  libsee/printf.c, libsee/string.c, shell/test/regress.js: Add
+	  SEE_grow_to() for limited, growable memory regions. Make
+	  internal simple strings use SEE_grow_to().
+
+2007-04-14 11:32  d
+
+	* [r1194] include/see/type.h.in: correct ifndef (part of bug 65)
+
+2007-04-15 01:13  d
+
+	* [r1195] NEWS: update NEWS
+
+2007-04-17 10:07  d
+
+	* [r1196] NEWS, libsee/lex.c, shell/test/regress.js: bug 66: fix
+	  line number tracking when using '//' or '<!--'
+
+2007-04-17 12:48  d
+
+	* [r1197] libsee/intern.c, libsee/lex.c, libsee/obj_Array.c,
+	  libsee/obj_RegExp.c, libsee/string.pl, libsee/tokens.c,
+	  libsee/tokens.h: bug 16: Add support for string resource stores.
+	  If STATIC_STRINGS is defined, then STR(x) references will be
+	  calculated at link time. Otherwise, STR(x) is calculated at
+	  runtime as an index into an array at SEE_stringtab. Someone
+	  porting this library to a device where string storage is premium
+	  can make use of this. They'll need to modify string.pl to
+	  generate a special resource file.
+
+2007-04-17 13:17  d
+
+	* [r1198] NEWS, configure.ac, libsee/nmath.h, libsee/obj_Date.c,
+	  libsee/obj_Number.c, libsee/parse.c, libsee/value.c: bug 16: use
+	  floor() instead of rint() Also, replace a bunch of math.h
+	  function calls with their NUMBER_xx equivalents.
+
+2007-04-17 13:31  d
+
+	* [r1199] libsee/parse.c: add missing header for NUMBER_fmod
+
+2007-04-17 13:32  d
+
+	* [r1200] libsee/regex.c: bug 20: use SEE_growable for regex data
+
+2007-04-17 13:36  d
+
+	* [r1201] include/see/mem.h: Add SEE_GROW_TO()
+
+2007-04-17 13:39  d
+
+	* [r1202] libsee/printf.c: fix dev bug: growby doesn't set the
+	  length (growto does)
+
+2007-04-17 13:40  d
+
+	* [r1203] configure.ac: improve configure help strings; don't
+	  build ssp
+
+2007-04-17 13:49  d
+
+	* [r1204] NEWS: update NEWS
+
+2007-04-17 13:56  d
+
+	* [r1205] libsee/system.c: bug64: define GC_PTR if gc.h can't be
+	  included.
+
+2007-04-19 10:29  d
+
+	* [r1206] libsee/value.c: Add some type checks to SEE_ToBoolean,
+	  ToNumber, ToString, ToObject().
+
+2007-04-21 01:46  d
+
+	* [r1207] libsee/mem.c: Bug 68: fixes crash in growto; the wrong
+	  pointer was being freed.
+
+2007-04-21 01:53  d
+
+	* [r1208] NEWS, shell/test/regress.js: add regression test for bug
+	  68
+
+2007-04-21 02:46  d
+
+	* [r1209] configure.ac: bug 67: fix ifelse argument warning with
+	  GNU m4
+
+2007-04-21 04:00  d
+
+	* [r1210] libsee/mem.c, libsee/native.c, libsee/obj_Date.c,
+	  libsee/obj_Error.c, libsee/obj_Global.c, libsee/obj_RegExp.c,
+	  libsee/obj_String.c, libsee/parse.c, libsee/platform.h,
+	  libsee/regex.c, libsee/simple_gc.c, libsee/string.c,
+	  libsee/value.c, shell/compat.c, shell/getopt.c, shell/main.c,
+	  shell/module.c, shell/readline.c: Fix some -Wall compiler
+	  warnings and protect #include <string.h> properly
+
+2007-04-22 13:54  d
+
+	* [r1211] shell/main.c: Compatibility flags (-c) apply to the
+	  SEE_system default flags instead of just the next created
+	  interpreter.
+
+2007-04-22 13:59  d
+
+	* [r1212] NEWS, doc/USAGE.html, libsee/obj_Object.c: bug 47: Add
+	  Object.prototype.eval() for JS1.1 and JS1.2 compatibility
+
+2007-04-25 07:22  d
+
+	* [r1213] include/see/mem.h: add small comment to document
+	  SEE_grow_to
+
+2007-04-25 07:25  d
+
+	* [r1214] shell/README: Correct documentation of the shell's
+	  compat option (-c)
+
+2007-04-25 07:29  d
+
+	* [r1215] libsee/array.h, libsee/cfunction.c, libsee/enumerate.h,
+	  libsee/error.c, libsee/init.h, libsee/input_file.c,
+	  libsee/input_utf8.c, libsee/lex.h, libsee/nmath.h,
+	  libsee/obj_Function.c, libsee/parse.h, libsee/printf.h,
+	  libsee/scope.h, libsee/tokens.c, libsee/tokens.h: Clean up
+	  headers: - Use consistent names for #ifndef-protection - Place
+	  use of string.h and stdarg.h in properly protected places -
+	  Forward declare some structures to keep some headers independent
+	  - Remove some unnecessary includes
+
+2007-04-25 07:36  d
+
+	* [r1216] configure.ac, libsee/memcmp.c, libsee/memmove.c,
+	  libsee/obj_Global.c, libsee/replace.h: Add memmove; and make
+	  memcmp and memmove replacements private to libsee. The reason I
+	  am renaming memmove and memcmp to _SEE_memcmp and _SEE_memmove
+	  is for the case the including application defines its own
+	  memmove or memcmp. We don't want to conflict.
+
+2007-04-25 07:46  d
+
+	* [r1217] libsee/memmove.c: correct return type of memmove()
+
+2007-04-25 10:23  d
+
+	* [r1218] libsee/memcmp.c, libsee/memmove.c, libsee/replace.h:
+	  Correct argument order of memmove. (I can't believe I got that
+	  wrong). Add const to memcmp() args
+
+2007-04-25 12:35  d
+
+	* [r1219] configure.ac, libsee/Makefile.am: Correctly detect
+	  memcmp and add libsee/replace.h to dist.
+
+2007-04-25 13:14  d
+
+	* [r1220] NEWS, doc/USAGE.html, libsee/cfunction.c,
+	  libsee/obj_Array.c, libsee/obj_Boolean.c, libsee/obj_Date.c,
+	  libsee/obj_Error.c, libsee/obj_Function.c, libsee/obj_Number.c,
+	  libsee/obj_Object.c, libsee/obj_RegExp.c, libsee/obj_String.c,
+	  libsee/string.defs, shell/mod_File.c: bug 69: fix segfaults when
+	  functions assume 'this' context, but thisobj is NULL
+
+2007-04-25 13:19  d
+
+	* [r1221] shell/test/regress.js: Add regression test for bug 69
+
+2007-04-28 11:00  d
+
+	* [r1222] NEWS, libsee/parse.c: bug 70: SEE_context_eval() should
+	  never return a reference value (spotted by Dan Kennedy)
+
+2007-05-05 14:23  d
+
+	* [r1223] doc/BYTECODE.txt: document the intermediate instuction
+	  set
+
+2007-05-29 12:08  d
+
+	* [r1224] include/see/try.h.in: Separate SEE_TRY() into macros for
+	  codegen
+
+2007-05-29 12:09  d
+
+	* [r1225] libsee/obj_Global.c, libsee/obj_String.c: Add missing
+	  includes that cause compiler warnings.
+
+2007-05-29 12:12  d
+
+	* [r1226] doc/BYTECODE.txt, include/see/system.h,
+	  libsee/Makefile.am, libsee/code.h, libsee/code1.c,
+	  libsee/code1.h, libsee/parse.c, libsee/system.c,
+	  libsee/version.c: Continued work on the code generator.
+
+2007-05-30 16:33  d
+
+	* [r1227] libsee/parse.c: Fix ExpressionStatement evaluation - it
+	  did not call GetValue() when it should. Refer to standard,
+	  section 12.4. This explains why when running see-shell, when the
+	  last command was an identifier, I'd get a SEE_REFERENCE.
+
+2007-05-30 16:40  d
+
+	* [r1228] doc/BYTECODE.txt, libsee/code.h, libsee/code1.c,
+	  libsee/code1.h, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/parse.c, libsee/string.defs, shell/test/function.js: More
+	  code generator work. - Provided separate opcodes for <,>,<=,>=
+	  because I found the the semantics too hard to untangle when
+	  comparing NaNs! - Added a FUNC instruction to bind a function
+	  object to a scope. - Distinguished between Program bodies and
+	  Function bodies for evaluation. This makes returning undefined
+	  from functions easier to do during eval/codegen. Added a test
+	  case. - added a disassembler to code1 - renamed the code
+	  interface method 'eval' to 'exec'. try/with/enum still not
+	  working in codegen.
+
+2007-05-31 14:08  d
+
+	* [r1229] shell/main.c: Allow debug vars to be mutlivalued. eg
+	  -dvvv means verbose -dv
+
+2007-05-31 14:09  d
+
+	* [r1230] libsee/code1.c, libsee/parse.c: More bytecode work. -
+	  fixes a bug in post inc/decrement where the stack use was
+	  underestimated. - adds WITH and ENUM block support to code1
+
+2007-05-31 15:29  d
+
+	* [r1231] libsee/code1.c: Implement try-catch and try-finally
+	  opcodes for code1.
+
+2007-06-01 13:18  d
+
+	* [r1232] shell/test/Makefile.am: Add TESTOPTS as a way to add
+	  extra (debug) flags to see-shell when running tests
+
+2007-06-01 13:19  d
+
+	* [r1233] libsee/code1.c: Implement EQ and SEQ. Remove some in
+	  situ assignments.
+
+2007-06-03 12:22  d
+
+	* [r1234] libsee/native.c, libsee/obj_Function.c,
+	  libsee/obj_RegExp.c, libsee/obj_String.c,
+	  libsee/platform_posix.c, libsee/printf.c, libsee/string.c,
+	  libsee/value.c: SEE_ASSERT() now calls SEE_ABORT()
+
+2007-06-03 12:23  d
+
+	* [r1235] include/see/error.h.in: SEE_ASSERT() now calls
+	  SEE_ABORT()
+
+2007-06-03 12:25  d
+
+	* [r1236] libsee/code1.c: add missing include for SEE_ASSERT also
+	  fix intern bug in experimental codegen INST_LOOKUP instruction
+
+2007-06-09 14:37  d
+
+	* [r1237] doc/USAGE.html: Add examples blocks that are typset
+	  distinctly. Also add extra examples, from and inspired by
+	  s.d.hammett at googlemail.com.
+
+2007-06-10 03:12  d
+
+	* [r1238] NEWS: bug 74: don't use snprintf for portability; thanks
+	  TP
+
+2007-06-12 13:06  d
+
+	* [r1239] include/see/interpreter.h: Move definition of
+	  SEE_traceback out of SEE_interpreter for C++ compilers.
+	  Otherwise it becomes known as SEE_interpreter::SEE_traceback.
+	  Spotted by TD s.d.hammett%googlemail.com
+
+2007-06-12 13:14  d
+
+	* [r1240] NEWS, configure.ac, doc/USAGE.html, include/see/value.h,
+	  libsee/Makefile.am, libsee/lex.c, libsee/math.c, libsee/nmath.h,
+	  libsee/obj_Global.c, libsee/obj_Math.c, libsee/value.c,
+	  shell/test/regress.js: bug 77: move wrappers around
+	  isnan/finite/copysign into a compilation unit. Also, deprecate
+	  SEE_NUMBER_ISINF. This is to better support platforms that don't
+	  have these math functions in an obvious place, and to avoid a
+	  further header file expansion.
+
+2007-06-12 13:15  d
+
+	* [r1241] libsee/obj_Array.c, libsee/obj_Date.c,
+	  libsee/obj_String.c, libsee/regex.c: style: always follow commas
+	  with a space
+
+2007-06-12 13:16  d
+
+	* [r1242] shell/module.c: bug 74: Remove non-portable use of
+	  snprintf. Thanks TD/s.d.hammett
+
+2007-06-12 13:22  d
+
+	* [r1243] NEWS, libsee/enumerate.c: bug 75: check that an object
+	  has an enumerator before enumerating it
+
+2007-06-12 13:28  d
+
+	* [r1244] libsee/dprint.c: Don't crash when calling dprints(NULL).
+	  Instead, just print "(null)".
+
+2007-06-12 13:31  d
+
+	* [r1245] libsee/printf.c: Make va_copy() work under Win32. This
+	  may not even be the right way to do it. Found by TP/s.d.hammet.
+
+2007-06-18 05:15  d
+
+	* [r1246] NEWS, doc/USAGE.html, include/see/no.h,
+	  libsee/cfunction.c, libsee/no.c: Deprecate SEE_no_enumerator().
+	  Use NULL instead.
+
+2007-06-19 23:18  d
+
+	* [r1247] libsee/debug.c: Make dprints() truncate long strings.
+	  Strings longer than 1024 characters are printed as
+	  "foo\(...len=1234)" This is useful for when corrupt strings are
+	  printed.
+
+2007-06-19 23:57  d
+
+	* [r1248] libsee/code1.c, shell/README, shell/main.c: Improve
+	  debugging for the code backend. Renamed SEE_code1_debug to
+	  SEE_code_debug; other backends will provide this sym. Add -dc
+	  debug flag to see-shell to increment it. Added assertions to
+	  code1 regarding interned string literals. +more debug info.
+
+2007-06-20 00:06  d
+
+	* [r1249] libsee/code1.c: fix bug in ADD instruction where '1+,'
+	  would result in '1'
+
+2007-06-20 00:08  d
+
+	* [r1250] shell/test/regress.js: Correct comment in regression
+	  test to refer to the right bug number
+
+2007-06-20 00:17  d
+
+	* [r1251] libsee/parse.c: Various fixes for the code generator. -
+	  Intern strings when generating string literals and regex flags
+	  for codegen - Use NULL to indicate an empty function - Don't
+	  generate 'empty' functions when it has var statements (because
+	  they may have side effects) - Don't think that zero stack usage
+	  means an empty function. - Calculate max stack correctly for
+	  arglist construction - Use ASSERT instead of throw-Error for
+	  unexpected branches in case statements (because they are
+	  internal errors instead of syntax errors) - Various whitespace
+	  changes - Ensure the value on the stack is boolean for if()
+	  condition - Support empty initialiser for 'for(;;)' - Remove
+	  superfluous pop from 'for(var...)' codegen - Attempt to make
+	  labels apply to iteration nodes.. (not working!) - Disable
+	  function pretty-printing when codegen is in place. - Remove an
+	  unused variable. Only known problems remaining is that labels
+	  are not being transfered to iteration nodes properly.
+
+2007-06-22 11:42  d
+
+	* [r1252] NEWS, shell/README, shell/main.c, shell/shell.c: Added
+	  -e and -i options to see-shell, and tidied up documentation. The
+	  -e <string> option executes the string as a program. The -i
+	  option enters interactive mode, and -f "-" no longer does.
+	  (Useful for pipes).
+
+2007-06-22 12:37  d
+
+	* [r1253] shell/debug.c: Add a helpful "try 'help'" message to the
+	  shell debugger
+
+2007-06-22 12:38  d
+
+	* [r1254] libsee/code1.c, libsee/code1.h, libsee/parse.c: Code
+	  generator: implement LOC instruction and hook code1 into
+	  SEE_system.trace Now the shell debugger work with codegen.
+
+2007-06-22 12:45  d
+
+	* [r1255] libsee/lex.c: Oops: the lexer should intern filenames so
+	  that CG_LOC can be fast
+	* [r1256] libsee/parse.c: Don't generate a statement-trace event
+	  at the implicit end of function bodies. It is just confusing to
+	  have the location jump back to the top of the file when the
+	  script exits.
+
+2007-06-22 13:37  d
+
+	* [r1257] libsee/code1.c: Improve the code1 disassembler. Prints
+	  function, literal and location information. Also, literal syntax
+	  changes from "@n" to "LITERAL,n" which is more consistent.
+
+2007-06-22 16:14  d
+
+	* [r1258] doc/BYTECODE.txt, libsee/code.h, libsee/code1.c,
+	  libsee/code1.h, libsee/parse.c: Replace VAR and PUTVAR
+	  instructions with VREF. Using VREF saves a LOOKUP call. Variable
+	  references are tracked in the parser. The code interface was
+	  changed to allow communication of variable identifiers to the
+	  backend. VREF simply builds a reference to a local variable.
+	  Known problem: getting a spurious seg fault from
+	  see-shell.static.
+
+2007-06-27 10:45  d
+
+	* [r1259] NEWS, libsee/parse.c, shell/test/regress.js: bug 78: fix
+	  crash when pretty-printing a switch with adjacent case clauses
+
+2007-06-28 15:06  d
+
+	* [r1260] shell/test/regress.js: oops: remove quote
+
+2007-06-28 15:08  d
+
+	* [r1261] libsee/parse.c: Correct stack calculation for functions
+	  consisting of just an empty statement.
+
+2007-07-04 12:10  d
+
+	* [r1262] shell/README, shell/main.c: see-shell's -d option now
+	  alters the default interpreter flags. This means that -d does
+	  not initialise the interpreter, allowing the -c and -l flags to
+	  follow -d now.
+
+2007-07-04 12:22  d
+
+	* [r1263] shell/README, shell/main.c: Allow more see-shell flags
+	  (-r, -c) to be used before AND after the interpreter is
+	  initialised. (Reverses part of revision 1262).
+
+2007-07-04 21:38  d
+
+	* [r1264] NEWS, doc/USAGE.html, libsee/lex.c, libsee/lex.h,
+	  libsee/tokens.c, shell/test/regress.js: bug 79: treat '-->' at
+	  start of line like '//' in SGMLCOM compatibility mode
+
+2007-07-24 14:33  d
+
+	* [r1265] NEWS, doc/USAGE.html, include/see/eval.h,
+	  libsee/code1.c, libsee/obj_Global.c, libsee/scope.c,
+	  libsee/scope.h: bug 73: Add SEE_eval()
+
+2007-08-02 13:56  d
+
+	* [r1266] configure.ac, libsee/Makefile.am, libsee/test,
+	  libsee/test/Makefile.am, libsee/test/t-basic.c,
+	  libsee/test/test.inc: Add the beginnings of a test suite to
+	  libsee. This is for testing the API.
+
+2007-08-02 14:03  d
+
+	* [r1267] NEWS, doc/USAGE.html, include/see/cfunction.h,
+	  libsee/cfunction.c, libsee/test/Makefile.am: remove unused bits
+	  from libsee/test/Makefile.am
+
+2007-08-02 14:05  d
+
+	* [r1268] NEWS, doc/USAGE.html, include/see/cfunction.h,
+	  libsee/cfunction.c: Remove stuff that shouldn't have been
+	  committed in revision 1267
+
+2007-08-08 00:10  d
+
+	* [r1269] libsee/parse.c: bug 83: make function pretty printer
+	  handle numeric literals
+
+2007-08-08 12:42  d
+
+	* [r1270] NEWS, doc/USAGE.html, include/see/cfunction.h,
+	  libsee/cfunction.c, libsee/test/Makefile.am,
+	  libsee/test/t-basic.c, libsee/test/test.inc: bug 81:
+	  SEE_parse_args_va() and SEE_call_args_va() Also added tests for
+	  bug 81 and fixed a couple of minor implementation bugs that were
+	  revealed. Improved libsee test driver. It's now verbose by
+	  default.
+
+2007-08-09 04:29  d
+
+	* [r1271] libsee/test/t-bug81.c: bug 81: oops missed this file in
+	  the previous commit
+
+2007-08-15 06:33  d
+
+	* [r1272] NEWS, doc/USAGE.html, include/see/interpreter.h,
+	  libsee/obj_Object.c, shell/compat.c, shell/test/regress.js: bug
+	  84: EMA 262-3 errata compatibility This commit adds a new compat
+	  flag (SEE_COMPAT_ERRATA) that provides compatibiliy with the
+	  errata published at
+	  http://www.mozilla.org/js/language/E262-3-errata.html The only
+	  functional difference arises from this item: 15.5.4.10 Change
+	  the last sentence of the second bullet from: The value returned
+	  is an array with the length property set to n and properties 0
+	  through nÃ¢1 corresponding to the first elements of the results
+	  of all matching invocations of RegExp.prototype.exec. to: If
+	  n=0, then the value returned is null; otherwise, the value
+	  returned is an array with the length property set to n and
+	  properties 0 through nÃ¢1 corresponding to the first elements of
+	  the results of all matching invocations of RegExp.prototype.exec.
+
+2007-08-15 06:39  d
+
+	* [r1273] libsee/obj_Object.c, libsee/obj_String.c: oops..
+	  correction for revision 1272. (Committed the wrong file)
+
+2007-08-15 06:44  d
+
+	* [r1274] NEWS, include/see/system.h, libsee/obj_Object.c,
+	  libsee/system.c: bug 85: Add SEE_system.object_construct hook
+
+2007-08-15 10:11  d
+
+	* [r1275] include/see/system.h: add fwd decl to avoid compiler
+	  warnings
+
+2007-08-15 10:20  d
+
+	* [r1276] NEWS, doc/USAGE.html, include/see/object.h,
+	  libsee/object.c, libsee/parse.c, shell/test/regress.js: bug 82:
+	  make instanceof operator compatible with Javascript 1.4 and
+	  JScript
+
+2007-08-15 10:27  d
+
+	* [r1277] shell/test/regress.js: improve regression test for bug
+	  82 ('Function.__proto__ instanceof Function' is a boundary case
+	  that should result in false)
+
+2007-08-15 13:22  d
+
+	* [r1278] doc/USAGE.html: correct documentation regarding
+	  SEE_COMPAT_ERRATA
+
+2007-08-15 14:16  d
+
+	* [r1279] doc/USAGE.html: correct math_sqrt example in USAGE
+
+2007-09-06 01:40  d
+
+	* [r1280] libsee/cfunction.c: correct a comment about cfunction
+	  prototypes
+
+2007-09-13 15:09  d
+
+	* [r1281] NEWS, doc/USAGE.html, include/see/error.h.in,
+	  libsee/error.c: bug 87: add new functions SEE_error_throw_va()
+	  and SEE_error_throw_sys_va()
+
+2007-09-13 22:26  d
+
+	* [r1282] COPYING, libsee/LICENCE, libsee/cfunction.c,
+	  libsee/code1.c, libsee/debug.c, libsee/dprint.c,
+	  libsee/dtoa_native.c, libsee/enumerate.c, libsee/error.c,
+	  libsee/function.c, libsee/input_file.c,
+	  libsee/input_lookahead.c, libsee/input_string.c,
+	  libsee/input_utf8.c, libsee/intern.c, libsee/interpreter.c,
+	  libsee/lex.c, libsee/math.c, libsee/mem.c, libsee/memcmp.c,
+	  libsee/memmove.c, libsee/module.c, libsee/native.c, libsee/no.c,
+	  libsee/obj_Array.c, libsee/obj_Boolean.c, libsee/obj_Date.c,
+	  libsee/obj_Error.c, libsee/obj_Function.c, libsee/obj_Global.c,
+	  libsee/obj_Math.c, libsee/obj_Number.c, libsee/obj_Object.c,
+	  libsee/obj_RegExp.c, libsee/obj_String.c, libsee/object.c,
+	  libsee/parse.c, libsee/platform_posix.c,
+	  libsee/platform_win32.c, libsee/printf.c, libsee/regex.c,
+	  libsee/scope.c, libsee/simple_gc.c, libsee/string.c,
+	  libsee/string.pl, libsee/stringdefs.c, libsee/strtod.c,
+	  libsee/system.c, libsee/tokens.c, libsee/try.c,
+	  libsee/unicase.c, libsee/unicode.c, libsee/value.c,
+	  libsee/version.c, shell/getopt.c, unicode/copyright: bug 89:
+	  Minor licensing change to conform to Open Source Initiative's
+	  text The effective change is to change the wording of these
+	  clauses, from: > 3. Neither the name of Mr Leonard nor the names
+	  of the contributors ---------- > THIS SOFTWARE IS PROVIDED BY
+	  DAVID LEONARD AND CONTRIBUTORS ``AS IS'' ------------- > IN NO
+	  EVENT SHALL DAVID LEONARD OR CONTRIBUTORS BE LIABLE
+	  ------------- to: > 3. Neither the name of David Leonard nor the
+	  names of its contributors ------------- > THIS SOFTWARE IS
+	  PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+	  --------------------- > IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+	  CONTRIBUTORS BE LIABLE ------------------- This makes SEE's
+	  license conform with the OSI's "New BSD License" template at
+	  http://www.opensource.org/licenses/bsd-license.php
+
+2007-11-01 07:43  d
+
+	* [r1283] NEWS, libsee/parse.c, shell/test/regress.js: bug 91:
+	  multiple function declarations inside conditional
+
+2007-11-01 08:36  d
+
+	* [r1284] NEWS, doc/USAGE.html, libsee/test/Makefile.am,
+	  libsee/test/t-bug90.c, libsee/test/test.inc, shell/main.c: Bug
+	  90: documnet that apps must call GC_INIT() when using Boehm GC
+
+2007-11-01 10:25  d
+
+	* [r1285] shell/test/regress.js: Improve regression test for bug
+	  91. I was worried that successive legitimate function
+	  declarations would be treated as statements instead of function
+	  declarations. This is demonstrated by testing that the function
+	  name is available lexically ahead of when the function is
+	  declared.
+
+2007-11-01 11:03  d
+
+	* [r1286] include/see/system.h, libsee/system.c: Add SEE_init()
+	  for future use in API 3.0. For now, this is a no-op.
+
+2007-11-07 12:10  d
+
+	* [r1287] NEWS, doc/USAGE.html, include/see/string.h,
+	  libsee/lex.c, libsee/string.c: Bug 92: add
+	  SEE_string_append_unicode() (Inspired by Hermecz Vajk)
+
+2007-11-12 13:54  d
+
+	* [r1288] NEWS, libsee/obj_String.c, shell/test/regress.js: bug
+	  93: seg fault when String.prototype.charAt/charCodeAt() called
+	  with no args Thanks, Alexander Botero-Lowry
+
+2007-11-19 15:00  d
+
+	* [r1289] libsee/native.c: add comment for bug 95, regarding
+	  [[DefaultValue]] treatment for Date objects.
+
+2007-12-11 11:00  d
+
+	* [r1290] NEWS, libsee/mem.c, shell/test/regress.js: Bug 94:
+	  string concatenation can end up with nuls The moral of the story
+	  is: Don't free; leave it to the GC!
+
+2007-12-11 12:05  d
+
+	* [r1291] NEWS, libsee/lex.c, libsee/unicode.h: Bug 96: newlines
+	  were not properly recognised with --disable-full-unicode Thanks,
+	  Hermecz Vajk
+
+2007-12-11 12:18  d
+
+	* [r1292] NEWS, libsee/lex.c, shell/test/regress.js: Bug 97:
+	  recognise CRLF line endings for line number reporting Spotted by
+	  Hermecz Vajk
+
+2007-12-11 12:23  d
+
+	* [r1293] libsee/math.c: Bug 80: Correct compat code to use
+	  _SEE_isfinite() instead of _SEE_finite(). Spotted by Hermecz
+	  Vajk.
+
+2007-12-16 02:09  d
+
+	* [r1294] shell/README: fix minor typos in shell/README
+
+2007-12-23 05:00  d
+
+	* [r1295] NEWS, doc/USAGE.html, libsee/lex.c,
+	  shell/test/regress.js: Bug 101: allow escaped LineTerminators in
+	  string literals for compat Applies to JS1.1 compat mode (and
+	  above)
+
+2007-12-23 14:50  d
+
+	* [r1296] include/see/interpreter.h, include/see/try.h.in,
+	  libsee/debug.c, libsee/parse.c: Add "throw" statements to the
+	  traceback, make SEE_Print*() more flexible. Extended traceback
+	  helps when a throw occurs in the toplevel of a script. Allows
+	  you to track down the statement that caused the exception. The
+	  ctxt traceback field is now also zeroed during SEE_TRY() to
+	  avoid having garbage when printing a traceback. Null FILEs can
+	  now be passed to the SEE_Print*() functions, and they are
+	  converted to standard error output. This is handy to know when
+	  inside gdb.
+
+2008-01-09 00:17  d
+
+	* [r1297] shell/README, shell/shell.c: Allow see-shell's print()
+	  function to take multiple arguments. This makes it work with the
+	  examples from http://eloquentjavascript.net/
+
+2008-01-09 00:20  d
+
+	* [r1298] NEWS, libsee/mem.c: Bug 106: fix prematurely reclaimed
+	  objects. Also, improve the bounds checking on extremely large
+	  allocations
+
+2008-01-09 00:27  d
+
+	* [r1299] NEWS, libsee/system.c: Bug 104: fix leaked finalized
+	  objects Thanks to Hermecz Vajk
+
+2008-01-09 03:02  d
+
+	* [r1300] shell/debug.c: When the debugger's 'list' command yields
+	  nothing, print a message saying so.
+
+2008-01-09 03:25  d
+
+	* [r1301] configure.ac, shell/Makefile.am, shell/README,
+	  shell/gtrace.c, shell/gtrace.h, shell/main.c, shell/shell.h,
+	  shell/trace.c: Add gtrace feature to shell, enabled with -dg.
+	  This trace tests for a SIGINFO signal and prints a traceback and
+	  memory dump.
+
+2008-01-09 04:17  d
+
+	* [r1302] configure.ac, libsee/try.c: Add --with-longjmperror
+	  option, and correct the way --with-native-dtoa works The
+	  longjmperror() handler may be defined by an application to
+	  override SEE's but it may not be clear if that is desirable, so
+	  I've made it an option. Also, when I cleaned up the arg enabling
+	  code, I noticed that the native-dtoa code may never be enabled.
+	  So, now --enable-native-dtoa=yes doesn't check for the presence
+	  of functions in libc: it simply assumes they're there.
+
+2008-01-09 04:49  d
+
+	* [r1303] shell/README, shell/shell.c: Add Shell.abort() function
+	  to see-shell, so that I can test SEE_ABORT()
+
+2008-01-09 04:50  d
+
+	* [r1304] libsee/platform_posix.c: Print a traceback by default
+	  when SEE_ABORT() is called.
+
+2008-01-09 04:55  d
+
+	* [r1305] include/see/string.h, libsee/string.c: Add
+	  SEE_string_cmp_ascii() Developers should really use intern'd
+	  strings (pointer comparison). It will be helpful for those who
+	  don't care too much about efficiency. I added this function so I
+	  can test SEE_intern()!
+
+2008-01-09 04:56  d
+
+	* [r1306] NEWS, libsee/intern.c, libsee/test/Makefile.am,
+	  libsee/test/t-bug105.c, libsee/test/t-string.c,
+	  libsee/test/test.inc: Bug 105: make SEE_intern() work between
+	  interpreters Strings resulting from foreign interpreters can now
+	  be internalized sensibly in other interpreters.
+
+2008-01-09 09:44  d
+
+	* [r1307] libsee/platform_posix.c: remove compiler warning
+
+2008-01-09 11:48  d
+
+	* [r1308] libsee/regex.h, libsee/regex_pcre.c, libsee/system.c:
+	  Add support for PCRE (http://pcre.org/) Note that PCRE is not
+	  wholly compatible with the ECMAScript definition of regular
+	  epressions.
+
+2008-01-09 11:50  d
+
+	* [r1309] NEWS, configure.ac, libsee/Makefile.am,
+	  libsee/see.pc.in, shell/Makefile.am: Generate a pkg-config
+	  output (lib/pkgconfig/see.pc) and implement --with-pcre
+
+2008-01-09 14:41  d
+
+	* [r1310] configure.ac, libsee/Makefile.am: Correct some problems
+	  found with 'make distcheck'
+
+2008-01-10 13:59  d
+
+	* [r1311] include/see/interpreter.h, include/see/system.h,
+	  libsee/Makefile.am, libsee/interpreter.c, libsee/regex.c,
+	  libsee/regex.h, libsee/regex_ecma.c, libsee/regex_pcre.c,
+	  libsee/system.c, shell/README, shell/shell.c: bug 107: support
+	  changing regex engines and add Shell.regex_engine().
+
+2008-01-11 23:57  d
+
+	* [r1312] NEWS, libsee/obj_Number.c, shell/test/regress.js: Bug
+	  108: Number.toString(undefined) should behave like
+	  Number.toString()
+
+2008-01-12 00:21  d
+
+	* [r1313] NEWS, libsee/lex.c, libsee/string.defs,
+	  shell/test/grammar.js, shell/test/regress.js: Bug 109: detect
+	  illegal unicode escapes within identifiers (s7.6:3)
+
+2008-01-12 00:28  d
+
+	* [r1314] NEWS, libsee/regex_ecma.c, shell/test/regress.js: Bug
+	  110: /[]/ is a legal regular expression, and should not throw
+	  SyntaxError
+
+2008-01-12 04:36  d
+
+	* [r1315] NEWS, libsee/regex_ecma.c, shell/test/regress.js: Bug
+	  112: /)/ and other disallowed regular expressions are now
+	  detected
+
+2008-01-13 02:21  d
+
+	* [r1316] NEWS, include/see/try.h.in, include/see/value.h,
+	  libsee/parse.c, shell/t-File.js, shell/test/Makefile.am,
+	  shell/test/common.js, shell/test/grammar.js,
+	  shell/test/regress.js, shell/test/throw.js: Bug 102: fix
+	  traceback chains. This commit reworks how the try/catch/finally
+	  handlers work, and adds a test suite for try-finally-catch under
+	  different circumstances. Also, the general test framework was
+	  overhauled so that specific exceptions can be tested for. And
+	  new macro, SEE_RETHROW() is introduced.
+
+2008-01-13 06:10  d
+
+	* [r1317] libsee/test/Makefile.am, libsee/test/t-bug104.c,
+	  libsee/test/test.inc: Add tests for bug 104. Note: Includes is a
+	  commented-out test for finalizers with cycles.
+
+2008-01-15 11:44  d
+
+	* [r1318] shell/module.c: remove compiler warning about
+	  initializing autos
+	* [r1319] libsee/test/t-bug104.c: remove compiler warning about
+	  prototypes
+
+2008-01-15 11:47  d
+
+	* [r1320] include/see/interpreter.h, libsee/interpreter.c: Bug
+	  113: add SEE_interpreter_save_state() This API extension is for
+	  Hermecz who is using multiple threads per interpreter
+
+2008-01-20 08:49  d
+
+	* [r1321] libsee/obj_Object.c, shell/test/regress.js: Bug 115:
+	  Object.prototype.isPrototypeOf() didn't follow prototype chain
+
+2008-01-20 08:52  d
+
+	* [r1322] NEWS, doc/USAGE.html, include/see/string.h,
+	  libsee/string.c: Add SEE_string_fix() function to create
+	  interpreter-less strings that are safe for sharing between
+	  interpreters.
+
+2008-01-20 08:54  d
+
+	* [r1323] configure.ac, shell/README, shell/shell.c: Add
+	  Shell.isatty() this is for later, so I can decide when to turn
+	  off VT colour codes
+
+2008-01-20 08:56  d
+
+	* [r1324] libsee/debug.c: SEE_STRING_FLAG_STATIC is deprecated
+
+2008-01-20 08:57  d
+
+	* [r1325] shell/test/Makefile.am, shell/test/common.js,
+	  shell/test/obj.Global.js, shell/test/obj.Object.js: Add tests
+	  for Global and Object classes. Also improve the test framework
+
+2008-01-20 09:34  d
+
+	* [r1326] libsee/test/test.inc, shell/shell.c: Fix the isatty()
+	  code that activates coloured test labels
+
+2008-01-20 12:15  d
+
+	* [r1327] libsee/test/t-bug104.c: remove compiler warning
+
+2008-01-20 12:40  d
+
+	* [r1328] NEWS, doc/USAGE.html, include/see/object.h,
+	  include/see/string.h, libsee/cfunction.c, libsee/function.c,
+	  libsee/intern.c, libsee/native.c, libsee/obj_Array.c,
+	  libsee/obj_Function.c, libsee/obj_String.c, libsee/parse.c,
+	  libsee/string.c, shell/mod_File.c: [Get], [Put], [CanPut],
+	  [HasProperty] and [Delete] assume intern'd properties. This is
+	  an important API change for users. You should review all places
+	  where you use the SEE_OBJECT_GET/PUT/CANPUT/etc macros and wrap
+	  the property argument with SEE_intern(interp, ...) as required.
+	  The SEE_OBJECT_GET/PUT/etc macros now contain an assertion check
+	  to detect when non-internalised properties have been passed.
+	  This should make it pretty easy to find where non-interned
+	  properties are being used. The assertion check is disabled by
+	  defining NDEBUG, or when --disable-debug is provided during
+	  configure.
+
+2008-01-20 12:51  d
+
+	* [r1329] doc/USAGE.html: remove unintentional doc commits
+
+2008-01-20 13:05  d
+
+	* [r1330] doc/USAGE.html: Mention the intern requirement of
+	  SEE_enumerator.next
+
+2008-01-25 22:01  d
+
+	* [r1331] doc/BYTECODE.txt: Tidy up the bytecode documentation;
+	  minor corrections
+
+2008-02-02 11:00  d
+
+	* [r1332] configure.ac: Remove AC_REVISION (a CVS leftover)
+
+2008-02-02 13:52  d
+
+	* [r1333] include/see/value.h, libsee/code1.c, libsee/debug.c,
+	  libsee/parse.c: Make branch targets work with bytecode
+	  generator. Branch (break/continue) targets are now identified by
+	  integers. Labels have been separated from labelsets. Minor fixes
+	  to code generator: - B_TRUE instruction calls ToBoolean() - some
+	  string internalising - fix an assertion check to handle NULL
+	  filenames
+
+2008-02-03 00:16  d
+
+	* [r1334] doc/BYTECODE.txt, libsee/code.h, libsee/code1.c,
+	  libsee/parse.c, shell/test/regress.js: Bug 117: Function
+	  expression property had wrong attributes (bytecode only)
+
+2008-02-05 11:13  d
+
+	* [r1335] libsee/Makefile.am: Change libsee version in preparation
+	  for 2.1 release
+
+2008-02-05 11:19  d
+
+	* [r1336] include/see/object.h: Change '#if !defined' to '#ifndef'
+	  for consistency
+
+2008-02-05 13:34  d
+
+	* [r1337] doc/USAGE.html: Update documentation - mention
+	  SEE_init() - mention SEE_interpreter_save_state() and friend -
+	  mention SEE_TRY_BREAK, SEE_RETHROW() - describe SEE_COPYSIGN(),
+	  mention SEE_ISPINF() and friends - describe
+	  SEE_object_instanceof() - add section on porting from 2.0 to 2.1
+	* [r1338] libsee/system.c: Ignore multiple invocations of
+	  SEE_init()
+	* [r1339] libsee/test/t-basic.c: Update test to be exactly that
+	  from the docs. i.e. add SEE_init() call.
+
+2008-02-05 13:39  d
+
+	* [r1340] doc/USAGE.html: Correct typo in SEE_grow_to example
+
+2008-02-05 14:58  d
+
+	* [r1341] NEWS: Reorder the 2.1 list to be easier to read
+
+2008-02-05 15:10  d
+
+	* [r1342] NEWS, doc/USAGE.html, include/see/object.h,
+	  libsee/cfunction.c, libsee/debug.c, libsee/native.c,
+	  libsee/obj_Function.c: Bug 88: Add host_data field to SEE_object
+
+2008-02-05 15:19  d
+
+	* [r1343] NEWS: add missing bug numbers to some NEWS items
+
+2008-02-05 15:24  d
+
+	* [r1344] doc/USAGE.html: Don't document SEE_regex_engine, yet.
+
+2008-02-05 15:26  d
+
+	* [r1345] include/see/interpreter.h, include/see/system.h: Mark
+	  the regex_engine API as experimental
+
+2008-02-05 15:27  d
+
+	* [r1346] libsee/debug.c: missing semicolon
+
+2008-02-07 12:13  d
+
+	* [r1347] libsee/input_string.c: hide non-public symbol
+	  (input_string_class)
+
+2008-02-08 09:44  d
+
+	* [r1348] libsee/code.h: Add a forward structure declaration to
+	  avoid a minor compiler warning.
+
+2008-02-08 09:45  d
+
+	* [r1349] libsee/parse.c: Avoid a compiler warning by using plain
+	  old int to carry a boolean result.
+
+2008-02-08 09:53  d
+
+	* [r1350] configure.ac, include/see/mem.h, include/see/system.h,
+	  include/see/type.h.in, libsee/mem.c, libsee/system.c: Improve
+	  allocation debugging and reduce typical memory footprint. -
+	  Changed signature of SEE_system.malloc and friends; they now
+	  take the filename:line of the original caller, so as to allow
+	  allocation debugging. - Changed GROW_INITIAL_SIZE from 1k to 64;
+	  this the reduces memory footprint - Changed attribute modifier
+	  _SEE_malloc to _SEE__malloc. - Removed 'arg' argument from the
+	  _SEE_malloc_*debug() functions - Defined GC_DEBUG when
+	  --enable-developer is given - simple_malloc's finalizer now runs
+	  all finalizers via atexit().
+
+2008-02-08 09:56  d
+
+	* [r1351] include/see/string.h, libsee/intern.c, libsee/string.c:
+	  Intern'd strings now allocate the minimum storage they really
+	  need - New function _SEE_string_dup_fix() - Also,
+	  SEE_string_free now ignores some obviously static strings.
+
+2008-02-08 09:59  d
+
+	* [r1352] include/see/native.h, libsee/native.c: Add a simple
+	  lookup cache for native object property access. - added new
+	  field to SEE_native called 'lru' (lru = Last Recently Used..
+	  yes, a silly name) - lru is check on most accessor methods.
+	  Tracing (with -dn) shows that lru hits are quite frequent. -
+	  Changed the hashing function to ignore the lower 7 bits Strings
+	  within 128 bytes of each other may have the same hash.
+
+2008-02-08 10:09  d
+
+	* [r1353] libsee/obj_Function.c: Correct the length property of
+	  Function.prototype.apply
+	* [r1354] include/see/system.h: Correct the comment of an #endif
+
+2008-02-08 10:10  d
+
+	* [r1355] doc/USAGE.html: Add a reference to the ECMAScript Errata
+	  URL. Also correct copyright date.
+	* [r1356] shell/test/common.js, shell/test/obj.Object.js: Move the
+	  getClass() function into the common.js file
+
+2008-02-08 10:30  d
+
+	* [r1357] libsee/system.c: oops simple_finalize typo
+
+2008-02-08 11:07  d
+
+	* [r1358] configure.ac, shell/test/Makefile.am,
+	  shell/test/mozilla: Remove unused and non-working mozilla test
+	  bridge
+
+2008-02-08 11:08  d
+
+	* [r1359] shell/test/Makefile.am, shell/test/obj.Function.js: Add
+	  obj.Function tests
+
+2008-02-08 12:30  d
+
+	* [r1360] libsee/platform_win32.c: Add missing header, and correct
+	  a compiler warning, for win32 platform support
+
+2008-02-08 12:36  d
+
+	* [r1361] libsee/native.c: Correctly initialize SEE_native.lru to
+	  NULL (because the allocator may not return zeroed memory)
+
+2008-02-08 14:22  d
+
+	* [r1362] libsee/test/Makefile.am, shell/Makefile.am,
+	  shell/t-File: The variable for linking libs with SEE is
+	  SEE_LIBS, not SEE_LDADD. Also, cause t-File test to be skipped
+	  if shared libraries were disabled.
+
+2008-02-08 14:24  d
+
+	* [r1363] configure.ac, libsee/system.c, libsee/test/t-bug104.c,
+	  libsee/test/test.inc, shell/gtrace.c, shell/main.c,
+	  shell/shell.c: Simplify Boehm GC tests to just '#if
+	  WITH_BOEHM_GC' The Boehm GC is found in a more portable way,
+	  that works on win32 as well now. Also removed GC_PTR which isn't
+	  in Boehm GC 7.0. Also fixed -lpcre to go in SEE_LIBS.
+
+2008-02-08 14:45  d
+
+	* [r1364] libsee/parse.c: Remove some compiler warnings since we
+	  now use integers instead of pointers for branch targets.
+
+2008-02-08 14:54  d
+
+	* [r1365] libsee/parse.c: quieten some parser debug messages
+
+2008-02-09 10:26  d
+
+	* [r1366] NEWS, libsee/parse.c: Bug 118: Programs with only
+	  function decls had no effect in bytecode mode
+	* [r1367] shell/test/regress.js: Regression test for bug 118
+
+2008-02-09 10:27  d
+
+	* [r1368] shell/t-File: Ignore the obj_File test if there is a
+	  problem loading the module As there is on win32, which doesn't
+	  seem to support this?
+
+2008-02-09 12:41  d
+
+	* [r1369] API, configure.ac, doc/USAGE.html,
+	  include/see/version.h: SEE version 3.0 change API version to 3.0
+
+2008-02-09 12:54  d
+
+	* [r1370] libsee/value.c: Allocate the right amount of space for
+	  int->str conversion.
+
+2008-02-10 04:59  d
+
+	* [r1371] NEWS, configure.ac, libsee/code1.c, libsee/parse.c:
+	  Allow constant folding independent of bytecode/AST eval. Added
+	  --enable-ast-eval (default no). The AST is still generated
+	  during parse but constant folding is now implemented using code
+	  execution, instead of node evaluation. This removed redundant
+	  evaluation code.
+
+2008-02-10 10:17  d
+
+	* [r1372] configure.ac: correct undisplayed help message from
+	  configure
+
+2008-02-10 10:18  d
+
+	* [r1373] libsee/code.h: correct some comments in libsee/code.h
+
+2008-02-10 10:19  d
+
+	* [r1374] see/releases/see-3.0: Copy SEE's trunk to
+	  releases/see-3.0
+
+2008-02-10 10:20  d
+
+	* [r1375] see/releases/see-3.0/configure.ac: Remove '_snapshot'
+	  from version string
+
+2008-02-10 10:32  d
+
+	* [r1376] see/releases/see-3.0/configure.ac: Remove the S from the
+	  version string; svnversion detected a switch
+

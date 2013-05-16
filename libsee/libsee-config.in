@@ -1,0 +1,32 @@
+#!/bin/sh
+# $Id: libsee-config.in 740 2004-11-01 13:08:08Z d $
+
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+libdir="@libdir@"
+includedir="@includedir@"
+
+case "$1" in
+    --version) 
+	echo "@PACKAGE_NAME@-@PACKAGE_VERSION@" ;;
+    --libs)
+	echo "-L$libdir -lsee @LDFLAGS@ @LIBS@" ;;
+    --cppflags)
+	echo "-I$includedir" ;;
+    --prefix)
+	echo "$prefix" ;;
+    --exec-prefix)
+	echo "$exec_prefix" ;;
+    *)
+	exec >&2
+	test -z "$1" || echo "unknown flag: $1"
+	echo "usage: $0 --<request>" 
+	echo "  where --<request> is one of:"
+	echo "     --version      - prints <package>-<version>"
+	echo "     --libs         - prints linker flags"
+	echo "     --cppflags     - prints preprocessor flags to use"
+	echo "     --prefix       - prints installation prefix"
+	echo "     --exec-prefix  - prints execution installation prefix"
+	exit 1
+	;;
+esac

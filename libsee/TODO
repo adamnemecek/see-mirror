@@ -1,0 +1,11 @@
+$Id: TODO 715 2004-10-17 13:50:51Z d $
+
+1. [DONE] put in a call recursion limit
+2. proper unicode uppercase/lowercase
+3. fix uicode hex escape i.e. "\xG \u&" -> "xG u&"
+4. fix Math.min/max so that +0 > -0
+5. fix Math.atan2 for the cases of atan2(0,-0) and atan2(-0,-0)
+6. fix Math.exp for case of exp(-Infinity) and exp(+Infinity)
+7. fix Array enumerator: 'for (i in new Array(0,1,2,3,4)) { print(i); }'
+
+

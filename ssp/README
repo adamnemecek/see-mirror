@@ -1,0 +1,23 @@
+
+ssp - SEE servlet pages
+
+This is a demonstration of using SEE in a simple web server to serve
+pages with embedded JavaScript. Compare this with JSP, PHP and ASP.
+
+The interpreter starts off with the standard ECMAscript environment
+plus the following:
+
+	print(str)	- prints a string to the request output
+	include(path)	- recursively includes another ssp file
+	REQUEST_METHOD	- the HTTP request method (eg "GET")
+	QUERY_STRING	- the part of the URI after the '?', or ""
+	QUERY_URI	- the URI requested
+
+If the QUERY_STRING is "raw", then the raw javascript to be
+executed is shown.
+
+
+Run the server (httpd) from this source directory, it listens on port 8000.
+Then visit http://127.0.0.1:8000/test.ssp with your web browser. You should
+see the file in your browser with the <%..%> embedded parts evaluated.
+

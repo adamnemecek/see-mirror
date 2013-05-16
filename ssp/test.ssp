@@ -1,0 +1,39 @@
+Testing..
+
+<% print("The square root of 7 is " + Math.sqrt(7)) %>
+
+The following is conditional:
+
+<% if (true) { %>
+	the true branch
+<% } else { %>
+	the false branch
+<% } %>
+It should say the true branch above.
+
+The query string is '<%= QUERY_STRING %>'.
+The URI is '<%= REQUEST_URI %>'.
+The method is '<%= REQUEST_METHOD %>'.
+
+<%
+    /* Testing an exception */
+
+    try {
+    	eval("syntax error");
+    } catch (e) {
+    	print("Caught test error: " + e);
+    }
+
+%>
+
+
+The headers were:
+<% for (var h in HEADER) { %>
+	<%=h%>: <%=HEADER[h]%>
+<% } %>
+
+Testing includes: 
+<% include("include.ssp") %>
+
+testing a bad include
+<% include("badinclude.ssp") %>

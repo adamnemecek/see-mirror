@@ -1,0 +1,235 @@
+
+SEE SHELL
+
+Synopsis
+--------
+
+    see-shell [-gV] [-l library] [-c <compat>] [-d<debugflags>] 
+	  [-r <maxrecurse>] 
+	  [-e <program> | -f <file> | -h <htmlfile> | -i]...
+
+Description
+-----------
+
+This is an ECMAScript shell program used to test and demonstrate 
+the SEE run-time library. It reads ECMAScript files and runs
+them. It includes a simplistic 'HTML' mode where it will pre-process
+a HTML document a little bit like a browser would. It also provides
+an interactive (prompted) mode and a simple interactive debugger.
+
+The options are as follows:
+
+    -c <compat>
+	    Sets the interpreter compatibility flags which affect
+	    how subsequent programs on the command line are run.
+
+	    The argument to this option must be a whitespace-separated
+	    sequence of identifiers from the list below, each optionally 
+	    prefixed with 'no_'. If the string begins with the character '='
+	    then the compatibility flag is initialised to zero, otherwise
+	    the arguments are bitwise-or'ed into the compatibility flag field.
+
+		sgmlcom     - treat SGML comments in program text as 
+			      normal comments
+		utf_unsafe  - pass through invalid UTF-8 characters 
+			      without error
+		262_3b      - provide the optional functions in 
+			      section 3B of standard
+		js11        - enable JavaScript 1.1 compatibility
+		js12        - enable JavaScript 1.2 compatibility
+		js13        - enable JavaScript 1.3 compatibility
+		js14        - enable JavaScript 1.4 compatibility
+		js15        - enable JavaScript 1.5 compatibility
+
+	    The effects of these identifiers are documented in doc/USAGE.html.
+
+    -d <debugflags>
+	    Enables debugging in the SEE library. This results in 
+	    messages being written to the standard error. This only makes
+	    sense if the library was compiled with debugging enabled
+	    and is intended for use by the maintainers of SEE. The flags
+	    correspond to different parts of SEE:
+
+		-dE         - error constructors
+		-dT         - execution call tracing
+		-dc         - code generator
+		-de         - exception try/catch
+		-dg         - enable gtrace (see below)
+		-dl         - lexical analysis
+		-dm         - trace memory allocation
+		-dn         - native object interface
+		-dp         - parser
+		-dr         - regular expression processing
+		-ds         - context and symbol scope operations
+		-dv         - execution/evaluation
+
+    -e string
+	    Executes the string as an ECMAscript program. The shell globals
+	    are installed into the environment as with the -f option.
+
+    -f file
+	    Executes a file containing an ECMAscript program.
+	    Before execution, a couple of 'shell' functions are included
+	    in the global environment. See below for details.
+	    If the file is "-", then the text is read non-interactively
+	    from standard input and then standard input is closed.
+
+    -g	    Drops into the interactive debugger. See the section below,
+	    'Interactive debugger', for details.
+
+    -h file
+	    Executes an HTML file containing <SCRIPT> elements.
+	    The HTML content is copied to standard output, except for
+	    the text inside <SCRIPT> elements. The script text is stripped
+	    and run as ECMAScript (regardless of any LANGUAGE attribute).
+	    There is no support for forms, URL inclusions or triggers such
+	    as 'onLoad'. However, a minimal 'document' environment is set up
+	    so that document.write() works.
+
+    -i	    Interactively reads commands from the standard input, one
+	    line at a time.  Each line entered must parse as a statement.
+	    Line breaks can be entered by escaping them with a backslash ('\').
+	    Before execution, the 'shell' functions are included into the
+	    global environment.
+
+    -l library
+	    Loads a library module.  This option must come before 
+	    any -e/-f/-h/-i options.  See the section 'Dynamically loaded 
+	    modules' below for details.
+
+    -r maxrecurse
+            Sets the function recursion limit. Default is -1 (no limit).
+
+    -V	    Prints the library and API versions then exits.
+
+The '-e string', '-f file' and '-h htmlfile' options can each be specified 
+multiple times. Each time they are specified, the given files or program 
+are run before further options are processed.
+
+If no -e, -f, -h or -i flags are given, an interactive prompt is produced as
+if the command line arguments ended with "-i".
+
+NOTE: The command line options have been chosen to be mostly compatible with
+the perl script used in Mozilla/spidermonkey's test suite.
+
+
+gtrace
+------
+
+On some systems, when -dg is specified, a trap will be installed that
+prints the current traceback and garbage collector status whenever a
+SIGINFO signal is sent to the process. This can be useful when a script
+is taking a long time to complete.
+
+
+Shell-provided objects and functions
+------------------------------------
+
+Besides the standard environment required by ECMA-262, the shell will 
+include some extra objects into the Global environment when the -e, -f or -i
+options are used:
+
+ print([string[, ...]]) 
+	     - This function prints its argument strings followed
+               by a newline. Without arguments, it prints a single newline.
+
+ compat([string]) -> string
+	     - Changes SEE's compatibility flags as if passed with the
+	       '-c' flag. Returns the old compatibility flag string, suitable
+	       for use in restoring the flags. If no argument is given,
+	       no change to the compatibility flags are made.
+
+ gc()
+	     - This function forces a memory garbage collection if possible.
+
+ version([int])
+             - A Netscape-compatible compatibility setter/getter.
+	       If called without arguments, returns the current JS
+	       compatibility level (e.g. 120, 130, .., 150), or 150
+	       if no compatible(!) If called with a numeric argument,
+	       then sets the JS compatibility to that number.
+
+ Shell.isatty()
+	     - Returns true if the output is a TTY
+
+ Shell.exit([int])
+	     - Causes the interpreter to immediately exit with the given
+	       exit code. If no argument is given, 0 is used.
+
+ Shell.gcdump()
+	     - Causes the garbage collector to dump information or
+	       statistics, if supported.
+
+ Shell.abort(msg)
+	     - This function forces a library-level abort (SEE_ABORT)
+
+ Shell.regex_engines() -> Array
+	     - Returns strings indicating Regex engines available to SEE
+
+ Shell.regex_engine([string]) -> string
+	     - Without arguments, returns the current regex engine name.
+	       With a string argument, changes the engine and returns the
+	       name of the old one.
+
+HTML document objects and functions
+-----------------------------------
+
+In HTML mode (-h) the following objects are inserted into the Global
+environment:
+
+ document.write([string])
+		     - a function to print a string to stdout.
+		       Unlike print() described above, no newline is added.
+
+
+ document.userAgent  - The string "SEE-shell (see-1.0)", or similar
+
+ document.navigator  - a placeholder object that references [Global]
+
+ document.window     - a placeholder object that references [Global]
+
+
+Interactive debugger
+--------------------
+
+The simple interactive debugger demonstrates how the SEE library can be
+controlled by a debugger via the trace() callback. The first time
+ECMAScript code is excuted, the debugger provides a prompt to the
+user. Commands available at the prompt include:
+
+	break [<filename>:]<lineno>	- add a new breakpoint
+	show				- show current breakpoints
+	delete <number>			- delete existing breakpoint
+
+	step				- step to a new line
+	cont				- continue execution
+
+	where				- print traceback information
+	info				- current context information
+	eval <expr>			- evaluate expression in context
+	throw <expr>			- throw an exception value
+
+
+Dynamically loaded modules
+--------------------------
+
+The -l option (which must be used before any -e, -f, -h or -i options) uses
+dlopens to open a shared library. It then looks for an exported structure 
+called 'module', and passes a pointer to it to SEE_module_add(). The 
+structure must be a 'struct SEE_module' as defined in <see/module.h>:
+
+	struct SEE_module {
+		SEE_uint32_t	magic;	 /* magic number */
+		const char     *name;	 /* name of module */
+		const char     *version; /* module version */
+		int	      (*mod_init)(void);
+		void	      (*alloc)(struct SEE_interpreter *);
+		void	      (*init)(struct SEE_interpreter *);
+	};
+
+See doc/USAGE.html for details on how module initialisation is performed,
+or read mod_File.c for an example loadable module.
+
+David Leonard
+
+$Id: README 1323 2008-01-20 08:54:54Z d $
